@@ -8,20 +8,24 @@
 
 <style>
 body {
-  font-family: sans-serif;
-  text-align: center;
-  padding: 30px;
+  font-family: monospace;
   background: #0f172a;
-  color: white;
+  color: #e5e7eb;
+  padding: 20px;
 }
-a, button {
+.box {
+  background: #020617;
+  border: 1px solid #334155;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+button, a {
   display: block;
-  margin: 10px auto;
+  margin: 8px 0;
   padding: 10px;
   border-radius: 6px;
   text-decoration: none;
   border: none;
-  cursor: pointer;
 }
 .join { background: #2563eb; color: white; }
 .retry { background: #16a34a; color: white; }
@@ -30,43 +34,60 @@ a, button {
 </head>
 <body>
 
-<h2>🔐 Checking Access...</h2>
+<h3>🔍 Join Check Debug</h3>
+
+<div class="box">
+<b>Webhook URL</b>
+<pre id="url"></pre>
+</div>
+
+<div class="box">
+<b>Response</b>
+<pre id="res"></pre>
+</div>
+
+<div id="ui"></div>
 
 <script>
 const params = new URLSearchParams(location.search);
 const url = params.get("check");
 
-function load() {
+document.getElementById("url").innerText = url;
+
+function load(){
+
   fetch(url)
     .then(r => r.json())
     .then(res => {
 
+      document.getElementById("res").innerText =
+        JSON.stringify(res, null, 2);
+
+      let ui = "";
+
       if (res.joined) {
 
-        document.body.innerHTML =
-          "<h2>✅ Access Granted</h2>" +
-          "<button onclick='continueBot()'>Continue</button>";
+        ui += "<h3>✅ Joined</h3>";
+        ui += "<button onclick='done()'>Continue</button>";
 
       } else {
 
-        let html = "<h3>❌ Join required</h3>";
+        ui += "<h3>❌ Not Joined</h3>";
 
-        res.channels.forEach(c => {
-          let link = "https://t.me/" + c.replace("@","");
-          html += `<a class="join" href="${link}" target="_blank">Join ${c}</a>`;
-        });
+        let link = "https://t.me/" + res.channel.replace("@","");
 
-        html += "<button class='retry' onclick='load()'>🔄 Recheck</button>";
-
-        document.body.innerHTML = html;
+        ui += `<a class="join" href="${link}" target="_blank">Join Channel</a>`;
+        ui += "<button class='retry' onclick='load()'>Recheck</button>";
       }
+
+      document.getElementById("ui").innerHTML = ui;
     })
-    .catch(e => {
-      document.body.innerHTML = "❌ Error loading WebApp";
+    .catch(err => {
+      document.getElementById("res").innerText = err.toString();
     });
 }
 
-function continueBot() {
+function done(){
   Telegram.WebApp.close();
 }
 

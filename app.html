@@ -5,6 +5,8 @@
   <title>Join to Access</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <script src="https://telegram.org/js/telegram-web-app.js?62"></script>
+  <!-- TWallpaper CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/twallpaper@latest/dist/index.umd.js"></script>
   <style>
     * {
       margin: 0;
@@ -19,42 +21,41 @@
       background: var(--tg-theme-bg-color, #ffffff);
     }
 
-    /* Telegram Official Background Layer */
-    .tgme_background_wrap {
+    /* TWallpaper Container */
+    .tw-wallpaper-container {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
       z-index: 0;
-      overflow: hidden;
     }
 
-    .tgme_background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .tgme_background_pattern {
-      position: absolute;
+    /* Pattern Overlay for Telegram look */
+    .pattern-overlay {
+      position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIj48Y2lyY2xlIGN4PSIyNSIgY3k9IjI1IiByPSIxLjUiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC4wOCIvPjwvc3ZnPg==');
+      z-index: 1;
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIj48Y2lyY2xlIGN4PSIyNSIgY3k9IjI1IiByPSIxLjUiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC4wNiIvPjwvc3ZnPg==');
       background-repeat: repeat;
       background-size: 50px 50px;
       pointer-events: none;
     }
 
+    /* Dark mode pattern adjustment */
+    @media (prefers-color-scheme: dark) {
+      .pattern-overlay {
+        background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIj48Y2lyY2xlIGN4PSIyNSIgY3k9IjI1IiByPSIxLjUiIGZpbGw9IiNGRkYiIGZpbGwtb3BhY2l0eT0iMC4wNCIvPjwvc3ZnPg==');
+      }
+    }
+
     /* Content Layer */
     .page {
       position: relative;
-      z-index: 1;
+      z-index: 2;
       max-width: 500px;
       margin: 0 auto;
       padding: 0 16px 32px;
@@ -277,17 +278,6 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Checkmark Animation */
-    @keyframes checkmark {
-      0% { transform: scale(0); opacity: 0; }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .checkmark-animate {
-      animation: checkmark 0.3s ease-out;
-    }
-
     /* Footer Note */
     .tgme_footer_note {
       text-align: center;
@@ -325,11 +315,10 @@
 </head>
 <body>
 
-<!-- Telegram Official Background Layer -->
-<div class="tgme_background_wrap">
-  <canvas id="tgme_background" class="tgme_background" width="50" height="50" data-colors="dbddbb,6ba587,d5d88d,88b884"></canvas>
-  <div class="tgme_background_pattern"></div>
-</div>
+<!-- TWallpaper Container -->
+<div id="twallpaper" class="tw-wallpaper-container"></div>
+<!-- Pattern Overlay for Telegram look -->
+<div class="pattern-overlay"></div>
 
 <div class="page">
   
@@ -405,6 +394,35 @@ if (tg) {
   });
 }
 
+// Initialize TWallpaper with Telegram colors
+const container = document.getElementById('twallpaper');
+if (container && typeof TWallpaper !== 'undefined') {
+  const wallpaper = new TWallpaper(container, {
+    colors: [
+      '#dbddbb',  // Telegram light green
+      '#6ba587',  // Muted green  
+      '#d5d88d',  // Soft yellow-green
+      '#88b884'   // Leaf green
+    ],
+    tails: 90,
+    fps: 30,
+    animate: true,
+    scrollAnimate: false,
+    pattern: {
+      image: null,  // Use the pattern overlay instead
+      mask: false,
+      size: 'auto',
+      blur: 0,
+      opacity: 0
+    }
+  });
+  wallpaper.init();
+  
+  // Ensure animation runs smoothly
+  window.addEventListener('focus', () => wallpaper.animate(true));
+  window.addEventListener('blur', () => wallpaper.animate(false));
+}
+
 // Channel Configuration
 const CHANNELS = [
   { id: 'ch1', name: 'Paradox Channel', username: '@ParadoxCh', link: 'https://t.me/ParadoxBackup' },
@@ -450,8 +468,8 @@ function renderChannels() {
         </svg>
       </div>
       <div class="tgme_channel_details">
-        <div class="tgme_channel_name">${channel.name}</div>
-        <div class="tgme_channel_username">${channel.username}</div>
+        <div class="tgme_channel_name">${escapeHtml(channel.name)}</div>
+        <div class="tgme_channel_username">${escapeHtml(channel.username)}</div>
       </div>
     `;
     
@@ -496,6 +514,13 @@ function renderChannels() {
     itemDiv.appendChild(btnDiv);
     container.appendChild(itemDiv);
   });
+}
+
+// Escape HTML to prevent XSS
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 // Join channel
@@ -559,20 +584,9 @@ function showToast(message, type = 'info') {
   }, 2500);
 }
 
-// Initialize TWallpaper
-const bgCanvas = document.getElementById('tgme_background');
-if (bgCanvas && typeof TWallpaper !== 'undefined') {
-  TWallpaper.init(bgCanvas);
-  TWallpaper.animate(true);
-  window.onfocus = () => TWallpaper.update();
-}
-
 // Initialize app
 renderChannels();
 updateMainButton();
 </script>
-
-<!-- TWallpaper Script -->
-<script src="https://telegram.org/js/tgwallpaper.min.js?3"></script>
 </body>
 </html>

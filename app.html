@@ -10,6 +10,9 @@
   <link href="//telegram.org/css/bootstrap.min.css?3" rel="stylesheet">
   <link href="//telegram.org/css/telegram.css?249" rel="stylesheet">
 
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <!-- Dark mode support -->
   <script>
     window.matchMedia &&
@@ -33,7 +36,7 @@
   <div class="tgme_page_wrap">
 
     <!-- HEADER (ORIGINAL) -->
-    <div class="tgme_head_wrap">
+        <div class="tgme_head_wrap">
         <div class="tgme_head">
           <a href="//telegram.org/" class="tgme_head_brand">
             <svg class="tgme_logo" height="34" viewBox="0 0 133 34" width="133" xmlns="http://www.w3.org/2000/svg">
@@ -48,10 +51,63 @@
         </div>
       </div>
 
-    <!-- EMPTY BODY -->
+    <!-- BODY -->
     <div class="tgme_body_wrap">
       <div class="tgme_page">
-        <!-- Intentionally empty -->
+
+        <!-- TITLE -->
+        <div class="tgme_page_title">
+          Join Required Channels
+        </div>
+
+        <!-- CHANNEL 1 -->
+        <div class="tgme_page_action">
+          <div style="margin-bottom:8px;font-weight:500;">
+            @TestChannelOne
+          </div>
+
+          <!-- JOIN (simple) -->
+          <a class="tgme_action_button_new"
+             style="background: var(--tg-theme-secondary-bg-color); color: var(--tg-theme-text-color);"
+             onclick="joinChannel('https://t.me/TestChannelOne')">
+            Join Channel
+          </a>
+
+          <!-- VERIFY (shine) -->
+          <a class="tgme_action_button_new shine"
+             style="margin-top:8px;"
+             onclick="verifySingle(1)">
+            Verify
+          </a>
+        </div>
+
+        <!-- CHANNEL 2 -->
+        <div class="tgme_page_action" style="margin-top:15px;">
+          <div style="margin-bottom:8px;font-weight:500;">
+            @TestChannelTwo
+          </div>
+
+          <a class="tgme_action_button_new"
+             style="background: var(--tg-theme-secondary-bg-color); color: var(--tg-theme-text-color);"
+             onclick="joinChannel('https://t.me/TestChannelTwo')">
+            Join Channel
+          </a>
+
+          <a class="tgme_action_button_new shine"
+             style="margin-top:8px;"
+             onclick="verifySingle(2)">
+            Verify
+          </a>
+        </div>
+
+        <!-- FINAL VERIFY -->
+        <div class="tgme_page_action" style="margin-top:20px;">
+          <a class="tgme_action_button_new shine"
+             onclick="verifyAll()">
+            ✅ Verify All & Continue
+          </a>
+        </div>
+
       </div>
     </div>
 
@@ -69,6 +125,35 @@
     }
 
     document.body.classList.remove('no_transition');
+
+    /* WebApp */
+    let tg = window.Telegram.WebApp;
+    tg.expand();
+
+    /* Apply theme properly */
+    document.body.style.background = tg.themeParams.bg_color;
+    document.body.style.color = tg.themeParams.text_color;
+
+    /* Functions */
+    function joinChannel(link){
+      window.open(link, "_blank");
+    }
+
+    let joined = {1:false, 2:false};
+
+    function verifySingle(id){
+      joined[id] = true;
+      tg.showAlert("Channel " + id + " verified ✅");
+    }
+
+    function verifyAll(){
+      if(joined[1] && joined[2]){
+        tg.sendData("joined");
+        tg.showAlert("All channels joined 🎉");
+      } else {
+        tg.showAlert("Join all channels first ❌");
+      }
+    }
   </script>
 
 </body>

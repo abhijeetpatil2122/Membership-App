@@ -277,17 +277,6 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Checkmark Animation */
-    @keyframes checkmark {
-      0% { transform: scale(0); opacity: 0; }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .checkmark-animate {
-      animation: checkmark 0.3s ease-out;
-    }
-
     /* Footer Note */
     .tgme_footer_note {
       text-align: center;
@@ -405,6 +394,22 @@ if (tg) {
   });
 }
 
+// Initialize Telegram Wallpaper (Official)
+const bgCanvas = document.getElementById('tgme_background');
+if (bgCanvas && typeof TWallpaper !== 'undefined') {
+  TWallpaper.init(bgCanvas);
+  TWallpaper.animate(true);
+  window.onfocus = function() { TWallpaper.update(); };
+} else if (bgCanvas) {
+  // Fallback gradient if TWallpaper not loaded
+  const ctx = bgCanvas.getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, bgCanvas.width, bgCanvas.height);
+  gradient.addColorStop(0, '#dbddbb');
+  gradient.addColorStop(1, '#88b884');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+}
+
 // Channel Configuration
 const CHANNELS = [
   { id: 'ch1', name: 'Paradox Channel', username: '@ParadoxCh', link: 'https://t.me/ParadoxBackup' },
@@ -450,8 +455,8 @@ function renderChannels() {
         </svg>
       </div>
       <div class="tgme_channel_details">
-        <div class="tgme_channel_name">${channel.name}</div>
-        <div class="tgme_channel_username">${channel.username}</div>
+        <div class="tgme_channel_name">${escapeHtml(channel.name)}</div>
+        <div class="tgme_channel_username">${escapeHtml(channel.username)}</div>
       </div>
     `;
     
@@ -496,6 +501,13 @@ function renderChannels() {
     itemDiv.appendChild(btnDiv);
     container.appendChild(itemDiv);
   });
+}
+
+// Escape HTML to prevent XSS
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 // Join channel
@@ -557,14 +569,6 @@ function showToast(message, type = 'info') {
   toastTimeout = setTimeout(() => {
     toast.classList.remove('show');
   }, 2500);
-}
-
-// Initialize TWallpaper
-const bgCanvas = document.getElementById('tgme_background');
-if (bgCanvas && typeof TWallpaper !== 'undefined') {
-  TWallpaper.init(bgCanvas);
-  TWallpaper.animate(true);
-  window.onfocus = () => TWallpaper.update();
 }
 
 // Initialize app

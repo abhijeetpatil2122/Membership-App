@@ -4,11 +4,7 @@
   <meta charset="utf-8">
   <title>Join to Access</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- TWallpaper CDN -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/twallpaper@latest/css/index.css">
-  <script src="https://cdn.jsdelivr.net/npm/twallpaper@latest/dist/index.umd.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js?62"></script>
   <style>
     * {
       margin: 0;
@@ -17,21 +13,51 @@
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
       position: relative;
       background: var(--tg-theme-bg-color, #ffffff);
     }
 
-    /* TWallpaper Container */
-    .tw-wallpaper-container {
+    /* Telegram Official Background Canvas */
+    .tgme_background_wrap {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
       z-index: 0;
+      overflow: hidden;
+    }
+
+    .tgme_background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .tgme_background_pattern {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIj48Y2lyY2xlIGN4PSIyNSIgY3k9IjI1IiByPSIxIiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9IjAuMDYiLz48L3N2Zz4=');
+      background-repeat: repeat;
+      background-size: 50px 50px;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    /* Dark mode pattern adjustment */
+    @media (prefers-color-scheme: dark) {
+      .tgme_background_pattern {
+        opacity: 0.15;
+      }
     }
 
     /* Content Layer */
@@ -44,197 +70,180 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      backdrop-filter: blur(0px);
     }
 
-    /* Header - Telegram Style */
-    .tg-header {
-      padding: 12px 0 20px;
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      border-bottom: 0.5px solid var(--tg-theme-section-separator-color, rgba(0, 0, 0, 0.1));
-      margin-bottom: 24px;
+    /* Header - Exact Telegram Style */
+    .tgme_head_wrap {
       background: transparent;
+      margin-bottom: 24px;
     }
 
-    .tg-header h1 {
-      font-size: 28px;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--tg-theme-button-color, #2481cc), #1a6baa);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      letter-spacing: -0.3px;
+    .tgme_head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
     }
 
-    .tg-header-badge {
-      font-size: 13px;
+    .tgme_head_brand {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+
+    .tgme_logo {
+      height: 34px;
+    }
+
+    .tgme_head_right_btn {
+      font-size: 14px;
       font-weight: 500;
-      padding: 4px 12px;
-      background: var(--tg-theme-secondary-bg-color, rgba(0, 0, 0, 0.05));
-      backdrop-filter: blur(10px);
+      padding: 6px 14px;
+      background: var(--tg-theme-button-color, #2481cc);
+      color: var(--tg-theme-button-text-color, #ffffff);
       border-radius: 20px;
-      color: var(--tg-theme-hint-color, #8e8e93);
+      text-decoration: none;
+      transition: opacity 0.1s ease;
     }
 
-    /* Main Card - Solid like Telegram Web */
-    .tg-card {
+    .tgme_head_right_btn:active {
+      opacity: 0.7;
+    }
+
+    /* Main Card - Solid like Telegram */
+    .tgme_page {
       background: var(--tg-theme-bg-color, #ffffff);
       border-radius: 14px;
       overflow: hidden;
-      margin-bottom: 16px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
-    /* Channel List Header */
-    .tg-card-header {
-      padding: 20px 20px 16px;
-      text-align: center;
+    /* Channel Photo/Icon */
+    .tgme_page_photo {
+      padding: 32px 20px 16px;
+    }
+
+    .tgme_page_photo_image {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* Channel Title */
+    .tgme_page_title {
+      padding: 0 20px;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--tg-theme-text-color, #000000);
+      word-break: break-word;
+    }
+
+    /* Subscriber Count */
+    .tgme_page_extra {
+      padding: 8px 20px 0;
+      font-size: 14px;
+      color: var(--tg-theme-hint-color, #8e8e93);
+    }
+
+    /* Description */
+    .tgme_page_description {
+      padding: 16px 20px;
+      font-size: 15px;
+      color: var(--tg-theme-text-color, #000000);
+      line-height: 1.4;
+      text-align: left;
+      border-top: 0.5px solid var(--tg-theme-section-separator-color, rgba(0, 0, 0, 0.1));
+      margin-top: 12px;
+    }
+
+    /* Check Items Section */
+    .tgme_checks_section {
+      padding: 8px 20px;
+      text-align: left;
+      border-top: 0.5px solid var(--tg-theme-section-separator-color, rgba(0, 0, 0, 0.1));
+    }
+
+    .tgme_checks_title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--tg-theme-text-color, #000000);
+      margin-bottom: 12px;
+    }
+
+    .tgme_check_item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
       border-bottom: 0.5px solid var(--tg-theme-section-separator-color, rgba(0, 0, 0, 0.1));
     }
 
-    .tg-icon-circle {
-      width: 64px;
-      height: 64px;
-      background: var(--tg-theme-button-color, #2481cc);
-      border-radius: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 12px;
-      box-shadow: 0 2px 8px rgba(36, 129, 204, 0.3);
+    .tgme_check_item:last-child {
+      border-bottom: none;
     }
 
-    .tg-icon-circle svg {
-      width: 32px;
-      height: 32px;
-      fill: white;
-    }
-
-    .tg-card-header h2 {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--tg-theme-text-color, #000000);
-    }
-
-    .tg-card-header p {
-      font-size: 14px;
-      color: var(--tg-theme-hint-color, #8e8e93);
-      line-height: 1.4;
-    }
-
-    /* Channel Items */
-    .channel-item {
-      background: var(--tg-theme-secondary-bg-color, #f5f5f5);
-      margin: 0 12px 12px 12px;
-      border-radius: 14px;
-      padding: 12px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: transform 0.1s ease;
-    }
-
-    .channel-avatar {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, var(--tg-theme-button-color, #2481cc), #1a6baa);
-      border-radius: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .channel-avatar svg {
-      width: 24px;
-      height: 24px;
-      fill: white;
-    }
-
-    .channel-info {
+    .tgme_check_item_info {
       flex: 1;
     }
 
-    .channel-name {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 4px;
+    .tgme_check_item_name {
+      font-size: 15px;
+      font-weight: 500;
       color: var(--tg-theme-text-color, #000000);
     }
 
-    .channel-username {
+    .tgme_check_item_username {
       font-size: 13px;
       color: var(--tg-theme-hint-color, #8e8e93);
+      margin-top: 2px;
     }
 
-    .channel-status {
-      flex-shrink: 0;
-    }
-
-    /* Telegram Style Buttons - Proper alignment */
-    .tg-button-group {
-      display: flex;
-      gap: 8px;
+    /* Buttons */
+    .tgme_action_button {
+      display: inline-flex;
       align-items: center;
-    }
-
-    .tg-button {
+      gap: 6px;
       padding: 8px 16px;
       border-radius: 10px;
       font-size: 14px;
       font-weight: 600;
       border: none;
+      transition: opacity 0.1s ease;
       cursor: pointer;
-      transition: all 0.1s ease;
-      font-family: inherit;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--tg-theme-bg-color, #ffffff);
-      color: var(--tg-theme-button-color, #2481cc);
-      border: 1px solid var(--tg-theme-button-color, #2481cc);
-      white-space: nowrap;
+      text-decoration: none;
     }
 
-    .tg-button-primary {
+    .tgme_action_button_join {
       background: var(--tg-theme-button-color, #2481cc);
       color: var(--tg-theme-button-text-color, #ffffff);
-      border: none;
     }
 
-    .tg-button-success {
+    .tgme_action_button_check {
+      background: transparent;
+      color: var(--tg-theme-button-color, #2481cc);
+      border: 1px solid var(--tg-theme-button-color, #2481cc);
+    }
+
+    .tgme_action_button_done {
       background: #34c759;
       color: white;
-      border: none;
-      opacity: 0.8;
+      opacity: 0.7;
       cursor: default;
     }
 
-    .tg-button-loading {
+    .tgme_action_button_loading {
       background: var(--tg-theme-secondary-bg-color, #f0f0f0);
       color: var(--tg-theme-hint-color, #8e8e93);
       border: 1px solid var(--tg-theme-section-separator-color, rgba(0, 0, 0, 0.1));
       cursor: default;
-      pointer-events: none;
     }
 
-    .tg-button:active:not(:disabled):not(.tg-button-success) {
-      transform: scale(0.97);
-      opacity: 0.8;
-    }
-
-    .tg-button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* Continue Button */
-    .tg-continue-btn {
-      width: calc(100% - 32px);
-      margin: 0 16px 16px 16px;
+    /* Main Continue Button */
+    .tgme_continue_btn {
+      width: 100%;
+      margin-top: 20px;
       padding: 14px;
       background: var(--tg-theme-button-color, #2481cc);
       color: var(--tg-theme-button-text-color, #ffffff);
@@ -242,33 +251,28 @@
       border-radius: 12px;
       font-size: 16px;
       font-weight: 600;
-      font-family: inherit;
       cursor: pointer;
-      transition: all 0.1s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      transition: opacity 0.1s ease;
     }
 
-    .tg-continue-btn:active:not(:disabled) {
-      transform: scale(0.98);
-      opacity: 0.9;
+    .tgme_continue_btn:active:not(:disabled) {
+      opacity: 0.8;
     }
 
-    .tg-continue-btn:disabled {
+    .tgme_continue_btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
 
     /* Spinner */
     .spinner {
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       border: 2px solid rgba(255, 255, 255, 0.3);
       border-top-color: white;
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
+      display: inline-block;
     }
 
     .spinner-dark {
@@ -280,8 +284,8 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Toast Notification */
-    .tg-toast {
+    /* Toast */
+    .tgme_toast {
       position: fixed;
       bottom: 20px;
       left: 50%;
@@ -298,100 +302,73 @@
       pointer-events: none;
       white-space: nowrap;
       max-width: 90vw;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
-    .tg-toast.show {
+    .tgme_toast.show {
       transform: translateX(-50%) translateY(0);
-    }
-
-    /* Footer Note */
-    .tg-footer-note {
-      text-align: center;
-      font-size: 12px;
-      color: var(--tg-theme-hint-color, #8e8e93);
-      padding: 20px 16px 0;
-      line-height: 1.4;
     }
   </style>
 </head>
 <body>
 
-<!-- TWallpaper Container -->
-<div id="twallpaper" class="tw-wallpaper-container"></div>
+<!-- Telegram Official Background Layer -->
+<div class="tgme_background_wrap">
+  <canvas id="tgme_background" class="tgme_background" width="50" height="50" data-colors="dbddbb,6ba587,d5d88d,88b884"></canvas>
+  <div class="tgme_background_pattern"></div>
+</div>
 
 <div class="page">
   
   <!-- Header -->
-  <div class="tg-header">
-    <h1>Telegram</h1>
-    <span class="tg-header-badge">Bot Access</span>
+  <div class="tgme_head_wrap">
+    <div class="tgme_head">
+      <a href="https://telegram.org" class="tgme_head_brand" target="_blank">
+        <svg class="tgme_logo" viewBox="0 0 133 34" width="133" height="34" xmlns="http://www.w3.org/2000/svg">
+          <g fill="none" fill-rule="evenodd">
+            <circle cx="17" cy="17" fill="var(--tg-theme-button-color, #2481cc)" r="17"/>
+            <path d="m7.06510669 16.9258959c5.22739451-2.1065178 8.71314291-3.4952633 10.45724521-4.1662364 4.9797665-1.9157646 6.0145193-2.2485535 6.6889567-2.2595423.1483363-.0024169.480005.0315855.6948461.192827.1814076.1361492.23132.3200675.2552048.4491519.0238847.1290844.0536269.4231419.0299841.65291-.2698553 2.6225356-1.4375148 8.986738-2.0315537 11.9240228-.2513602 1.2428753-.7499132 1.5088847-1.2290685 1.5496672-1.0413153.0886298-1.8284257-.4857912-2.8369905-1.0972863-1.5782048-.9568691-2.5327083-1.3984317-4.0646293-2.3321592-1.7703998-1.0790837-.212559-1.583655.7963867-2.5529189.2640459-.2536609 4.7753906-4.3097041 4.755976-4.431706-.0070494-.0442984-.1409018-.481649-.2457499-.5678447-.104848-.0861957-.2595946-.0567202-.3712641-.033278-.1582881.0332286-2.6794907 1.5745492-7.5636077 4.6239616-.715635.4545193-1.3638349.6759763-1.9445998.6643712-.64024672-.0127938-1.87182452-.334829-2.78737602-.6100966-1.12296117-.3376271-1.53748501-.4966332-1.45976769-1.0700283.04048-.2986597.32581586-.610598.8560076-.935815z" fill="#fff"/>
+            <path d="m49.4 24v-12.562h-4.224v-2.266h11.198v2.266h-4.268v12.562zm16.094-4.598h-7.172c.066 1.936 1.562 2.772 3.3 2.772 1.254 0 2.134-.198 2.97-.484l.396 1.848c-.924.396-2.2.682-3.74.682-3.476 0-5.522-2.134-5.522-5.412 0-2.97 1.804-5.764 5.236-5.764 3.476 0 4.62 2.86 4.62 5.214 0 .506-.044.902-.088 1.144zm-7.172-1.892h4.708c.022-.99-.418-2.618-2.222-2.618-1.672 0-2.376 1.518-2.486 2.618zm9.538 6.49v-15.62h2.706v15.62zm14.84-4.598h-7.172c.066 1.936 1.562 2.772 3.3 2.772 1.254 0 2.134-.198 2.97-.484l.396 1.848c-.924.396-2.2.682-3.74.682-3.476 0-5.522-2.134-5.522-5.412 0-2.97 1.804-5.764 5.236-5.764 3.476 0 4.62 2.86 4.62 5.214 0 .506-.044.902-.088 1.144zm-7.172-1.892h4.708c.022-.99-.418-2.618-2.222-2.618-1.672 0-2.376 1.518-2.486 2.618zm19.24-1.144v6.072c0 2.244-.462 3.85-1.584 4.862-1.1.99-2.662 1.298-4.136 1.298-1.364 0-2.816-.308-3.74-.858l.594-2.046c.682.396 1.826.814 3.124.814 1.76 0 3.08-.924 3.08-3.234v-.924h-.044c-.616.946-1.694 1.584-3.124 1.584-2.662 0-4.554-2.2-4.554-5.236 0-3.52 2.288-5.654 4.862-5.654 1.65 0 2.596.792 3.102 1.672h.044l.11-1.43h2.354c-.044.726-.088 1.606-.088 3.08zm-2.706 2.948v-1.738c0-.264-.022-.506-.088-.726-.286-.99-1.056-1.738-2.2-1.738-1.518 0-2.64 1.32-2.64 3.498 0 1.826.924 3.3 2.618 3.3 1.012 0 1.892-.66 2.2-1.65.088-.264.11-.638.11-.946zm5.622 4.686v-7.26c0-1.452-.022-2.508-.088-3.454h2.332l.11 2.024h.066c.528-1.496 1.782-2.266 2.948-2.266.264 0 .418.022.638.066v2.53c-.242-.044-.484-.066-.814-.066-1.276 0-2.178.814-2.42 2.046-.044.242-.066.528-.066.814v5.566zm16.05-6.424v3.85c0 .968.044 1.914.176 2.574h-2.442l-.198-1.188h-.066c-.638.836-1.76 1.43-3.168 1.43-2.156 0-3.366-1.562-3.366-3.19 0-2.684 2.398-4.07 6.358-4.048v-.176c0-.704-.286-1.87-2.178-1.87-1.056 0-2.156.33-2.882.792l-.528-1.76c.792-.484 2.178-.946 3.872-.946 3.432 0 4.422 2.178 4.422 4.532zm-2.64 2.662v-1.474c-1.914-.022-3.74.374-3.74 2.002 0 1.056.682 1.54 1.54 1.54 1.1 0 1.87-.704 2.134-1.474.066-.198.066-.396.066-.594zm5.6 3.762v-7.524c0-1.232-.044-2.266-.088-3.19h2.31l.132 1.584h.066c.506-.836 1.474-1.826 3.3-1.826 1.408 0 2.508.792 2.97 1.98h.044c.374-.594.814-1.034 1.298-1.342.616-.418 1.298-.638 2.2-.638 1.76 0 3.564 1.21 3.564 4.642v6.314h-2.64v-5.918c0-1.782-.616-2.838-1.914-2.838-.924 0-1.606.66-1.892 1.43-.088.242-.132.594-.132.902v6.424h-2.64v-6.204c0-1.496-.594-2.552-1.848-2.552-1.012 0-1.694.792-1.958 1.518-.088.286-.132.594-.132.902v6.336z" fill="var(--tg-theme-text-color, #000000)" fill-rule="nonzero"/>
+          </g>
+        </svg>
+      </a>
+      <a class="tgme_head_right_btn" href="https://telegram.org/dl">Download</a>
+    </div>
   </div>
 
   <!-- Main Card -->
-  <div class="tg-card">
-    <div class="tg-card-header">
-      <div class="tg-icon-circle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="white" fill="none"/>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="white" fill="none"/>
-        </svg>
-      </div>
-      <h2>Join to Continue</h2>
-      <p>Subscribe to our channels to access this bot</p>
+  <div class="tgme_page">
+    <div class="tgme_page_photo">
+      <img class="tgme_page_photo_image" src="https://cdn5.telesco.pe/file/H-Uo_HFXzEbLMgIDhnKouC6H8eT-4-G3BKC4DJ93snQuHSNZI2KT4Ipffv_GfEEtKNNQm1M4cB9JNEJQ2NChRV8dqRt2Zb43YSaSTe8lrDR0wFQ_hjpzCGF9G7L_Xy5Ul7TeOn8nAxHrCW_zi9e5Sw8nwsitHMYZX0McLg2X1t8JMEny00g4szQh1k_rPJgkrogcmx0fweQKKaSHTeusVdXI6oBa_QjPIgDQElbpdM-tGYLSZhTTmMy4q5KsTVQFwLBvelQ2jQcttE3T9Tpiuc9-zP8sPNn8iiEk86Mvxpeyjf-0zOx5wNI_01jOri3xUgSf3lEsQCMbY09HHmd8Pw.jpg">
+    </div>
+    <div class="tgme_page_title" dir="auto">
+      <span dir="auto">𝙿𝚊𝚛𝚊𝚍𝚘𝚡 𝙱𝚊𝚌𝚔𝚞𝚙 | 𝙽𝚎𝚠𝚜 🌏</span>
+    </div>
+    <div class="tgme_page_extra">2 047 subscribers</div>
+    <div class="tgme_page_description" dir="auto">
+      #Original<br/><br/>Please Don't Leave This Channel Guys. Incase If Any Channel Gets Banned, The New Channel Link Will Be Provided Here.
     </div>
 
-    <!-- Channel List Container -->
-    <div id="channelsContainer"></div>
+    <!-- Channels to Join Section -->
+    <div class="tgme_checks_section">
+      <div class="tgme_checks_title">📢 Required Channels</div>
+      <div id="channelsList"></div>
+    </div>
   </div>
 
   <!-- Continue Button -->
-  <button class="tg-continue-btn" id="continueBtn" disabled onclick="handleContinue()">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M5 12h14M12 5l7 7-7 7"/>
-    </svg>
-    Continue to Bot
-  </button>
-
-  <div class="tg-footer-note">
-    You need to join all channels above to continue
-  </div>
+  <button class="tgme_continue_btn" id="continueBtn" disabled onclick="handleContinue()">Continue to Bot</button>
 </div>
 
-<div id="toast" class="tg-toast"></div>
+<div id="toast" class="tgme_toast"></div>
 
 <script>
-// Initialize TWallpaper with official Telegram colors
-const container = document.getElementById('twallpaper');
-const wallpaper = new TWallpaper(container, {
-  colors: [
-    '#dbddbb',  // Telegram light green
-    '#6ba587',  // Muted green
-    '#c8dac2',  // Soft sage
-    '#88b884'   // Leaf green
-  ],
-  tails: 90,
-  fps: 30,
-  animate: true,
-  scrollAnimate: false,
-  pattern: {
-    image: 'https://telegram.org/img/tgpattern.png', // Official Telegram pattern
-    mask: false,
-    size: 'auto',
-    blur: 0,
-    opacity: 0.15
-  }
-});
-wallpaper.init();
-
 // Initialize Telegram WebApp
 const tg = window.Telegram?.WebApp;
 if (tg) {
   tg.ready();
   tg.expand();
   
-  // Apply theme colors
+  // Apply theme colors to CSS variables
   const root = document.documentElement;
   const theme = tg.themeParams;
   if (theme) {
@@ -405,104 +382,69 @@ if (tg) {
   }
 }
 
+// Initialize Telegram Wallpaper (Official)
+const bgCanvas = document.getElementById('tgme_background');
+if (bgCanvas && typeof TWallpaper !== 'undefined') {
+  TWallpaper.init(bgCanvas);
+  TWallpaper.animate(true);
+  window.onfocus = function() { TWallpaper.update(); };
+} else if (bgCanvas) {
+  // Fallback gradient if TWallpaper not loaded
+  const ctx = bgCanvas.getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, bgCanvas.width, bgCanvas.height);
+  gradient.addColorStop(0, '#dbddbb');
+  gradient.addColorStop(1, '#88b884');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+}
+
 // Channel Configuration
 const CHANNELS = [
-  {
-    id: 'paradox_main',
-    name: 'Paradox Channel',
-    username: '@ParadoxCh',
-    link: 'https://t.me/ParadoxBackup',
-    icon: 'M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83'
-  },
-  {
-    id: 'paradox_updates',
-    name: 'Paradox Updates',
-    username: '@ParadoxUpdates',
-    link: 'https://t.me/ParadoxBackup',
-    icon: 'M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.66 0 3-4 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4-3-9s1.34-9 3-9'
-  }
+  { id: 'ch1', name: 'Paradox Channel', username: '@ParadoxCh', link: 'https://t.me/ParadoxBackup' },
+  { id: 'ch2', name: 'Paradox Updates', username: '@ParadoxUpdates', link: 'https://t.me/ParadoxBackup' }
 ];
 
-// State management
+// State
 const state = {};
-
-CHANNELS.forEach(channel => {
-  state[channel.id] = {
-    joined: false,
-    checking: false
-  };
-});
+CHANNELS.forEach(ch => state[ch.id] = { joined: false, checking: false });
 
 // Render channels
 function renderChannels() {
-  const container = document.getElementById('channelsContainer');
+  const container = document.getElementById('channelsList');
   container.innerHTML = '';
   
-  CHANNELS.forEach((channel) => {
-    const channelState = state[channel.id];
-    const channelDiv = document.createElement('div');
-    channelDiv.className = 'channel-item';
+  CHANNELS.forEach(channel => {
+    const chState = state[channel.id];
+    const itemDiv = document.createElement('div');
+    itemDiv.className = 'tgme_check_item';
     
-    // Avatar
-    const avatar = document.createElement('div');
-    avatar.className = 'channel-avatar';
-    avatar.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="${channel.icon}"/></svg>`;
-    
-    // Info
-    const info = document.createElement('div');
-    info.className = 'channel-info';
-    info.innerHTML = `
-      <div class="channel-name">${channel.name}</div>
-      <div class="channel-username">${channel.username}</div>
+    // Info section
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'tgme_check_item_info';
+    infoDiv.innerHTML = `
+      <div class="tgme_check_item_name">${channel.name}</div>
+      <div class="tgme_check_item_username">${channel.username}</div>
     `;
     
-    // Status buttons
-    const statusDiv = document.createElement('div');
-    statusDiv.className = 'channel-status';
+    // Button section
+    const btnDiv = document.createElement('div');
     
-    if (channelState.joined) {
-      statusDiv.innerHTML = `
-        <div class="tg-button-group">
-          <button class="tg-button tg-button-success" disabled>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-            Joined
-          </button>
-        </div>
-      `;
-    } else if (channelState.checking) {
-      statusDiv.innerHTML = `
-        <div class="tg-button-group">
-          <button class="tg-button tg-button-loading" disabled>
-            <div class="spinner spinner-dark"></div>
-            Checking...
-          </button>
-        </div>
-      `;
+    if (chState.joined) {
+      btnDiv.innerHTML = `<button class="tgme_action_button tgme_action_button_done" disabled>✓ Joined</button>`;
+    } else if (chState.checking) {
+      btnDiv.innerHTML = `<button class="tgme_action_button tgme_action_button_loading" disabled><span class="spinner-dark"></span> Checking...</button>`;
     } else {
-      statusDiv.innerHTML = `
-        <div class="tg-button-group">
-          <button class="tg-button" onclick="joinChannel('${channel.id}')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-            Join
-          </button>
-          <button class="tg-button tg-button-primary" onclick="verifyChannel('${channel.id}')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-            Verify
-          </button>
+      btnDiv.innerHTML = `
+        <div style="display: flex; gap: 8px;">
+          <button class="tgme_action_button tgme_action_button_join" onclick="joinChannel('${channel.id}')">Join</button>
+          <button class="tgme_action_button tgme_action_button_check" onclick="verifyChannel('${channel.id}')">Verify</button>
         </div>
       `;
     }
     
-    channelDiv.appendChild(avatar);
-    channelDiv.appendChild(info);
-    channelDiv.appendChild(statusDiv);
-    container.appendChild(channelDiv);
+    itemDiv.appendChild(infoDiv);
+    itemDiv.appendChild(btnDiv);
+    container.appendChild(itemDiv);
   });
 }
 
@@ -511,103 +453,70 @@ function joinChannel(channelId) {
   const channel = CHANNELS.find(c => c.id === channelId);
   if (channel && tg) {
     tg.openTelegramLink(channel.link);
-    showToast(`Opening ${channel.name}...`, 'info');
+    showToast(`Opening ${channel.name}...`);
   } else if (channel) {
     window.open(channel.link, '_blank');
-    showToast(`Please join ${channel.name}`, 'info');
+    showToast(`Please join ${channel.name}`);
   }
 }
 
-// Verify channel membership
+// Verify channel
 async function verifyChannel(channelId) {
-  const channelState = state[channelId];
-  if (channelState.checking) return;
+  const chState = state[channelId];
+  if (chState.checking) return;
   
-  channelState.checking = true;
+  chState.checking = true;
   renderChannels();
   
-  // Simulate API call (replace with actual backend verification)
+  // Simulate API verification (replace with actual backend call)
   setTimeout(() => {
-    // In production, replace this with actual API call
-    const isMember = true; // Demo: always successful
-    
-    if (isMember) {
-      channelState.joined = true;
-      channelState.checking = false;
-      showToast(`✓ Verified ${CHANNELS.find(c => c.id === channelId).name}!`, 'success');
-      if (tg) tg.HapticFeedback?.notificationOccurred('success');
-    } else {
-      channelState.checking = false;
-      showToast(`Please join ${CHANNELS.find(c => c.id === channelId).name} first`, 'error');
-      if (tg) tg.HapticFeedback?.notificationOccurred('error');
-    }
-    
+    chState.joined = true;
+    chState.checking = false;
+    showToast(`✓ Verified ${CHANNELS.find(c => c.id === channelId).name}!`, 'success');
+    if (tg) tg.HapticFeedback?.notificationOccurred('success');
     renderChannels();
     updateContinueButton();
   }, 1500);
 }
 
-// Update continue button state
+// Update continue button
 function updateContinueButton() {
-  const allJoined = CHANNELS.every(channel => state[channel.id].joined);
-  const continueBtn = document.getElementById('continueBtn');
-  
-  if (continueBtn) {
-    continueBtn.disabled = !allJoined;
-    if (allJoined) {
-      showToast('All channels verified! You can continue now.', 'success');
-    }
-  }
+  const allJoined = CHANNELS.every(ch => state[ch.id].joined);
+  const btn = document.getElementById('continueBtn');
+  if (btn) btn.disabled = !allJoined;
+  if (allJoined && tg) tg.MainButton?.show();
 }
 
 // Handle continue
 function handleContinue() {
-  const allJoined = CHANNELS.every(channel => state[channel.id].joined);
-  
-  if (allJoined) {
+  if (CHANNELS.every(ch => state[ch.id].joined)) {
     if (tg) {
-      tg.sendData(JSON.stringify({
-        event: 'access_granted',
-        channels: CHANNELS.map(c => c.id),
-        timestamp: Date.now()
-      }));
+      tg.sendData(JSON.stringify({ event: 'access_granted', channels: CHANNELS.map(c => c.id) }));
       tg.close();
     } else {
-      showToast('Access granted! Redirecting...', 'success');
-      setTimeout(() => {
-        window.location.href = '/bot';
-      }, 1000);
+      showToast('Access granted!', 'success');
     }
   } else {
     showToast('Please verify all channels first', 'error');
   }
 }
 
-// Toast notification
+// Toast
 let toastTimeout;
-function showToast(message, type = 'info') {
+function showToast(msg, type = 'info') {
   const toast = document.getElementById('toast');
-  toast.textContent = message;
+  toast.textContent = msg;
   toast.classList.add('show');
-  
   clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => {
-    toast.classList.remove('show');
-  }, 3000);
+  toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
 // Initialize
 renderChannels();
-
-// Update main button state
-function checkAllVerified() {
-  const allJoined = CHANNELS.every(channel => state[channel.id].joined);
-  const continueBtn = document.getElementById('continueBtn');
-  if (continueBtn) continueBtn.disabled = !allJoined;
-}
-
-// Check periodically for verification completion
-setInterval(checkAllVerified, 500);
+setInterval(updateContinueButton, 500);
 </script>
+
+<!-- TWallpaper Script -->
+<script src="https://telegram.org/js/tgwallpaper.min.js?3"></script>
 </body>
 </html>

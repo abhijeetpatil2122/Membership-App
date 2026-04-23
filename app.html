@@ -3,441 +3,609 @@
 <head>
   <meta charset="utf-8">
   <title>Join to Access</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    :root {
-      --bg-color:   #c8dac2;
-      --card:       #ffffffcc;
-      --card-solid: #ffffff;
-      --text:       #1a1a1a;
-      --hint:       #6b7280;
-      --accent:     #2481cc;
-      --accent-rgb: 36,129,204;
-      --btn-text:   #ffffff;
-      --divider:    rgba(0,0,0,.09);
-      --shadow:     0 2px 12px rgba(0,0,0,.10);
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Roboto', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--tg-theme-bg-color, #ffffff);
+      color: var(--tg-theme-text-color, #000000);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
-      position: relative;
-      overflow-x: hidden;
     }
 
-    /* ── Background: gradient base + official TG pattern SVG ── */
-    .tg-bg {
-      position: fixed; inset: 0; z-index: 0;
-      background-color: var(--bg-color);
-      /* Soft animated gradient blobs underneath the pattern */
-      background-image:
-        radial-gradient(ellipse 60% 50% at 20% 20%, #b5d5a8cc, transparent),
-        radial-gradient(ellipse 55% 45% at 80% 80%, #d6dea4cc, transparent),
-        radial-gradient(ellipse 50% 40% at 60% 10%, #8bbf85aa, transparent);
-      animation: bgShift 14s ease-in-out infinite alternate;
-    }
-    @keyframes bgShift {
-      0%   { filter: hue-rotate(0deg) brightness(1); }
-      50%  { filter: hue-rotate(8deg) brightness(1.04); }
-      100% { filter: hue-rotate(-6deg) brightness(.97); }
-    }
-    /* Official TG pattern SVG on top of the gradient */
-    .tg-pattern {
-      position: fixed; inset: 0; z-index: 1; pointer-events: none;
-      background-image: url('https://image.zaw-myo.workers.dev/file/36540f86-31eb-4c9d-afc6-d690f321cabf');
-      background-repeat: repeat;
-      background-size: 200px auto;
-      opacity: .18;
-      mix-blend-mode: multiply;
-    }
-
-    /* ── Layout ──────────────────────────────────────────────── */
-    .page {
-      position: relative; z-index: 2;
-      max-width: 480px; margin: 0 auto;
-      padding: 0 0 48px;
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-    }
-
-    /* ── Header ──────────────────────────────────────────────── */
-    .tg-head {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 16px 10px;
-      background: rgba(180,210,172,.72);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(255,255,255,.3);
-    }
-    .tg-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
-    .tg-logo-icon { width: 32px; height: 32px; }
-    .tg-logo-text {
-      font-size: 17px; font-weight: 700;
-      color: #1a6ea8; letter-spacing: -.2px;
-    }
-    .tg-head-label {
-      font-size: 12px; font-weight: 600;
-      color: rgba(26,110,168,.75);
-      background: rgba(255,255,255,.5);
-      padding: 3px 10px; border-radius: 20px;
-      letter-spacing: .2px;
-    }
-
-    /* ── Main card ───────────────────────────────────────────── */
-    .tg-card {
-      background: var(--card);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-radius: 18px;
-      margin: 20px 14px 0;
-      box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.6);
-      overflow: hidden;
-    }
-    .tg-card-header {
-      padding: 20px 18px 16px;
-      text-align: center;
-      border-bottom: 1px solid var(--divider);
-    }
-    .tg-card-icon {
-      width: 56px; height: 56px; border-radius: 50%;
-      background: rgba(var(--accent-rgb),.12);
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 12px;
-    }
-    .tg-card-icon svg { width: 28px; height: 28px; fill: var(--accent); }
-    .tg-card-title {
-      font-size: 17px; font-weight: 700;
-      color: var(--text); margin-bottom: 5px;
-    }
-    .tg-card-desc {
-      font-size: 13px; color: var(--hint); line-height: 1.55;
-    }
-    .tg-card-desc strong { color: var(--text); font-weight: 600; }
-
-    /* ── Channel rows ────────────────────────────────────────── */
-    .ch-list { padding: 4px 0; }
-    .ch-row {
-      display: flex; align-items: center; gap: 12px;
-      padding: 11px 18px;
-      transition: background .15s;
-    }
-    .ch-row + .ch-row { border-top: 1px solid var(--divider); }
-    .ch-avatar {
-      width: 42px; height: 42px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), #1a6baa);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; box-shadow: 0 2px 6px rgba(var(--accent-rgb),.3);
-    }
-    .ch-avatar svg { width: 20px; height: 20px; fill: #fff; }
-    .ch-meta { flex: 1; min-width: 0; }
-    .ch-name {
-      font-size: 14px; font-weight: 600; color: var(--text);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .ch-user { font-size: 12px; color: var(--hint); margin-top: 1px; }
-    .ch-actions { display: flex; gap: 6px; flex-shrink: 0; }
-
-    /* ── Pill buttons ────────────────────────────────────────── */
-    .pill {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 6px 14px; border-radius: 50px;
-      font-family: 'Roboto', sans-serif;
-      font-size: 13px; font-weight: 600;
-      border: none; cursor: pointer;
-      text-decoration: none; line-height: 1;
-      white-space: nowrap;
-      transition: opacity .15s, transform .1s, box-shadow .15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .pill:active { opacity: .72; transform: scale(.95); }
-    .pill svg { width: 12px; height: 12px; flex-shrink: 0; }
-
-    .pill-join {
-      background: var(--accent);
-      color: #fff;
-      box-shadow: 0 2px 8px rgba(var(--accent-rgb),.35);
-    }
-    .pill-check {
-      background: rgba(var(--accent-rgb),.10);
-      color: var(--accent);
-      border: 1px solid rgba(var(--accent-rgb),.18);
-    }
-    .pill-done {
-      background: rgba(40,167,69,.12);
-      color: #1e8a3a;
-      border: 1px solid rgba(40,167,69,.2);
+    /* Telegram Official Background Pattern */
+    .tg-pattern-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 0;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(0, 0, 0, 0.02) 0%, transparent 50%),
+        repeating-linear-gradient(45deg, 
+          rgba(0, 0, 0, 0.02) 0px, 
+          rgba(0, 0, 0, 0.02) 1px, 
+          transparent 1px, 
+          transparent 20px
+        );
       pointer-events: none;
     }
-    .pill-loading {
-      background: rgba(var(--accent-rgb),.08);
-      color: var(--accent);
-      border: 1px solid rgba(var(--accent-rgb),.15);
-      pointer-events: none; min-width: 70px; justify-content: center;
+
+    /* Dark mode pattern adjustment */
+    @media (prefers-color-scheme: dark) {
+      .tg-pattern-bg {
+        background-image: 
+          radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+          repeating-linear-gradient(45deg, 
+            rgba(255, 255, 255, 0.02) 0px, 
+            rgba(255, 255, 255, 0.02) 1px, 
+            transparent 1px, 
+            transparent 20px
+          );
+      }
     }
 
-    /* ── Spinner ─────────────────────────────────────────────── */
-    .spin {
-      width: 13px; height: 13px; flex-shrink: 0;
-      border: 2px solid rgba(var(--accent-rgb),.2);
-      border-top-color: var(--accent);
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 0 16px 32px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header - Telegram Style */
+    .tg-header {
+      padding: 12px 0 20px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      border-bottom: 0.5px solid var(--tg-theme-section-separator-color, rgba(0, 0, 0, 0.1));
+      margin-bottom: 24px;
+    }
+
+    .tg-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--tg-theme-button-color, #2481cc), #1a6baa);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+    }
+
+    .tg-header-badge {
+      font-size: 13px;
+      font-weight: 500;
+      padding: 4px 12px;
+      background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+      border-radius: 20px;
+      color: var(--tg-theme-hint-color, #8e8e93);
+    }
+
+    /* Main Card - Solid like Telegram */
+    .tg-card {
+      background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    /* Channel List Header */
+    .tg-card-header {
+      padding: 20px 20px 16px;
+      text-align: center;
+      border-bottom: 0.5px solid var(--tg-theme-section-separator-color, rgba(0, 0, 0, 0.1));
+    }
+
+    .tg-icon-circle {
+      width: 64px;
+      height: 64px;
+      background: var(--tg-theme-button-color, #2481cc);
+      border-radius: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      box-shadow: 0 2px 8px rgba(36, 129, 204, 0.3);
+    }
+
+    .tg-icon-circle svg {
+      width: 32px;
+      height: 32px;
+      fill: white;
+    }
+
+    .tg-card-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--tg-theme-text-color, #000000);
+    }
+
+    .tg-card-header p {
+      font-size: 14px;
+      color: var(--tg-theme-hint-color, #8e8e93);
+      line-height: 1.4;
+    }
+
+    /* Channel Items - Solid Background */
+    .channel-item {
+      background: var(--tg-theme-bg-color, #ffffff);
+      margin: 0 12px 12px 12px;
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: transform 0.1s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .channel-avatar {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--tg-theme-button-color, #2481cc), #1a6baa);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .channel-avatar svg {
+      width: 24px;
+      height: 24px;
+      fill: white;
+    }
+
+    .channel-info {
+      flex: 1;
+    }
+
+    .channel-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--tg-theme-text-color, #000000);
+    }
+
+    .channel-username {
+      font-size: 13px;
+      color: var(--tg-theme-hint-color, #8e8e93);
+    }
+
+    .channel-status {
+      flex-shrink: 0;
+    }
+
+    /* Telegram Style Buttons */
+    .tg-button {
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.1s ease;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--tg-theme-bg-color, #ffffff);
+      color: var(--tg-theme-button-color, #2481cc);
+      border: 1px solid var(--tg-theme-button-color, #2481cc);
+    }
+
+    .tg-button-primary {
+      background: var(--tg-theme-button-color, #2481cc);
+      color: var(--tg-theme-button-text-color, #ffffff);
+      border: none;
+    }
+
+    .tg-button-success {
+      background: #34c759;
+      color: white;
+      border: none;
+      opacity: 0.7;
+      cursor: default;
+    }
+
+    .tg-button-loading {
+      background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+      color: var(--tg-theme-hint-color, #8e8e93);
+      border: 1px solid var(--tg-theme-section-separator-color, rgba(0, 0, 0, 0.1));
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .tg-button:active:not(:disabled) {
+      transform: scale(0.97);
+      opacity: 0.8;
+    }
+
+    .tg-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Continue Button */
+    .tg-continue-btn {
+      width: calc(100% - 32px);
+      margin: 0 16px 16px 16px;
+      padding: 14px;
+      background: var(--tg-theme-button-color, #2481cc);
+      color: var(--tg-theme-button-text-color, #ffffff);
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .tg-continue-btn:active:not(:disabled) {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+
+    .tg-continue-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
       border-radius: 50%;
-      animation: _spin .65s linear infinite;
-    }
-    @keyframes _spin { to { transform: rotate(360deg); } }
-
-    /* ── Bottom CTA ──────────────────────────────────────────── */
-    .tg-card-footer { padding: 14px 18px 18px; border-top: 1px solid var(--divider); }
-    .btn-continue {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      width: 100%; padding: 13px;
-      background: var(--accent); color: #fff;
-      border: none; border-radius: 12px;
-      font-family: 'Roboto', sans-serif;
-      font-size: 15px; font-weight: 700;
-      cursor: pointer; letter-spacing: .1px;
-      box-shadow: 0 3px 12px rgba(var(--accent-rgb),.4);
-      transition: opacity .15s, transform .1s, box-shadow .15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .btn-continue:disabled {
-      opacity: .38; cursor: not-allowed;
-      box-shadow: none; transform: none;
-    }
-    .btn-continue:not(:disabled):active {
-      opacity: .82; transform: scale(.98);
-      box-shadow: 0 1px 6px rgba(var(--accent-rgb),.3);
-    }
-    .btn-continue svg { width: 18px; height: 18px; fill: #fff; flex-shrink: 0; }
-
-    /* ── Note ────────────────────────────────────────────────── */
-    .tg-note {
-      font-size: 12.5px; color: rgba(30,60,30,.65);
-      text-align: center; line-height: 1.6;
-      margin: 12px 20px 0; padding: 0 8px;
+      animation: spin 0.6s linear infinite;
     }
 
-    /* ── Toast ───────────────────────────────────────────────── */
+    .spinner-dark {
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      border-top-color: var(--tg-theme-button-color, #2481cc);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Toast Notification */
     .tg-toast {
-      position: fixed; bottom: 26px; left: 50%;
-      transform: translateX(-50%) translateY(70px);
-      border-radius: 24px; padding: 10px 22px;
-      font-size: 13.5px; font-weight: 500;
-      color: #fff; z-index: 999; pointer-events: none;
-      white-space: nowrap; max-width: 88vw; text-align: center;
-      box-shadow: 0 4px 16px rgba(0,0,0,.2);
-      transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .22s;
-      opacity: 0;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 1000;
+      transition: transform 0.3s ease;
+      pointer-events: none;
+      white-space: nowrap;
+      max-width: 90vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .tg-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-    .tg-toast.success { background: #28a745; }
-    .tg-toast.error   { background: #dc3545; }
-    .tg-toast.info    { background: rgba(0,0,0,.76); }
+
+    .tg-toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Footer Note */
+    .tg-footer-note {
+      text-align: center;
+      font-size: 12px;
+      color: var(--tg-theme-hint-color, #8e8e93);
+      padding: 20px 16px 0;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
 
-  <div class="tg-bg"></div>
-  <div class="tg-pattern"></div>
+<div class="tg-pattern-bg"></div>
 
-  <div class="page">
-
-    <!-- Header -->
-    <div class="tg-head">
-      <a href="https://telegram.org" class="tg-logo" target="_blank">
-        <svg class="tg-logo-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="16" cy="16" r="16" fill="#2481cc"/>
-          <path d="M6.8 15.7c4.8-1.95 8-3.25 9.65-3.85 4.6-1.77 5.55-2.08 6.18-2.09.14 0 .44.03.64.18.17.12.22.29.24.41.02.12.05.4.03.61-.25 2.42-1.33 8.3-1.88 11.01-.23 1.15-.69 1.39-1.13 1.43-.97.08-1.7-.45-2.64-1.01-1.46-.88-2.34-1.3-3.76-2.16-1.66-1.01-.2-1.47.74-2.36.25-.24 4.41-3.97 4.39-4.1 0-.04-.13-.45-.23-.53-.1-.08-.24-.05-.34-.03-.15.03-2.47 1.46-7 4.38-.66.42-1.26.62-1.8.61-.59-.01-1.73-.31-2.57-.57-1.04-.32-1.42-.47-1.37-.99.03-.27.3-.56.79-.86z" fill="#fff"/>
-        </svg>
-        <span class="tg-logo-text">Telegram</span>
-      </a>
-      <span class="tg-head-label">Bot Access</span>
-    </div>
-
-    <!-- Card -->
-    <div class="tg-card">
-
-      <div class="tg-card-header">
-        <div class="tg-card-icon">
-          <!-- Lock icon -->
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18 10h-1V7A5 5 0 0 0 7 7v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2zm-8-3a3 3 0 1 1 6 0v3H10V7zm3 9.7V18a1 1 0 1 1-2 0v-1.3a2 2 0 1 1 2 0z"/>
-          </svg>
-        </div>
-        <div class="tg-card-title">Members Only Access</div>
-        <div class="tg-card-desc">
-          Join the channel(s) below to unlock this bot.<br>
-          Tap <strong>Join</strong> → open channel → come back → tap <strong>Check</strong>.
-        </div>
-      </div>
-
-      <!-- Channel list -->
-      <div class="ch-list" id="ch_list"></div>
-
-      <div class="tg-card-footer">
-        <button class="btn-continue" id="btn_continue" disabled onclick="onContinue()">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
-          </svg>
-          Continue to Bot
-        </button>
-      </div>
-
-    </div>
-
-    <div class="tg-note">
-      All channels must be verified before access is granted.
-    </div>
-
+<div class="page">
+  
+  <!-- Header -->
+  <div class="tg-header">
+    <h1>Telegram</h1>
+    <span class="tg-header-badge">Bot Access</span>
   </div>
 
-  <!-- Toast -->
-  <div class="tg-toast" id="toast"></div>
+  <!-- Main Card -->
+  <div class="tg-card">
+    <div class="tg-card-header">
+      <div class="tg-icon-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="white" fill="none"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="white" fill="none"/>
+        </svg>
+      </div>
+      <h2>Join to Continue</h2>
+      <p>Subscribe to our channels to access this bot</p>
+    </div>
 
-  <script>
-  /* ════════════════════════════════════
-     CONFIG
-  ════════════════════════════════════ */
-  const CHANNELS = [
-    { id: 'ch1', name: 'Paradox Channel',  user: '@ParadoxCh',      link: 'https://t.me/ParadoxBackup' },
-    { id: 'ch2', name: 'Paradox Updates',  user: '@ParadoxUpdates', link: 'https://t.me/ParadoxBackup' },
-  ];
+    <!-- Channel List Container -->
+    <div id="channelsContainer"></div>
+  </div>
 
-  /* ════════════════════════════════════
-     TG SDK INIT
-  ════════════════════════════════════ */
-  const tg = window.Telegram?.WebApp;
-  if (tg) {
-    tg.ready(); tg.expand();
-    const p = tg.themeParams || {};
-    const s = document.documentElement.style;
-    if (p.secondary_bg_color) s.setProperty('--bg-color', p.secondary_bg_color);
-    if (p.bg_color)           s.setProperty('--card-solid', p.bg_color);
-    if (p.text_color)         s.setProperty('--text',    p.text_color);
-    if (p.hint_color)         s.setProperty('--hint',    p.hint_color);
-    if (p.button_color)       s.setProperty('--accent',  p.button_color);
-    if (p.button_text_color)  s.setProperty('--btn-text', p.button_text_color);
+  <!-- Continue Button -->
+  <button class="tg-continue-btn" id="continueBtn" disabled onclick="handleContinue()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M5 12h14M12 5l7 7-7 7"/>
+    </svg>
+    Continue to Bot
+  </button>
+
+  <div class="tg-footer-note">
+    You need to join all channels above to continue
+  </div>
+</div>
+
+<div id="toast" class="tg-toast"></div>
+
+<script>
+// Initialize Telegram WebApp
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+  
+  // Apply theme colors
+  const root = document.documentElement;
+  const theme = tg.themeParams;
+  if (theme) {
+    root.style.setProperty('--tg-theme-bg-color', theme.bg_color || '#ffffff');
+    root.style.setProperty('--tg-theme-text-color', theme.text_color || '#000000');
+    root.style.setProperty('--tg-theme-hint-color', theme.hint_color || '#8e8e93');
+    root.style.setProperty('--tg-theme-button-color', theme.button_color || '#2481cc');
+    root.style.setProperty('--tg-theme-button-text-color', theme.button_text_color || '#ffffff');
+    root.style.setProperty('--tg-theme-secondary-bg-color', theme.secondary_bg_color || '#f5f5f5');
+    root.style.setProperty('--tg-theme-section-separator-color', theme.section_separator_color || 'rgba(0,0,0,0.1)');
   }
+}
 
-  /* ════════════════════════════════════
-     STATE + RENDER
-  ════════════════════════════════════ */
-  const state = {};
-  CHANNELS.forEach(c => state[c.id] = { joinClicked: false, joined: false });
+// Channel Configuration
+const CHANNELS = [
+  {
+    id: 'paradox_main',
+    name: 'Paradox Channel',
+    username: '@ParadoxCh',
+    link: 'https://t.me/ParadoxBackup',
+    icon: 'M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83'
+  },
+  {
+    id: 'paradox_updates',
+    name: 'Paradox Updates',
+    username: '@ParadoxUpdates',
+    link: 'https://t.me/ParadoxBackup',
+    icon: 'M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.66 0 3-4 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4-3-9s1.34-9 3-9'
+  }
+];
 
-  const list = document.getElementById('ch_list');
-  CHANNELS.forEach((ch, i) => {
-    if (i > 0) list.insertAdjacentHTML('beforeend',
-      `<div style="height:1px;background:var(--divider);margin:0 18px"></div>`);
-    list.insertAdjacentHTML('beforeend', `
-      <div class="ch-row">
-        <div class="ch-avatar">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.93 6.68-1.67 7.87c-.12.56-.45.69-.92.43l-2.5-1.84-1.21 1.16c-.13.13-.25.25-.5.25l.18-2.55 4.64-4.19c.2-.18-.04-.28-.31-.1L7.34 14.64l-2.44-.76c-.53-.17-.54-.53.11-.78l9.56-3.69c.44-.16.83.11.36.27z"/>
+// State management
+const state = {};
+
+CHANNELS.forEach(channel => {
+  state[channel.id] = {
+    joined: false,
+    checking: false
+  };
+});
+
+// Render channels
+function renderChannels() {
+  const container = document.getElementById('channelsContainer');
+  container.innerHTML = '';
+  
+  CHANNELS.forEach((channel, index) => {
+    const channelState = state[channel.id];
+    const channelDiv = document.createElement('div');
+    channelDiv.className = 'channel-item';
+    
+    // Avatar
+    const avatar = document.createElement('div');
+    avatar.className = 'channel-avatar';
+    avatar.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="${channel.icon}"/></svg>`;
+    
+    // Info
+    const info = document.createElement('div');
+    info.className = 'channel-info';
+    info.innerHTML = `
+      <div class="channel-name">${channel.name}</div>
+      <div class="channel-username">${channel.username}</div>
+    `;
+    
+    // Status button
+    const statusDiv = document.createElement('div');
+    statusDiv.className = 'channel-status';
+    
+    if (channelState.joined) {
+      statusDiv.innerHTML = `
+        <button class="tg-button tg-button-success" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <polyline points="20 6 9 17 4 12"/>
           </svg>
-        </div>
-        <div class="ch-meta">
-          <div class="ch-name">${ch.name}</div>
-          <div class="ch-user">${ch.user}</div>
-        </div>
-        <div class="ch-actions" id="act_${ch.id}">
-          <a class="pill pill-join" href="${ch.link}" target="_blank"
-             onclick="state['${ch.id}'].joinClicked=true">
-            <svg viewBox="0 0 24 24"><path d="M15 12H9m3-3v6M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-            Join
-          </a>
-          <button class="pill pill-check" id="chk_${ch.id}" onclick="checkChannel('${ch.id}')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            Check
-          </button>
-        </div>
-      </div>`);
-  });
-
-  /* ════════════════════════════════════
-     CHECK
-  ════════════════════════════════════ */
-  async function checkChannel(id) {
-    if (!state[id].joinClicked) {
-      showToast('Join the channel first, then tap Check.', 'error'); return;
-    }
-    const wrap = document.getElementById('act_' + id);
-    wrap.innerHTML = `<span class="pill pill-loading"><span class="spin"></span> Checking…</span>`;
-
-    try {
-      /* ── YOUR BACKEND FETCH HERE ─────────────────────────────
-         const res = await fetch('https://YOUR_WEBHOOK/check', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({
-             channelId: id,
-             initData: tg?.initData,
-             userId:   tg?.initDataUnsafe?.user?.id
-           })
-         });
-         const { isMember } = await res.json();
-      ──────────────────────────────────────────────────────── */
-
-      // DEMO — remove below 2 lines when wiring real backend
-      await new Promise(r => setTimeout(r, 1400));
-      const isMember = true;
-
-      if (isMember) {
-        state[id].joined = true;
-        wrap.innerHTML = `<span class="pill pill-done">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>
           Joined
-        </span>`;
-        showToast('✓ Channel verified!', 'success');
-        if (tg) tg.HapticFeedback?.notificationOccurred('success');
-        checkAllDone();
-      } else {
-        wrap.innerHTML = `
-          <a class="pill pill-join" href="${CHANNELS.find(c=>c.id===id).link}" target="_blank"
-             onclick="state['${id}'].joinClicked=true">Join</a>
-          <button class="pill pill-check" id="chk_${id}" onclick="checkChannel('${id}')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            Check
-          </button>`;
-        showToast('Not joined yet. Join then check again.', 'error');
-        if (tg) tg.HapticFeedback?.notificationOccurred('error');
-      }
-    } catch {
-      wrap.innerHTML = `
-        <a class="pill pill-join" href="${CHANNELS.find(c=>c.id===id).link}" target="_blank"
-           onclick="state['${id}'].joinClicked=true">Join</a>
-        <button class="pill pill-check" onclick="checkChannel('${id}')">Retry</button>`;
-      showToast('Network error. Try again.', 'error');
+        </button>
+      `;
+    } else if (channelState.checking) {
+      statusDiv.innerHTML = `
+        <button class="tg-button tg-button-loading" disabled>
+          <div class="spinner spinner-dark"></div>
+          Checking...
+        </button>
+      `;
+    } else {
+      statusDiv.innerHTML = `
+        <button class="tg-button" onclick="joinChannel('${channel.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+          Join
+        </button>
+        <button class="tg-button tg-button-primary" onclick="verifyChannel('${channel.id}')" style="margin-left: 8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Verify
+        </button>
+      `;
+    }
+    
+    channelDiv.appendChild(avatar);
+    channelDiv.appendChild(info);
+    channelDiv.appendChild(statusDiv);
+    container.appendChild(channelDiv);
+  });
+}
+
+// Join channel
+function joinChannel(channelId) {
+  const channel = CHANNELS.find(c => c.id === channelId);
+  if (channel && tg) {
+    tg.openTelegramLink(channel.link);
+    showToast(`Opening ${channel.name}...`, 'info');
+  } else if (channel) {
+    window.open(channel.link, '_blank');
+    showToast(`Please join ${channel.name}`, 'info');
+  }
+}
+
+// Verify channel membership
+async function verifyChannel(channelId) {
+  const channelState = state[channelId];
+  if (channelState.checking) return;
+  
+  channelState.checking = true;
+  renderChannels();
+  
+  // Simulate API call (replace with actual backend verification)
+  setTimeout(() => {
+    // In production, replace this with actual API call:
+    // const response = await fetch('/api/verify', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({
+    //     channelId: channelId,
+    //     userId: tg?.initDataUnsafe?.user?.id,
+    //     initData: tg?.initData
+    //   })
+    // });
+    // const result = await response.json();
+    
+    // Demo: Simulate successful verification
+    const isMember = true;
+    
+    if (isMember) {
+      channelState.joined = true;
+      channelState.checking = false;
+      showToast(`✓ Verified ${CHANNELS.find(c => c.id === channelId).name}!`, 'success');
+      if (tg) tg.HapticFeedback?.notificationOccurred('success');
+    } else {
+      channelState.checking = false;
+      showToast(`Please join ${CHANNELS.find(c => c.id === channelId).name} first`, 'error');
+      if (tg) tg.HapticFeedback?.notificationOccurred('error');
+    }
+    
+    renderChannels();
+    updateContinueButton();
+  }, 1500);
+}
+
+// Update continue button state
+function updateContinueButton() {
+  const allJoined = CHANNELS.every(channel => state[channel.id].joined);
+  const continueBtn = document.getElementById('continueBtn');
+  
+  if (continueBtn) {
+    continueBtn.disabled = !allJoined;
+    if (allJoined) {
+      showToast('All channels verified! You can continue now.', 'success');
     }
   }
+}
 
-  function checkAllDone() {
-    if (CHANNELS.every(c => state[c.id].joined)) {
-      document.getElementById('btn_continue').disabled = false;
-      showToast('All verified! Tap Continue.', 'success');
+// Handle continue
+function handleContinue() {
+  const allJoined = CHANNELS.every(channel => state[channel.id].joined);
+  
+  if (allJoined) {
+    if (tg) {
+      tg.sendData(JSON.stringify({
+        event: 'access_granted',
+        channels: CHANNELS.map(c => c.id),
+        timestamp: Date.now()
+      }));
+      tg.close();
+    } else {
+      showToast('Access granted! Redirecting...', 'success');
+      setTimeout(() => {
+        window.location.href = '/bot';
+      }, 1000);
     }
+  } else {
+    showToast('Please verify all channels first', 'error');
   }
+}
 
-  function onContinue() {
-    if (tg) { tg.sendData(JSON.stringify({ event: 'all_joined' })); tg.close(); }
-    else showToast('All channels joined!', 'success');
-  }
+// Toast notification
+let toastTimeout;
+function showToast(message, type = 'info') {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3000);
+}
 
-  /* ════════════════════════════════════
-     TOAST
-  ════════════════════════════════════ */
-  let _tt;
-  function showToast(msg, type) {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.className = 'tg-toast ' + type + ' show';
-    clearTimeout(_tt);
-    _tt = setTimeout(() => el.classList.remove('show'), 3000);
-  }
-  </script>
+// Initialize
+renderChannels();
+
+// Set main button if in Telegram
+if (tg) {
+  tg.MainButton.text = "Continue";
+  tg.MainButton.onClick(handleContinue);
+  
+  // Update main button state when verification completes
+  const observer = setInterval(() => {
+    const allJoined = CHANNELS.every(channel => state[channel.id].joined);
+    if (allJoined) {
+      tg.MainButton.show();
+      clearInterval(observer);
+    } else {
+      tg.MainButton.hide();
+    }
+  }, 500);
+}
+</script>
 </body>
 </html>

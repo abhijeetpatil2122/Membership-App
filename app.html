@@ -52,66 +52,83 @@
       </div>
 
     <!-- BODY -->
-    <div class="tgme_body_wrap">
-      <div class="tgme_page">
+<div class="tgme_body_wrap">
+  <div class="tgme_page">
 
-        <!-- TITLE -->
-        <div class="tgme_page_title">
-          Join Required Channels
-        </div>
+    <!-- TITLE -->
+    <div class="tgme_page_title">
+      Join Required Channels
+    </div>
 
-        <!-- CHANNEL 1 -->
-        <div class="tgme_page_action">
-          <div style="margin-bottom:8px;font-weight:500;">
-            @TestChannelOne
-          </div>
+    <!-- CHANNEL 1 -->
+    <div class="tgme_page_action">
 
-          <!-- JOIN (simple) -->
-          <a class="tgme_action_button_new"
-             style="background: var(--tg-theme-secondary-bg-color); color: var(--tg-theme-text-color);"
-             onclick="joinChannel('https://t.me/TestChannelOne')">
-            Join Channel
-          </a>
+      <div style="margin-bottom:10px;font-weight:500;">
+        @TestChannelOne
+      </div>
 
-          <!-- VERIFY (shine) -->
-          <a class="tgme_action_button_new shine"
-             style="margin-top:8px;"
-             onclick="verifySingle(1)">
-            Verify
-          </a>
-        </div>
+      <div style="display:flex; gap:8px; flex-direction:column;">
+        
+        <!-- JOIN -->
+        <a class="tgme_action_button_new"
+           style="background: var(--tg-theme-secondary-bg-color); color: var(--tg-theme-text-color); text-align:center;"
+           onclick="joinChannel('https://t.me/TestChannelOne')">
+          Join Channel
+        </a>
 
-        <!-- CHANNEL 2 -->
-        <div class="tgme_page_action" style="margin-top:15px;">
-          <div style="margin-bottom:8px;font-weight:500;">
-            @TestChannelTwo
-          </div>
-
-          <a class="tgme_action_button_new"
-             style="background: var(--tg-theme-secondary-bg-color); color: var(--tg-theme-text-color);"
-             onclick="joinChannel('https://t.me/TestChannelTwo')">
-            Join Channel
-          </a>
-
-          <a class="tgme_action_button_new shine"
-             style="margin-top:8px;"
-             onclick="verifySingle(2)">
-            Verify
-          </a>
-        </div>
-
-        <!-- FINAL VERIFY -->
-        <div class="tgme_page_action" style="margin-top:20px;">
-          <a class="tgme_action_button_new shine"
-             onclick="verifyAll()">
-            ✅ Verify All & Continue
-          </a>
-        </div>
+        <!-- VERIFY -->
+        <a class="tgme_action_button_new shine"
+           style="text-align:center;"
+           onclick="verifySingle(1)">
+          Verify
+        </a>
 
       </div>
+
+    </div>
+
+    <!-- SEPARATOR -->
+    <div style="height:1px;background:rgba(0,0,0,0.08);margin:18px 0;"></div>
+
+    <!-- CHANNEL 2 -->
+    <div class="tgme_page_action">
+
+      <div style="margin-bottom:10px;font-weight:500;">
+        @TestChannelTwo
+      </div>
+
+      <div style="display:flex; gap:8px; flex-direction:column;">
+
+        <a class="tgme_action_button_new"
+           style="background: var(--tg-theme-secondary-bg-color); color: var(--tg-theme-text-color); text-align:center;"
+           onclick="joinChannel('https://t.me/TestChannelTwo')">
+          Join Channel
+        </a>
+
+        <a class="tgme_action_button_new shine"
+           style="text-align:center;"
+           onclick="verifySingle(2)">
+          Verify
+        </a>
+
+      </div>
+
+    </div>
+
+    <!-- SEPARATOR -->
+    <div style="height:1px;background:rgba(0,0,0,0.08);margin:20px 0;"></div>
+
+    <!-- FINAL VERIFY -->
+    <div class="tgme_page_action">
+      <a class="tgme_action_button_new shine"
+         style="text-align:center;"
+         onclick="verifyAll()">
+        ✅ Verify All & Continue
+      </a>
     </div>
 
   </div>
+</div>
 
   <!-- Wallpaper Script -->
   <script src="//telegram.org/js/tgwallpaper.min.js?3"></script>

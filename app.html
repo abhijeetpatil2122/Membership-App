@@ -45,7 +45,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIj48Y2lyY2xlIGN4PSIyNSIgY3k9IjI1IiByPSIxLjUiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC4wOCIvPjwvc3ZnPg==');
+      background-image: url('https://image.zaw-myo.workers.dev/file/7d90fb23-1cce-4e2a-ad3a-02a42aed3646');
       background-repeat: repeat;
       background-size: 50px 50px;
       pointer-events: none;
@@ -277,13 +277,22 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Footer Note */
+    /* Footer Note - Improved */
     .tgme_footer_note {
       text-align: center;
       font-size: 12px;
       color: var(--tg-theme-hint-color, #8e8e93);
-      padding: 16px 16px 0;
-      line-height: 1.4;
+      padding: 20px 20px 0;
+      line-height: 1.5;
+      background: transparent;
+      border-radius: 10px;
+      margin-top: 8px;
+    }
+
+    .tgme_footer_note_icon {
+      display: inline-block;
+      margin-right: 4px;
+      vertical-align: middle;
     }
 
     /* Toast */
@@ -357,7 +366,7 @@
   </div>
 
   <div class="tgme_footer_note">
-    Join each channel → tap Verify → all verified then continue
+    <span class="tgme_footer_note_icon">🔐</span> Join each channel → tap Verify → all verified then continue
   </div>
 </div>
 

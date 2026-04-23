@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Join Check WebApp</title>
+<title>Join Panel</title>
 
 <style>
 body {
@@ -42,70 +42,87 @@ pre {
 
 <body>
 
-<h2>🔐 Channel Join Check</h2>
-
-<div class="box">
-<b>Webhook URL</b>
-<pre id="webhook">Loading...</pre>
-</div>
+<h2>🔐 Join Required</h2>
 
 <div class="box">
 <b>Status:</b><br>
-<span id="status">Checking...</span><br><br>
+<span id="status">Checking...</span>
+</div>
 
-<a id="joinBtn" class="join" href="#" target="_blank">Join Channel</a>
-<button class="retry" onclick="check()">Retry</button>
+<div class="box" id="channelsBox"></div>
+
+<div class="box">
+<button class="retry" onclick="check()">🔄 Retry</button>
 </div>
 
 <div class="box">
-<b>Response</b>
-<pre id="response">{}</pre>
+<pre id="debug">{}</pre>
 </div>
 
 <script>
 const params = new URLSearchParams(window.location.search);
 const webhookUrl = params.get("check");
 
-document.getElementById("webhook").innerText = webhookUrl;
+function renderChannels(list){
+  let html = "";
+
+  list.forEach(c => {
+    let name = c.channel;
+    let clean = name.replace("@", "");
+    let link = "https://t.me/" + clean;
+
+    html += `
+      <div>
+        ${c.joined ? "✅" : "❌"} ${name}
+        ${!c.joined ? `<a class="join" href="${link}" target="_blank">Join</a>` : ""}
+      </div>
+    `;
+  });
+
+  document.getElementById("channelsBox").innerHTML = html;
+}
 
 function check(){
 
   document.getElementById("status").innerText = "⏳ Checking...";
-  document.getElementById("response").innerText = "Loading...";
 
   fetch(webhookUrl)
     .then(r => r.json())
     .then(res => {
 
-      // DEBUG
-      document.getElementById("response").innerText =
+      document.getElementById("debug").innerText =
         JSON.stringify(res, null, 2);
 
-      // SAFE DATA
-      let channel = (res && res.channel) ? res.channel : "@unknown";
-      let joined = (res && res.joined) ? true : false;
+      if (!res || !res.channels) {
+        document.getElementById("status").innerText = "⚠️ Error";
+        return;
+      }
 
-      // FIX replace crash
-      let clean = channel.replace("@", "");
-      let link = "https://t.me/" + clean;
+      renderChannels(res.channels);
 
-      document.getElementById("joinBtn").href = link;
+      if (res.joined) {
 
-      // STATUS UI
-      if (joined) {
-        document.getElementById("status").innerText = "✅ You joined the channel";
+        document.getElementById("status").innerText =
+          "✅ All channels joined!";
+
+        // 🔥 AUTO CLOSE
+        setTimeout(() => {
+          window.close();
+        }, 2000);
+
       } else {
-        document.getElementById("status").innerText = "❌ Not joined yet";
+        document.getElementById("status").innerText =
+          "❌ Please join all channels";
       }
 
     })
     .catch(err => {
-      document.getElementById("response").innerText = err.toString();
-      document.getElementById("status").innerText = "⚠️ Error loading";
+      document.getElementById("debug").innerText = err.toString();
+      document.getElementById("status").innerText = "⚠️ Failed";
     });
 }
 
-// AUTO RUN
+// auto run
 check();
 </script>
 

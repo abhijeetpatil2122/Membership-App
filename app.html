@@ -20,69 +20,50 @@ body {
   margin-bottom: 15px;
 }
 
-button, a {
+a, button {
   display: inline-block;
-  padding: 10px 14px;
-  margin: 5px 5px 0 0;
-  border: 0;
+  padding: 8px 12px;
+  margin-top: 5px;
   border-radius: 6px;
-  cursor: pointer;
   text-decoration: none;
 }
 
 .join { background: #22c55e; color: #000; }
 .retry { background: #3b82f6; color: #fff; }
 
-pre {
-  white-space: pre-wrap;
-  word-break: break-word;
-}
 </style>
 </head>
 
 <body>
 
-<h2>🔐 Join Required</h2>
+<h3>🔐 Join Required</h3>
 
-<div class="box">
-<b>Status:</b><br>
-<span id="status">Checking...</span>
-</div>
+<div class="box" id="status">Checking...</div>
 
-<div class="box" id="channelsBox"></div>
+<div class="box" id="channels"></div>
 
-<div class="box">
 <button class="retry" onclick="check()">🔄 Retry</button>
-</div>
-
-<div class="box">
-<pre id="debug">{}</pre>
-</div>
 
 <script>
 const params = new URLSearchParams(window.location.search);
 const webhookUrl = params.get("check");
 
-function renderChannels(list){
+function render(list) {
   let html = "";
 
   list.forEach(c => {
-    let name = c.channel;
-    let clean = name.replace("@", "");
-    let link = "https://t.me/" + clean;
-
     html += `
       <div>
-        ${c.joined ? "✅" : "❌"} ${name}
-        ${!c.joined ? `<a class="join" href="${link}" target="_blank">Join</a>` : ""}
-      </div>
+        ${c.joined ? "✅" : "❌"} ${c.channel}<br>
+        ${!c.joined ? `<a class="join" href="${c.link}" target="_blank">Join</a>` : ""}
+      </div><br>
     `;
   });
 
-  document.getElementById("channelsBox").innerHTML = html;
+  document.getElementById("channels").innerHTML = html;
 }
 
-function check(){
+function check() {
 
   document.getElementById("status").innerText = "⏳ Checking...";
 
@@ -90,39 +71,30 @@ function check(){
     .then(r => r.json())
     .then(res => {
 
-      document.getElementById("debug").innerText =
-        JSON.stringify(res, null, 2);
-
       if (!res || !res.channels) {
         document.getElementById("status").innerText = "⚠️ Error";
         return;
       }
 
-      renderChannels(res.channels);
+      render(res.channels);
 
       if (res.joined) {
+        document.getElementById("status").innerText = "✅ All joined";
 
-        document.getElementById("status").innerText =
-          "✅ All channels joined!";
-
-        // 🔥 AUTO CLOSE
         setTimeout(() => {
           window.close();
         }, 2000);
 
       } else {
-        document.getElementById("status").innerText =
-          "❌ Please join all channels";
+        document.getElementById("status").innerText = "❌ Join all channels";
       }
 
     })
-    .catch(err => {
-      document.getElementById("debug").innerText = err.toString();
+    .catch(() => {
       document.getElementById("status").innerText = "⚠️ Failed";
     });
 }
 
-// auto run
 check();
 </script>
 

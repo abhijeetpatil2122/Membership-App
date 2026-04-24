@@ -54,6 +54,18 @@
       display: block;
     }
 
+    .tgme_background_pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-repeat: repeat;
+  background-size: 50px 50px;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3e%3cpath fill='none' stroke='rgba(255,255,255,0.08)' stroke-width='1'%3e%3cpath d='M0 0h50v50H0z'/%3e%3c/path%3e%3c/svg%3e");
+}
+
     /* ── Page wrap ──────────────────────────────────────────── */
     .tgme_page_wrap {
       position: relative;
@@ -341,12 +353,13 @@
 
   <!-- Wallpaper (EXACT from Telegram source - NO pattern overlay) -->
   <div class="tgme_background_wrap">
-    <canvas id="tgme_background"
-            class="tgme_background default"
-            width="50" height="50"
-            data-colors="dbddbb,6ba587,d5d88d,88b884">
-    </canvas>
-  </div>
+  anvas id="tgme_background"
+          class="tgme_background default"
+          width="50" height="50"
+          data-colors="dbddbb,6ba587,d5d88d,88b884">
+  </canvas>
+  <div class="tgme_background_pattern default"></div>
+</div>
 
   <div class="tgme_page_wrap">
 

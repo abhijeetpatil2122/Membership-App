@@ -35,24 +35,34 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Wallpaper ──────────────────────────────────────────── */
+    /* ── Wallpaper (EXACT from Telegram source) ─────────────── */
     .tgme_background_wrap {
       position: fixed;
-      inset: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       z-index: 0;
+      overflow: hidden;
     }
-    #tgme_background {
+    .tgme_background {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       display: block;
     }
     .tgme_background_pattern {
       position: absolute;
-      inset: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIj48Y2lyY2xlIGN4PSIyNSIgY3k9IjI1IiByPSIxLjUiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC4wOCIvPjwvc3ZnPg==');
+      background-repeat: repeat;
+      background-size: 50px 50px;
       pointer-events: none;
-      background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
-      background-size: 18px 18px;
-      opacity: .3;
     }
 
     /* ── Page wrap ──────────────────────────────────────────── */
@@ -60,10 +70,7 @@
       position: relative;
       z-index: 1;
       min-height: 100dvh;
-      padding:
-        max(10px, env(safe-area-inset-top))
-        14px
-        max(80px, calc(env(safe-area-inset-bottom) + 80px));
+      padding: max(10px, env(safe-area-inset-top)) 14px max(80px, calc(env(safe-area-inset-bottom) + 80px));
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -91,18 +98,17 @@
     }
     .tgme_logo { width: 120px; height: 30px; }
     .tgme_head_right_btn {
-      border: 1px solid rgba(255,255,255,0.18);
       border-radius: 9px;
-      padding: 7px 12px;
-      color: var(--text);
-      background: rgba(255,255,255,0.04);
+      padding: 7px 16px;
+      background: var(--btn-bg);
+      color: var(--btn-txt);
       text-decoration: none;
       font-size: 12px;
       font-weight: 600;
       white-space: nowrap;
-      transition: background .15s;
+      transition: opacity .15s;
     }
-    .tgme_head_right_btn:active { background: rgba(255,255,255,0.1); }
+    .tgme_head_right_btn:active { opacity: 0.7; }
 
     /* ── Body ───────────────────────────────────────────────── */
     .tgme_body_wrap {
@@ -130,25 +136,27 @@
       overflow: hidden;
     }
 
-    /* ── Hero card ──────────────────────────────────────────── */
+    /* ── Hero card with perfect lock icon ───────────────────── */
     .hero {
-      padding: 16px;
+      padding: 18px 16px;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 14px;
     }
     .hero-icon {
-      width: 46px;
-      height: 46px;
-      border-radius: 13px;
-      background: rgba(42,171,238,0.18);
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: rgba(42,171,238,0.15);
       border: 1px solid rgba(42,171,238,0.3);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      font-size: 22px;
-      line-height: 1;
+    }
+    .hero-icon svg {
+      width: 28px;
+      height: 28px;
     }
     .hero-text { flex: 1; min-width: 0; }
     .hero-label {
@@ -172,69 +180,71 @@
       line-height: 1.45;
     }
 
-    /* ── Status bar ─────────────────────────────────────────── */
+    /* ── Status bar with dynamic colors ────────────────────── */
     #status {
-      padding: 11px 16px;
+      padding: 12px 16px;
       font-size: 13px;
       font-weight: 500;
       line-height: 1.4;
-      color: var(--hint);
-      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      gap: 8px;
-      transition: background .25s, color .25s, border-color .25s;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+      transition: all .25s;
     }
     #status::before {
       content: '';
-      width: 7px;
-      height: 7px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       flex-shrink: 0;
-      background: var(--hint);
       transition: background .25s;
     }
-    #status.ok    { color: #86efac; background: rgba(34,197,94,.07);  border-color: rgba(34,197,94,.18);  }
-    #status.ok::before    { background: var(--ok); }
-    #status.warn  { color: #fde68a; background: rgba(245,158,11,.07); border-color: rgba(245,158,11,.18); }
-    #status.warn::before  { background: var(--warn); }
-    #status.error { color: #fecaca; background: rgba(239,68,68,.07);  border-color: rgba(239,68,68,.18);  }
-    #status.error::before { background: var(--error); }
+    #status.ok {
+      background: rgba(34,197,94,0.08);
+      color: #86efac;
+    }
+    #status.ok::before { background: var(--ok); box-shadow: 0 0 6px var(--ok); }
+    #status.warn {
+      background: rgba(245,158,11,0.08);
+      color: #fde68a;
+    }
+    #status.warn::before { background: var(--warn); box-shadow: 0 0 6px var(--warn); }
+    #status.error {
+      background: rgba(239,68,68,0.08);
+      color: #fecaca;
+    }
+    #status.error::before { background: var(--error); box-shadow: 0 0 6px var(--error); }
 
     /* ── Channel list ───────────────────────────────────────── */
     #channel-list {
-      padding: 10px 12px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
 
-    /* ── Single channel row ─────────────────────────────────── */
+    /* ── Channel row ────────────────────────────────────────── */
     .channel {
-      border: 1px solid rgba(255,255,255,0.09);
-      border-radius: 13px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
       background: rgba(255,255,255,0.03);
-      padding: 11px 12px;
+      padding: 10px 12px;
       display: flex;
       align-items: center;
       gap: 12px;
     }
-
-    /* Avatar circle */
     .ch-avatar {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       background: var(--btn-bg);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      opacity: .85;
     }
     .ch-avatar svg { fill: #fff; width: 20px; height: 20px; }
-
-    /* Name + status badge */
     .ch-info { flex: 1; min-width: 0; }
     .channel-title {
       font-size: 14px;
@@ -243,52 +253,54 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      line-height: 1.3;
+      margin-bottom: 4px;
     }
     .badge {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      margin-top: 4px;
       border-radius: 999px;
       padding: 3px 8px;
       font-size: 11px;
       font-weight: 700;
     }
-    .badge.ok   { color: #052e16; background: #86efac; }
+    .badge.ok { color: #052e16; background: #86efac; }
     .badge.warn { color: #451a03; background: #fcd34d; }
 
-    /* Join button */
+    /* ── Join button styles ─────────────────────────────────── */
     .join-btn {
       flex-shrink: 0;
       border: none;
       border-radius: 10px;
-      padding: 9px 16px;
+      padding: 8px 16px;
       background: var(--btn-bg);
       color: var(--btn-txt);
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       font-family: inherit;
-      white-space: nowrap;
       display: inline-flex;
       align-items: center;
       gap: 6px;
       transition: opacity .15s;
     }
-    .join-btn:active  { opacity: .75; }
-    .join-btn:disabled { opacity: .45; cursor: default; }
-    .join-btn.joined {
-      background: rgba(34,197,94,0.15);
+    .join-btn:active { opacity: .75; transform: scale(0.97); }
+    .join-btn:disabled { opacity: .5; cursor: default; transform: none; }
+    .joined-btn {
+      background: rgba(34,197,94,0.12);
       color: #86efac;
       border: 1px solid rgba(34,197,94,0.25);
+      cursor: default;
     }
-
-    /* Spinner inside button */
+    .joined-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: #86efac;
+    }
     .btn-spinner {
       width: 12px;
       height: 12px;
-      border: 2px solid rgba(255,255,255,0.25);
+      border: 2px solid rgba(255,255,255,0.3);
       border-top-color: currentColor;
       border-radius: 50%;
       animation: spin .65s linear infinite;
@@ -296,24 +308,15 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Footer note ────────────────────────────────────────── */
-    .footer-note {
-      font-size: 12px;
-      color: var(--hint);
-      line-height: 1.5;
-      text-align: center;
-      padding: 2px 4px;
-    }
-
-    /* ── Toast ──────────────────────────────────────────────── */
-    .footer-toast {
+    /* ── Footer notification ────────────────────────────────── */
+    .footer-notification {
       position: fixed;
-      left: 14px;
-      right: 14px;
-      bottom: max(14px, env(safe-area-inset-bottom));
+      left: 16px;
+      right: 16px;
+      bottom: max(16px, env(safe-area-inset-bottom));
       z-index: 30;
-      border-radius: 13px;
-      padding: 11px 16px;
+      border-radius: 12px;
+      padding: 10px 16px;
       font-size: 13px;
       font-weight: 500;
       line-height: 1.4;
@@ -321,27 +324,33 @@
       opacity: 0;
       transform: translateY(10px);
       pointer-events: none;
-      transition: opacity .22s ease, transform .22s ease;
+      transition: opacity .25s ease, transform .25s ease;
       box-shadow: 0 6px 20px rgba(0,0,0,.35);
-      /* default neutral */
-      background: rgba(30, 41, 59, 0.95);
-      border: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
     }
-    .footer-toast.show             { opacity: 1; transform: translateY(0); }
-    .footer-toast.toast-ok         { background: rgba(22,101,52,0.95);  border-color: rgba(34,197,94,.35); }
-    .footer-toast.toast-warn       { background: rgba(92,53,0,0.95);    border-color: rgba(245,158,11,.35); }
-    .footer-toast.toast-error      { background: rgba(127,29,29,0.95);  border-color: rgba(239,68,68,.35); }
+    .footer-notification.show { opacity: 1; transform: translateY(0); }
+    .footer-notification.ok { background: rgba(34,197,94,0.95); border-left: 3px solid #fff; }
+    .footer-notification.warn { background: rgba(245,158,11,0.95); border-left: 3px solid #fff; }
+    .footer-notification.error { background: rgba(239,68,68,0.95); border-left: 3px solid #fff; }
+    .footer-notification.info { background: rgba(42,171,238,0.95); border-left: 3px solid #fff; }
+
+    /* Footer note text */
+    .footer-note {
+      font-size: 11px;
+      color: var(--hint);
+      line-height: 1.4;
+      text-align: center;
+      padding: 8px 4px;
+      opacity: 0.7;
+    }
   </style>
 </head>
 
 <body class="no_transition">
 
-  <!-- Wallpaper (UNCHANGED) -->
+  <!-- Wallpaper (EXACT from Telegram source) -->
   <div class="tgme_background_wrap">
-    <canvas id="tgme_background"
-            class="tgme_background default"
-            width="50" height="50"
-            data-colors="dbddbb,6ba587,d5d88d,88b884"></canvas>
+    <canvas id="tgme_background" class="tgme_background default" width="50" height="50" data-colors="dbddbb,6ba587,d5d88d,88b884"></canvas>
     <div class="tgme_background_pattern default"></div>
   </div>
 
@@ -359,244 +368,206 @@
             </g>
           </svg>
         </a>
-        <a class="tgme_head_right_btn" href="https://t.me/MembershipAppBot" target="_blank" rel="noopener">
-          Open Bot
-        </a>
+        <a class="tgme_head_right_btn" href="https://t.me/MembershipAppBot" target="_blank" rel="noopener">Open Bot</a>
       </div>
     </div>
 
     <div class="tgme_body_wrap">
       <div class="tgme_page">
 
-        <!-- Hero card -->
+        <!-- Hero card with perfect lock icon -->
         <section class="card hero">
-          <div class="hero-icon">🔐</div>
+          <div class="hero-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="11" width="14" height="11" rx="2" stroke="var(--btn-bg)" stroke-width="1.5" fill="none"/>
+              <path d="M8 11V8C8 5.79 9.79 4 12 4C14.21 4 16 5.79 16 8V11" stroke="var(--btn-bg)" stroke-width="1.5" fill="none"/>
+              <circle cx="12" cy="16" r="1.5" fill="var(--btn-bg)"/>
+            </svg>
+          </div>
           <div class="hero-text">
-            <div class="hero-label">BB Verification</div>
-            <div class="hero-title">Join all required channels</div>
-            <div class="hero-sub" id="subtitle">Checking your membership via Bot Business webhook.</div>
+            <div class="hero-label">🔐 Channel Verification</div>
+            <div class="hero-title">Join required channels</div>
+            <div class="hero-sub" id="subtitle">Verify your membership to continue</div>
           </div>
         </section>
 
         <!-- Status + channel list card -->
         <section class="card">
-          <div id="status" class="warn">Initializing Telegram Mini App…</div>
+          <div id="status" class="warn">Initializing...</div>
           <div id="channel-list"></div>
         </section>
 
         <!-- Footer note -->
-        <div class="footer-note" id="footer-note">
-          Use Telegram Main Button to re-check. This screen updates automatically after each check.
-        </div>
+        <div class="footer-note">Use Main Button to re-check • Auto-closes after full verification</div>
 
       </div>
     </div>
   </div>
 
-  <!-- Toast -->
-  <div class="footer-toast" id="footer-toast"></div>
+  <!-- Footer notification toast -->
+  <div id="footerNotification" class="footer-notification"></div>
 
   <script src="https://telegram.org/js/tgwallpaper.min.js?3"></script>
 
   <script>
-    // ── Wallpaper init (UNCHANGED) ───────────────────────────
+    // ── Wallpaper init (EXACT from Telegram source) ──────────
     function initWallpaper() {
-      const bg = document.getElementById('tgme_background');
-      if (!bg || !window.TWallpaper) { document.body.classList.remove('no_transition'); return; }
-      try {
-        TWallpaper.init(bg);
-        TWallpaper.animate(true);
-        window.onfocus = function() { TWallpaper.update(); };
-      } catch (e) { /* static fallback */ }
+      const bgCanvas = document.getElementById('tgme_background');
+      if (bgCanvas && window.TWallpaper) {
+        try {
+          TWallpaper.init(bgCanvas);
+          TWallpaper.animate(true);
+          window.onfocus = function() { TWallpaper.update(); };
+        } catch(e) { console.warn('TWallpaper error:', e); }
+      }
       document.body.classList.remove('no_transition');
     }
 
     // ── Refs ─────────────────────────────────────────────────
-    const tg           = window.Telegram?.WebApp;
-    const statusEl     = document.getElementById('status');
-    const subtitleEl   = document.getElementById('subtitle');
-    const listEl       = document.getElementById('channel-list');
-    const toastEl      = document.getElementById('footer-toast');
+    const tg = window.Telegram?.WebApp;
+    const statusEl = document.getElementById('status');
+    const subtitleEl = document.getElementById('subtitle');
+    const listEl = document.getElementById('channel-list');
+    const toastEl = document.getElementById('footerNotification');
     const checkEndpoint = new URLSearchParams(window.location.search).get('check');
 
-    // ── Toast (now with type: 'ok' | 'warn' | 'error' | '') ──
-    let _toastTimer;
-    function showToast(message, type, delay) {
+    // ── Show notification with haptic ────────────────────────
+    let toastTimer;
+    function showNotification(message, type, duration = 2500) {
       toastEl.textContent = message;
-      toastEl.className = 'footer-toast show' + (type ? ' toast-' + type : '');
-      clearTimeout(_toastTimer);
-      _toastTimer = setTimeout(() => toastEl.classList.remove('show'), delay || 2800);
+      toastEl.className = `footer-notification ${type} show`;
+      if (tg && type === 'ok') tg.HapticFeedback?.notificationOccurred('success');
+      if (tg && type === 'error') tg.HapticFeedback?.notificationOccurred('error');
+      if (tg && type === 'warn') tg.HapticFeedback?.notificationOccurred('warning');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove('show'), duration);
     }
 
-    // ── Status bar ───────────────────────────────────────────
-    function setStatus(kind, text) {
+    // ── Dynamic status update ────────────────────────────────
+    function setStatus(kind, message) {
       statusEl.className = kind;
-      statusEl.textContent = text;
+      statusEl.textContent = message;
+      if (kind === 'ok') subtitleEl.textContent = '✓ All channels verified!';
+      else if (kind === 'warn') subtitleEl.textContent = '⚠️ Join missing channels and re-check';
+      else if (kind === 'error') subtitleEl.textContent = '❌ Verification failed';
     }
 
-    // ── Security helpers (UNCHANGED) ─────────────────────────
-    function escapeHtml(value) {
-      return String(value)
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-        .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    // ── Helpers ──────────────────────────────────────────────
+    function escapeHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
     function isValidWebhookUrl(url) {
       if (!url) return false;
       try { return new URL(url).protocol === 'https:'; } catch { return false; }
     }
 
-    // ── Render channel rows ───────────────────────────────────
+    // ── Render channels with proper joined button ────────────
     function renderChannels(channels) {
       listEl.innerHTML = '';
-
       if (!channels.length) {
-        listEl.innerHTML = '<div style="padding:14px 12px;font-size:13px;color:var(--hint)">No channels received from webhook.</div>';
+        listEl.innerHTML = '<div style="padding:14px;text-align:center;color:var(--hint)">No channels from webhook</div>';
         return;
       }
-
-      channels.forEach((ch, index) => {
-        const title  = ch.channel || ch.title || ch.id || ('Channel ' + (index + 1));
+      channels.forEach((ch, idx) => {
+        const title = ch.channel || ch.title || ch.id || `Channel ${idx + 1}`;
         const joined = Boolean(ch.joined);
-
-        // Row
         const row = document.createElement('article');
         row.className = 'channel';
-
-        // Avatar
         const avatar = document.createElement('div');
         avatar.className = 'ch-avatar';
-        avatar.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>';
-
-        // Info block
-        const info = document.createElement('div');
-        info.className = 'ch-info';
-        info.innerHTML =
-          '<div class="channel-title">' + escapeHtml(title) + '</div>' +
-          '<span class="badge ' + (joined ? 'ok' : 'warn') + '">' +
-            (joined ? '✓ Joined' : '✗ Not joined') +
-          '</span>';
-
+        avatar.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>';
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'ch-info';
+        infoDiv.innerHTML = `<div class="channel-title">${escapeHtml(title)}</div><span class="badge ${joined ? 'ok' : 'warn'}">${joined ? '✓ Joined' : '✗ Not joined'}</span>`;
         row.appendChild(avatar);
-        row.appendChild(info);
-
-        // Join button (only if not joined and link exists)
+        row.appendChild(infoDiv);
         if (!joined && ch.link) {
           const btn = document.createElement('button');
-          btn.type = 'button';
           btn.className = 'join-btn';
-          btn.textContent = 'Join';
-          btn.onclick = function() {
+          btn.innerHTML = 'Join';
+          btn.onclick = () => {
             tg?.HapticFeedback?.impactOccurred('light');
             if (tg) tg.openTelegramLink(ch.link);
             else window.open(ch.link, '_blank');
-            // Visual feedback while user goes to channel
             btn.disabled = true;
             btn.innerHTML = '<span class="btn-spinner"></span> Opening…';
             setTimeout(() => {
-              btn.classList.add('joined');
+              if (!btn.disabled) return;
+              btn.innerHTML = 'Join';
               btn.disabled = false;
-              btn.textContent = 'Joined ✓';
-              btn.onclick = null;
-            }, 2000);
+            }, 3000);
           };
           row.appendChild(btn);
         } else if (joined) {
-          // Joined indicator button (non-interactive)
-          const done = document.createElement('button');
-          done.type = 'button';
-          done.className = 'join-btn joined';
-          done.disabled = true;
-          done.textContent = 'Joined ✓';
-          row.appendChild(done);
+          const doneBtn = document.createElement('button');
+          doneBtn.className = 'join-btn joined-btn';
+          doneBtn.disabled = true;
+          doneBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Joined';
+          row.appendChild(doneBtn);
         }
-
         listEl.appendChild(row);
       });
     }
 
-    // ── Fetch with timeout (UNCHANGED) ───────────────────────
+    // ── Fetch wrapper ────────────────────────────────────────
     async function fetchWithTimeout(url, options, timeoutMs) {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), timeoutMs);
-      try {
-        return await fetch(url, { ...options, signal: controller.signal });
-      } finally {
-        clearTimeout(timer);
-      }
+      try { return await fetch(url, { ...options, signal: controller.signal }); }
+      finally { clearTimeout(timer); }
     }
 
-    // ── Main check logic (UNCHANGED, only toast calls updated) ─
+    // ── Main verification ────────────────────────────────────
     async function runCheck() {
       if (!isValidWebhookUrl(checkEndpoint)) {
-        setStatus('error', 'Invalid or missing check webhook URL.');
-        subtitleEl.textContent = 'Please open this app from your /start button.';
-        showToast('Missing ?check= webhook url', 'error');
+        setStatus('error', 'Invalid or missing webhook URL');
+        showNotification('Missing ?check= webhook URL', 'error');
         return;
       }
-
       try {
-        setStatus('warn', 'Checking memberships…');
-        subtitleEl.textContent = 'Verifying channels from Bot Business webhook.';
-
+        setStatus('warn', 'Verifying memberships...');
+        tg?.HapticFeedback?.impactOccurred('medium');
         const url = new URL(checkEndpoint);
-        url.searchParams.set('_', Date.now().toString());
-
+        url.searchParams.set('_', Date.now());
         const resp = await fetchWithTimeout(url.toString(), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            initData: tg?.initData || null,
-            platform: tg?.platform || null,
-            version:  tg?.version  || null
-          })
+          body: JSON.stringify({ initData: tg?.initData || null, platform: tg?.platform || null })
         }, 12000);
-
-        const text = await resp.text();
-        let data = null;
-        try { data = JSON.parse(text); }
-        catch { throw new Error('Webhook did not return valid JSON'); }
-
-        if (!resp.ok || !data?.ok) throw new Error(data?.error || 'Webhook response error');
-
+        const data = await resp.json();
+        if (!resp.ok || !data?.ok) throw new Error(data?.error || 'Webhook error');
         const channels = Array.isArray(data.channels) ? data.channels : [];
         renderChannels(channels);
-
         if (data.joined) {
-          setStatus('ok', '✅ You joined all required channels. Closing mini app…');
-          subtitleEl.textContent = 'Verification complete. Returning to bot.';
+          setStatus('ok', '✅ All channels joined! Closing...');
+          showNotification('Verification complete! Closing app...', 'ok', 1800);
           tg?.HapticFeedback?.notificationOccurred('success');
-          tg?.MainButton?.setText('Verified ✅');
+          tg?.MainButton?.setText('Verified ✓');
           tg?.MainButton?.show();
           tg?.MainButton?.disable();
-          showToast('Verification complete! Closing…', 'ok', 2000);
           setTimeout(() => tg?.close(), 1500);
           return;
         }
-
-        setStatus('warn', 'Join missing channels, then use Main Button to re-check.');
-        subtitleEl.textContent = 'After joining channels, tap the Telegram Main Button.';
-        tg?.MainButton?.setText('Re-check Membership');
+        setStatus('warn', '⚠️ Join missing channels and tap Main Button');
+        showNotification('Please join pending channels and re-check', 'warn');
+        tg?.MainButton?.setText('Re-check');
         tg?.MainButton?.show();
         tg?.MainButton?.enable();
-        showToast('Join pending channels and re-check', 'warn');
-
-      } catch (error) {
-        const isAbort = error?.name === 'AbortError';
-        setStatus('error', '❌ ' + (isAbort ? 'Webhook timeout' : error.message));
-        subtitleEl.textContent = 'Check BB WebApp.render response format.';
+      } catch (err) {
+        const isAbort = err?.name === 'AbortError';
+        setStatus('error', isAbort ? 'Webhook timeout' : err.message);
+        showNotification(isAbort ? 'Request timeout — tap Retry' : err.message, 'error');
         tg?.MainButton?.setText('Retry');
         tg?.MainButton?.show();
         tg?.MainButton?.enable();
-        showToast(isAbort ? 'Request timeout — tap Retry' : error.message, 'error');
       }
     }
 
-    // ── Boot ─────────────────────────────────────────────────
+    // ── Bootstrap ────────────────────────────────────────────
     function initApp() {
       if (!tg) {
-        setStatus('error', 'Telegram WebApp SDK not found.');
-        subtitleEl.textContent = 'Open this page from Telegram bot web app button.';
-        showToast('Open via Telegram bot', 'error');
+        setStatus('error', 'Telegram WebApp SDK missing');
+        showNotification('Open from Telegram bot', 'error');
         return;
       }
       tg.ready();

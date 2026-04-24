@@ -1,240 +1,81 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>Telegram WebApp</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <title>Telegram WebApp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Telegram CSS -->
-<link href="//telegram.org/css/font-roboto.css?1" rel="stylesheet">
-<link href="//telegram.org/css/bootstrap.min.css?3" rel="stylesheet">
-<link href="//telegram.org/css/telegram.css?249" rel="stylesheet">
+  <!-- Telegram Fonts & CSS -->
+  <link href="//telegram.org/css/font-roboto.css?1" rel="stylesheet">
+  <link href="//telegram.org/css/bootstrap.min.css?3" rel="stylesheet">
+  <link href="//telegram.org/css/telegram.css?249" rel="stylesheet">
 
-<!-- WebApp SDK -->
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-<style>
-
-/* ===== FIX CARD SPACING ===== */
-.tgme_page_action{
-  padding:16px;
-  border-radius:12px;
-  margin-bottom:14px;
-}
-
-/* ===== BUTTON FIX ===== */
-.tgme_action_button_new{
-  width:100%;
-  border-radius:10px;
-  padding:12px;
-  font-weight:500;
-  transition:0.2s;
-}
-
-/* ===== REAL SHINE ===== */
-.shine{
-  position:relative;
-  overflow:hidden;
-}
-
-.shine::after{
-  content:"";
-  position:absolute;
-  top:0;
-  left:-100%;
-  width:100%;
-  height:100%;
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255,255,255,0.35),
-    transparent
-  );
-  animation: shineMove 2.2s infinite;
-}
-
-@keyframes shineMove{
-  0% { left:-100%; }
-  100% { left:120%; }
-}
-
-/* ===== FOOTER ===== */
-.footer_note{
-  text-align:center;
-  font-size:13px;
-  opacity:0.7;
-  margin-top:20px;
-}
-
-</style>
-
+  <!-- Dark mode support -->
+  <script>
+    window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches &&
+    document.documentElement.classList.add('theme_dark');
+  </script>
 </head>
 
 <body class="no_transition">
 
-<!-- ===== BACKGROUND (RESTORED) ===== -->
-<div class="tgme_background_wrap">
-  <canvas id="tgme_background"
-          class="tgme_background default"
-          width="50" height="50"
-          data-colors="dbddbb,6ba587,d5d88d,88b884">
-  </canvas>
-  <div class="tgme_background_pattern default"></div>
-</div>
+  <!-- Background -->
+  <div class="tgme_background_wrap">
+    <canvas id="tgme_background"
+            class="tgme_background default"
+            width="50" height="50"
+            data-colors="dbddbb,6ba587,d5d88d,88b884">
+    </canvas>
+    <div class="tgme_background_pattern default"></div>
+  </div>
 
-<div class="tgme_page_wrap">
+  <div class="tgme_page_wrap">
 
-<!-- ===== HEADER (RESTORED) ===== -->
-<div class="tgme_head_wrap">
-  <div class="tgme_head">
+    <!-- HEADER (ORIGINAL) -->
+    <div class="tgme_head_wrap">
+      <div class="tgme_head">
 
-    <a href="//telegram.org/" class="tgme_head_brand">
-      <b>Telegram</b>
-    </a>
+        <a href="//telegram.org/" class="tgme_head_brand">
+          <svg class="tgme_logo" height="34" viewBox="0 0 133 34" width="133">
+            <g fill="none" fill-rule="evenodd">
+              <circle cx="17" cy="17" fill="var(--accent-btn-color)" r="17"/>
+              <path d="m7.06510669 16.9258959c5.22739451-2.1065178 8.71314291-3.4952633 10.45724521-4.1662364 4.9797665-1.9157646 6.0145193-2.2485535 6.6889567-2.2595423.1483363-.0024169.480005.0315855.6948461.192827.1814076.1361492.23132.3200675.2552048.4491519.0238847.1290844.0536269.4231419.0299841.65291-.2698553 2.6225356-1.4375148 8.986738-2.0315537 11.9240228-.2513602 1.2428753-.7499132 1.5088847-1.2290685 1.5496672-1.0413153.0886298-1.8284257-.4857912-2.8369905-1.0972863-1.5782048-.9568691-2.5327083-1.3984317-4.0646293-2.3321592-1.7703998-1.0790837-.212559-1.583655.7963867-2.5529189.2640459-.2536609 4.7753906-4.3097041 4.755976-4.431706-.0070494-.0442984-.1409018-.481649-.2457499-.5678447-.104848-.0861957-.2595946-.0567202-.3712641-.033278-.1582881.0332286-2.6794907 1.5745492-7.5636077 4.6239616-.715635.4545193-1.3638349.6759763-1.9445998.6643712-.64024672-.0127938-1.87182452-.334829-2.78737602-.6100966-1.12296117-.3376271-1.53748501-.4966332-1.45976769-1.0700283.04048-.2986597.32581586-.610598.8560076-.935815z" fill="#fff"/>
+              <path d="m49.4 24v-12.562h-4.224v-2.266h11.198v2.266h-4.268v12.562z" fill="var(--tme-logo-color)"/>
+            </g>
+          </svg>
+        </a>
 
-    <a class="tgme_head_right_btn" href="https://t.me/MembershipAppBot">
-      Open Bot
-    </a>
+        <a class="tgme_head_right_btn"
+           href="//telegram.org/dl?tme=1">
+          Download
+        </a>
+
+      </div>
+    </div>
+
+    <!-- EMPTY BODY -->
+    <div class="tgme_body_wrap">
+      <div class="tgme_page">
+        <!-- Intentionally empty -->
+      </div>
+    </div>
 
   </div>
-</div>
 
-<!-- ===== BODY ===== -->
-<div class="tgme_body_wrap">
-<div class="tgme_page">
+  <!-- Wallpaper Script -->
+  <script src="//telegram.org/js/tgwallpaper.min.js?3"></script>
 
-<div class="tgme_page_title">
-  Join Required Channels
-</div>
+  <script>
+    var tme_bg = document.getElementById('tgme_background');
+    if (tme_bg) {
+      TWallpaper.init(tme_bg);
+      TWallpaper.animate(true);
+      window.onfocus = function(){ TWallpaper.update(); };
+    }
 
-<!-- CHANNEL 1 -->
-<div class="tgme_page_action">
-
-<div style="margin-bottom:10px;font-weight:500;">
-  @TestChannelOne
-</div>
-
-<div style="display:flex; gap:10px; flex-direction:column;">
-
-<a class="tgme_action_button_new"
-   onclick="joinChannel('https://t.me/TestChannelOne')">
-  Join Channel
-</a>
-
-<a class="tgme_action_button_new shine"
-   id="verify1"
-   onclick="verifySingle(1)">
-  Verify
-</a>
-
-</div>
-</div>
-
-<!-- CHANNEL 2 -->
-<div class="tgme_page_action">
-
-<div style="margin-bottom:10px;font-weight:500;">
-  @TestChannelTwo
-</div>
-
-<div style="display:flex; gap:10px; flex-direction:column;">
-
-<a class="tgme_action_button_new"
-   onclick="joinChannel('https://t.me/TestChannelTwo')">
-  Join Channel
-</a>
-
-<a class="tgme_action_button_new shine"
-   id="verify2"
-   onclick="verifySingle(2)">
-  Verify
-</a>
-
-</div>
-</div>
-
-<!-- FINAL VERIFY -->
-<div class="tgme_page_action">
-<a class="tgme_action_button_new shine"
-   onclick="verifyAll()">
-  ✅ Verify All & Continue
-</a>
-</div>
-
-<!-- FOOTER -->
-<div class="footer_note">
-  Join all channels to unlock access 🚀
-</div>
-
-</div>
-</div>
-</div>
-
-<!-- ===== WALLPAPER SCRIPT (RESTORED) ===== -->
-<script src="//telegram.org/js/tgwallpaper.min.js?3"></script>
-
-<script>
-var tme_bg = document.getElementById('tgme_background');
-if (tme_bg) {
-  TWallpaper.init(tme_bg);
-  TWallpaper.animate(true);
-  window.onfocus = function(){ TWallpaper.update(); };
-}
-
-document.body.classList.remove('no_transition');
-
-/* ===== TELEGRAM WEBAPP ===== */
-let tg = window.Telegram.WebApp;
-tg.expand();
-
-/* ===== APPLY THEME ===== */
-function applyTheme(){
-  let p = tg.themeParams;
-
-  document.body.style.background = p.bg_color;
-  document.body.style.color = p.text_color;
-
-  document.querySelectorAll(".tgme_action_button_new").forEach(btn=>{
-    btn.style.background = p.button_color;
-    btn.style.color = p.button_text_color;
-  });
-}
-
-applyTheme();
-
-/* ===== LOGIC ===== */
-function joinChannel(link){
-  window.open(link, "_blank");
-}
-
-let joined = {1:false,2:false};
-
-function verifySingle(id){
-  joined[id] = true;
-
-  let btn = document.getElementById("verify"+id);
-  btn.innerText = "✅ Verified";
-  btn.style.opacity = "0.7";
-
-  tg.showAlert("Channel "+id+" verified ✅");
-}
-
-function verifyAll(){
-  if(joined[1] && joined[2]){
-    tg.sendData("joined");
-
-    tg.showAlert("All channels joined 🎉");
-
-    setTimeout(()=>{
-      tg.close();
-    },1200);
-
-  } else {
-    tg.showAlert("Join all channels first ❌");
-  }
-}
-
-</script>
+    document.body.classList.remove('no_transition');
+  </script>
 
 </body>
 </html>

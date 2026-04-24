@@ -2,25 +2,27 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Join Required</title>
+<title>Telegram WebApp</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- Telegram CSS -->
 <link href="//telegram.org/css/font-roboto.css?1" rel="stylesheet">
 <link href="//telegram.org/css/bootstrap.min.css?3" rel="stylesheet">
 <link href="//telegram.org/css/telegram.css?249" rel="stylesheet">
 
+<!-- WebApp SDK -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 
-/* ✅ FIX CONTAINER SPACING */
+/* ===== FIX CARD SPACING ===== */
 .tgme_page_action{
   padding:16px;
   border-radius:12px;
-  margin-bottom:12px;
+  margin-bottom:14px;
 }
 
-/* ✅ BUTTON FIX */
+/* ===== BUTTON FIX ===== */
 .tgme_action_button_new{
   width:100%;
   border-radius:10px;
@@ -29,10 +31,10 @@
   transition:0.2s;
 }
 
-/* ✅ REAL SHINE EFFECT */
+/* ===== REAL SHINE ===== */
 .shine{
-  position: relative;
-  overflow: hidden;
+  position:relative;
+  overflow:hidden;
 }
 
 .shine::after{
@@ -45,7 +47,7 @@
   background: linear-gradient(
     120deg,
     transparent,
-    rgba(255,255,255,0.4),
+    rgba(255,255,255,0.35),
     transparent
   );
   animation: shineMove 2.2s infinite;
@@ -56,12 +58,12 @@
   100% { left:120%; }
 }
 
-/* ✅ FOOTER */
+/* ===== FOOTER ===== */
 .footer_note{
   text-align:center;
   font-size:13px;
   opacity:0.7;
-  margin-top:18px;
+  margin-top:20px;
 }
 
 </style>
@@ -70,7 +72,34 @@
 
 <body class="no_transition">
 
+<!-- ===== BACKGROUND (RESTORED) ===== -->
+<div class="tgme_background_wrap">
+  <canvas id="tgme_background"
+          class="tgme_background default"
+          width="50" height="50"
+          data-colors="dbddbb,6ba587,d5d88d,88b884">
+  </canvas>
+  <div class="tgme_background_pattern default"></div>
+</div>
+
 <div class="tgme_page_wrap">
+
+<!-- ===== HEADER (RESTORED) ===== -->
+<div class="tgme_head_wrap">
+  <div class="tgme_head">
+
+    <a href="//telegram.org/" class="tgme_head_brand">
+      <b>Telegram</b>
+    </a>
+
+    <a class="tgme_head_right_btn" href="https://t.me/MembershipAppBot">
+      Open Bot
+    </a>
+
+  </div>
+</div>
+
+<!-- ===== BODY ===== -->
 <div class="tgme_body_wrap">
 <div class="tgme_page">
 
@@ -88,7 +117,6 @@
 <div style="display:flex; gap:10px; flex-direction:column;">
 
 <a class="tgme_action_button_new"
-   id="join1"
    onclick="joinChannel('https://t.me/TestChannelOne')">
   Join Channel
 </a>
@@ -112,7 +140,6 @@
 <div style="display:flex; gap:10px; flex-direction:column;">
 
 <a class="tgme_action_button_new"
-   id="join2"
    onclick="joinChannel('https://t.me/TestChannelTwo')">
   Join Channel
 </a>
@@ -126,7 +153,7 @@
 </div>
 </div>
 
-<!-- FINAL BUTTON -->
+<!-- FINAL VERIFY -->
 <div class="tgme_page_action">
 <a class="tgme_action_button_new shine"
    onclick="verifyAll()">
@@ -143,12 +170,24 @@
 </div>
 </div>
 
-<script>
+<!-- ===== WALLPAPER SCRIPT (RESTORED) ===== -->
+<script src="//telegram.org/js/tgwallpaper.min.js?3"></script>
 
+<script>
+var tme_bg = document.getElementById('tgme_background');
+if (tme_bg) {
+  TWallpaper.init(tme_bg);
+  TWallpaper.animate(true);
+  window.onfocus = function(){ TWallpaper.update(); };
+}
+
+document.body.classList.remove('no_transition');
+
+/* ===== TELEGRAM WEBAPP ===== */
 let tg = window.Telegram.WebApp;
 tg.expand();
 
-/* THEME APPLY */
+/* ===== APPLY THEME ===== */
 function applyTheme(){
   let p = tg.themeParams;
 
@@ -160,9 +199,10 @@ function applyTheme(){
     btn.style.color = p.button_text_color;
   });
 }
+
 applyTheme();
 
-/* FUNCTIONS */
+/* ===== LOGIC ===== */
 function joinChannel(link){
   window.open(link, "_blank");
 }

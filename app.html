@@ -1,192 +1,200 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Telegram WebApp</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<title>Join Required</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Telegram Fonts & CSS -->
-  <link href="//telegram.org/css/font-roboto.css?1" rel="stylesheet">
-  <link href="//telegram.org/css/bootstrap.min.css?3" rel="stylesheet">
-  <link href="//telegram.org/css/telegram.css?249" rel="stylesheet">
+<link href="//telegram.org/css/font-roboto.css?1" rel="stylesheet">
+<link href="//telegram.org/css/bootstrap.min.css?3" rel="stylesheet">
+<link href="//telegram.org/css/telegram.css?249" rel="stylesheet">
 
-  <!-- Telegram WebApp SDK -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<style>
+
+/* ✅ FIX CONTAINER SPACING */
+.tgme_page_action{
+  padding:16px;
+  border-radius:12px;
+  margin-bottom:12px;
+}
+
+/* ✅ BUTTON FIX */
+.tgme_action_button_new{
+  width:100%;
+  border-radius:10px;
+  padding:12px;
+  font-weight:500;
+  transition:0.2s;
+}
+
+/* ✅ REAL SHINE EFFECT */
+.shine{
+  position: relative;
+  overflow: hidden;
+}
+
+.shine::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-100%;
+  width:100%;
+  height:100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.4),
+    transparent
+  );
+  animation: shineMove 2.2s infinite;
+}
+
+@keyframes shineMove{
+  0% { left:-100%; }
+  100% { left:120%; }
+}
+
+/* ✅ FOOTER */
+.footer_note{
+  text-align:center;
+  font-size:13px;
+  opacity:0.7;
+  margin-top:18px;
+}
+
+</style>
 
 </head>
 
 <body class="no_transition">
 
-  <!-- Background -->
-  <div class="tgme_background_wrap">
-    <canvas id="tgme_background"
-            class="tgme_background default"
-            width="50" height="50"
-            data-colors="dbddbb,6ba587,d5d88d,88b884">
-    </canvas>
-    <div class="tgme_background_pattern default"></div>
-  </div>
+<div class="tgme_page_wrap">
+<div class="tgme_body_wrap">
+<div class="tgme_page">
 
-  <div class="tgme_page_wrap">
+<div class="tgme_page_title">
+  Join Required Channels
+</div>
 
-    <!-- HEADER -->
-    <div class="tgme_head_wrap">
-      <div class="tgme_head">
-        <a href="//telegram.org/" class="tgme_head_brand">
-          Telegram
-        </a>
-        <a class="tgme_head_right_btn" href="https://t.me/MembershipAppBot">
-          Open Bot
-        </a>
-      </div>
-    </div>
+<!-- CHANNEL 1 -->
+<div class="tgme_page_action">
 
-    <!-- BODY -->
-    <div class="tgme_body_wrap">
-      <div class="tgme_page">
+<div style="margin-bottom:10px;font-weight:500;">
+  @TestChannelOne
+</div>
 
-        <div class="tgme_page_title">
-          Join Required Channels
-        </div>
+<div style="display:flex; gap:10px; flex-direction:column;">
 
-        <!-- CHANNEL 1 -->
-        <div class="tgme_page_action">
+<a class="tgme_action_button_new"
+   id="join1"
+   onclick="joinChannel('https://t.me/TestChannelOne')">
+  Join Channel
+</a>
 
-          <div style="margin-bottom:10px;font-weight:500;">
-            @TestChannelOne
-          </div>
+<a class="tgme_action_button_new shine"
+   id="verify1"
+   onclick="verifySingle(1)">
+  Verify
+</a>
 
-          <div style="display:flex; gap:8px; flex-direction:column;">
+</div>
+</div>
 
-            <a class="tgme_action_button_new"
-               id="join1"
-               onclick="joinChannel('https://t.me/TestChannelOne')">
-              Join Channel
-            </a>
+<!-- CHANNEL 2 -->
+<div class="tgme_page_action">
 
-            <a class="tgme_action_button_new shine"
-               id="verify1"
-               onclick="verifySingle(1)">
-              Verify
-            </a>
+<div style="margin-bottom:10px;font-weight:500;">
+  @TestChannelTwo
+</div>
 
-          </div>
+<div style="display:flex; gap:10px; flex-direction:column;">
 
-        </div>
+<a class="tgme_action_button_new"
+   id="join2"
+   onclick="joinChannel('https://t.me/TestChannelTwo')">
+  Join Channel
+</a>
 
-        <div style="height:1px;margin:18px 0;" id="sep1"></div>
+<a class="tgme_action_button_new shine"
+   id="verify2"
+   onclick="verifySingle(2)">
+  Verify
+</a>
 
-        <!-- CHANNEL 2 -->
-        <div class="tgme_page_action">
+</div>
+</div>
 
-          <div style="margin-bottom:10px;font-weight:500;">
-            @TestChannelTwo
-          </div>
+<!-- FINAL BUTTON -->
+<div class="tgme_page_action">
+<a class="tgme_action_button_new shine"
+   onclick="verifyAll()">
+  ✅ Verify All & Continue
+</a>
+</div>
 
-          <div style="display:flex; gap:8px; flex-direction:column;">
+<!-- FOOTER -->
+<div class="footer_note">
+  Join all channels to unlock access 🚀
+</div>
 
-            <a class="tgme_action_button_new"
-               id="join2"
-               onclick="joinChannel('https://t.me/TestChannelTwo')">
-              Join Channel
-            </a>
+</div>
+</div>
+</div>
 
-            <a class="tgme_action_button_new shine"
-               id="verify2"
-               onclick="verifySingle(2)">
-              Verify
-            </a>
+<script>
 
-          </div>
+let tg = window.Telegram.WebApp;
+tg.expand();
 
-        </div>
+/* THEME APPLY */
+function applyTheme(){
+  let p = tg.themeParams;
 
-        <div style="height:1px;margin:20px 0;" id="sep2"></div>
+  document.body.style.background = p.bg_color;
+  document.body.style.color = p.text_color;
 
-        <!-- FINAL VERIFY -->
-        <div class="tgme_page_action">
-          <a class="tgme_action_button_new shine"
-             onclick="verifyAll()">
-            ✅ Verify All & Continue
-          </a>
-        </div>
+  document.querySelectorAll(".tgme_action_button_new").forEach(btn=>{
+    btn.style.background = p.button_color;
+    btn.style.color = p.button_text_color;
+  });
+}
+applyTheme();
 
-      </div>
-    </div>
+/* FUNCTIONS */
+function joinChannel(link){
+  window.open(link, "_blank");
+}
 
-  </div>
+let joined = {1:false,2:false};
 
-  <!-- Wallpaper -->
-  <script src="//telegram.org/js/tgwallpaper.min.js?3"></script>
+function verifySingle(id){
+  joined[id] = true;
 
-  <script>
-    var tme_bg = document.getElementById('tgme_background');
-    if (tme_bg) {
-      TWallpaper.init(tme_bg);
-      TWallpaper.animate(true);
-      window.onfocus = function(){ TWallpaper.update(); };
-    }
+  let btn = document.getElementById("verify"+id);
+  btn.innerText = "✅ Verified";
+  btn.style.opacity = "0.7";
 
-    document.body.classList.remove('no_transition');
+  tg.showAlert("Channel "+id+" verified ✅");
+}
 
-    // ===== TELEGRAM WEBAPP =====
-    let tg = window.Telegram.WebApp;
-    tg.expand();
+function verifyAll(){
+  if(joined[1] && joined[2]){
+    tg.sendData("joined");
 
-    // 🎨 APPLY TELEGRAM THEME
-    function applyTheme() {
-      const p = tg.themeParams;
+    tg.showAlert("All channels joined 🎉");
 
-      document.body.style.background = p.bg_color || "#0f172a";
-      document.body.style.color = p.text_color || "#fff";
+    setTimeout(()=>{
+      tg.close();
+    },1200);
 
-      let buttons = document.querySelectorAll(".tgme_action_button_new");
+  } else {
+    tg.showAlert("Join all channels first ❌");
+  }
+}
 
-      buttons.forEach(btn => {
-        btn.style.background = p.button_color || "#2481cc";
-        btn.style.color = p.button_text_color || "#fff";
-      });
-
-      let seps = [document.getElementById("sep1"), document.getElementById("sep2")];
-      seps.forEach(s => {
-        if (s) s.style.background = p.hint_color || "rgba(255,255,255,0.1)";
-      });
-    }
-
-    applyTheme();
-
-    // ===== FUNCTIONS =====
-    function joinChannel(link){
-      window.open(link, "_blank");
-    }
-
-    let joined = {1:false, 2:false};
-
-    function verifySingle(id){
-      joined[id] = true;
-
-      let btn = document.getElementById("verify" + id);
-      btn.innerText = "✅ Verified";
-      btn.style.opacity = "0.7";
-
-      tg.showAlert("Channel " + id + " verified ✅");
-    }
-
-    function verifyAll(){
-      if(joined[1] && joined[2]){
-        tg.sendData("joined");
-
-        tg.showAlert("All channels joined 🎉");
-
-        setTimeout(() => {
-          tg.close();
-        }, 1200);
-
-      } else {
-        tg.showAlert("Join all channels first ❌");
-      }
-    }
-  </script>
+</script>
 
 </body>
 </html>

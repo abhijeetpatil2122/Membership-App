@@ -21,41 +21,91 @@
   </script>
 
   <style>
-    /* Give page room so content doesn't hide under MainButton */
-    .tgme_page { padding-bottom: 80px; }
 
-    /* ── Section labels ── */
-    .cv-title {
-      font-size: 17px;
-      font-weight: 600;
+    /* ═══════════════════════════════════════════════════
+       LAYOUT — custom content sits BELOW the header,
+       completely independent of .tgme_page / .tgme_body_wrap
+    ═══════════════════════════════════════════════════ */
+
+    /* Push tgme_page out of the way — we're not using it */
+    .tgme_body_wrap { display: none !important; }
+
+    /* Our own content layer, placed right under the header */
+    .cv-wrap {
+      position: relative;
+      z-index: 1;
+      padding: 16px 16px 100px;   /* bottom pad for MainButton */
+      max-width: 480px;
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+
+    /* ── Section header block ───────────────────────────
+       A standalone card above the channel list
+    ─────────────────────────────────────────────────── */
+    .cv-section-header {
+      background: var(--tg-theme-bg-color, #ffffff);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .cv-section-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--tg-theme-button-color, #3390ec);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .cv-section-icon svg { fill: #fff; width: 20px; height: 20px; }
+    .cv-section-text { flex: 1; min-width: 0; }
+    .cv-section-title {
+      font-size: 16px;
+      font-weight: 700;
       color: var(--tg-theme-text-color, #000);
-      margin: 0 0 4px 2px;
+      line-height: 1.3;
+      margin: 0 0 4px;
     }
-    .cv-subtitle {
+    .cv-section-desc {
       font-size: 13px;
-      color: var(--tg-theme-hint-color, #999);
-      margin: 0 0 14px 2px;
+      color: var(--tg-theme-hint-color, #888);
+      line-height: 1.45;
+      margin: 0;
     }
 
-    /* ── Channel Card ── */
-    .cv-card {
-      background: var(--tg-theme-bg-color, #fff);
-      border-radius: 16px;
+    /* ── Channel list wrapper ───────────────────────────
+       Separate rounded container holding all channel rows
+    ─────────────────────────────────────────────────── */
+    .cv-list {
+      background: var(--tg-theme-bg-color, #ffffff);
+      border-radius: 14px;
       overflow: hidden;
-      margin-bottom: 10px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      margin-bottom: 12px;
     }
 
-    /* Card top: avatar + name + badge */
-    .cv-card-top {
+    /* Each channel row */
+    .cv-row {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 14px 16px 12px;
+      padding: 13px 14px;
     }
-    .cv-card-avatar {
-      width: 46px;
-      height: 46px;
+    /* Divider between rows (not after last) */
+    .cv-row + .cv-row {
+      border-top: 1px solid var(--tg-theme-secondary-bg-color, #f1f1f1);
+    }
+
+    /* Avatar */
+    .cv-avatar {
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       background: var(--tg-theme-button-color, #3390ec);
       display: flex;
@@ -63,112 +113,127 @@
       justify-content: center;
       flex-shrink: 0;
     }
-    .cv-card-avatar svg { fill: #fff; width: 22px; height: 22px; }
-    .cv-card-meta { flex: 1; min-width: 0; }
-    .cv-card-name {
-      font-size: 15px;
+    .cv-avatar svg { fill: #fff; width: 20px; height: 20px; }
+
+    /* Name + handle */
+    .cv-meta { flex: 1; min-width: 0; }
+    .cv-name {
+      font-size: 14px;
       font-weight: 600;
       color: var(--tg-theme-text-color, #000);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 1.3;
     }
-    .cv-card-handle {
+    .cv-handle {
       font-size: 12px;
       color: var(--tg-theme-hint-color, #999);
       margin-top: 2px;
     }
-    .cv-card-badge {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: #e8f5e9;
+
+    /* Action buttons on the right */
+    .cv-actions {
       display: flex;
-      align-items: center;
-      justify-content: center;
+      gap: 7px;
       flex-shrink: 0;
-      opacity: 0;
-      transform: scale(0.6);
-      transition: opacity .25s, transform .3s cubic-bezier(.34,1.56,.64,1);
-    }
-    .cv-card-badge.visible {
-      opacity: 1;
-      transform: scale(1);
-    }
-    .cv-card-badge svg { width: 14px; height: 14px; fill: #43a047; }
-
-    /* Divider */
-    .cv-card-divider {
-      height: 1px;
-      background: var(--tg-theme-secondary-bg-color, #f0f0f0);
-      margin: 0 16px;
-    }
-
-    /* Card bottom: two equal buttons */
-    .cv-card-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
     }
     .cv-btn {
       border: none;
-      background: none;
-      padding: 13px 0;
-      font-size: 14px;
+      border-radius: 9px;
+      padding: 8px 14px;
+      font-size: 13px;
       font-weight: 500;
       cursor: pointer;
       font-family: inherit;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      transition: background .15s, opacity .15s;
-      position: relative;
+      gap: 5px;
+      white-space: nowrap;
+      transition: opacity .15s;
+      min-width: 60px;
     }
-    .cv-btn:active { opacity: .65; }
+    .cv-btn:active { opacity: .7; }
     .cv-btn:disabled { cursor: default; }
 
+    /* Join button */
     .cv-btn-join {
-      color: var(--tg-theme-button-color, #3390ec);
-      border-right: 1px solid var(--tg-theme-secondary-bg-color, #f0f0f0);
+      background: var(--tg-theme-button-color, #3390ec);
+      color: var(--tg-theme-button-text-color, #fff);
     }
-    .cv-btn-join.done { color: #43a047; }
-    .cv-btn-join:disabled { opacity: .5; }
+    .cv-btn-join.done {
+      background: rgba(67,160,71,0.13);
+      color: #43a047;
+    }
+    .cv-btn-join:disabled { opacity: .55; }
 
+    /* Verify button */
     .cv-btn-verify {
-      color: var(--tg-theme-button-color, #3390ec);
+      background: var(--tg-theme-secondary-bg-color, #f1f1f1);
+      color: var(--tg-theme-text-color, #222);
     }
-    .cv-btn-verify.done { color: #43a047; }
-    .cv-btn-verify:disabled:not(.done) { opacity: .4; }
+    .cv-btn-verify.done {
+      background: rgba(67,160,71,0.13);
+      color: #43a047;
+    }
+    .cv-btn-verify:disabled:not(.done) { opacity: .45; }
+
+    /* Verified badge icon (replaces text) */
+    .cv-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(67,160,71,0.13);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transform: scale(0.5);
+      opacity: 0;
+      transition: opacity .25s, transform .3s cubic-bezier(.34,1.56,.64,1);
+    }
+    .cv-badge.visible {
+      display: flex;
+      transform: scale(1);
+      opacity: 1;
+    }
+    .cv-badge svg { fill: #43a047; width: 15px; height: 15px; }
 
     /* Spinner */
     .cv-spinner {
-      width: 13px;
-      height: 13px;
-      border: 2px solid rgba(0,0,0,0.12);
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(0,0,0,0.1);
       border-top-color: var(--tg-theme-button-color, #3390ec);
       border-radius: 50%;
       animation: cv-spin .65s linear infinite;
+      display: inline-block;
+    }
+    .theme_dark .cv-spinner {
+      border-color: rgba(255,255,255,0.15);
+      border-top-color: var(--tg-theme-button-color, #3390ec);
     }
     @keyframes cv-spin { to { transform: rotate(360deg); } }
 
-    /* ── Footer note (outside cards) ── */
+    /* ── Footer note — completely outside, below list ── */
     .cv-footer-note {
-      text-align: center;
       font-size: 12px;
       color: var(--tg-theme-hint-color, #aaa);
-      margin-top: 12px;
-      padding: 0 10px;
+      text-align: center;
       line-height: 1.6;
+      padding: 0 8px;
+      margin: 0;
     }
 
-    /* ── Toast ── */
+    /* ── Toast ─────────────────────────────────────────── */
     .cv-toast {
       position: fixed;
       bottom: 26px;
       left: 50%;
-      transform: translateX(-50%) translateY(64px);
-      padding: 10px 22px;
-      border-radius: 22px;
+      transform: translateX(-50%) translateY(60px);
+      padding: 10px 20px;
+      border-radius: 20px;
       font-size: 13.5px;
       font-weight: 500;
       color: #fff;
@@ -176,8 +241,8 @@
       z-index: 9999;
       pointer-events: none;
       opacity: 0;
-      transition: transform .32s cubic-bezier(.34,1.56,.64,1), opacity .22s;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .2s;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.22);
     }
     .cv-toast.show {
       transform: translateX(-50%) translateY(0);
@@ -186,6 +251,7 @@
     .cv-toast.success { background: #43a047; }
     .cv-toast.error   { background: #e53935; }
     .cv-toast.info    { background: #1e88e5; }
+
   </style>
 </head>
 
@@ -203,7 +269,7 @@
 
   <div class="tgme_page_wrap">
 
-    <!-- HEADER (UNCHANGED except "Open Bot" link) -->
+    <!-- HEADER (UNCHANGED except Open Bot link) -->
     <div class="tgme_head_wrap">
       <div class="tgme_head">
         <a href="//telegram.org/" class="tgme_head_brand">
@@ -221,20 +287,34 @@
       </div>
     </div>
 
-    <!-- BODY -->
+    <!-- tgme_body_wrap hidden via CSS; we inject our own layout -->
     <div class="tgme_body_wrap">
-      <div class="tgme_page">
+      <div class="tgme_page"></div>
+    </div>
 
-        <p class="cv-title">Join Channels</p>
-        <p class="cv-subtitle">Join and verify each channel below to continue.</p>
+  </div>
 
-        <div id="cv-channels"></div>
+  <!-- ═══ OUR CUSTOM CONTENT — outside tgme_page_wrap ═══ -->
+  <div class="cv-wrap">
 
-        <!-- Footer note — outside the card -->
-        <p class="cv-footer-note" id="cv-footer-note"></p>
-
+    <!-- Section header card -->
+    <div class="cv-section-header">
+      <div class="cv-section-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+        </svg>
+      </div>
+      <div class="cv-section-text">
+        <p class="cv-section-title">Join Required Channels</p>
+        <p class="cv-section-desc">Join and verify each channel below to unlock full bot access.</p>
       </div>
     </div>
+
+    <!-- Channel list (separate card) -->
+    <div class="cv-list" id="cv-channels"></div>
+
+    <!-- Footer note — outside, below the list card -->
+    <p class="cv-footer-note" id="cv-footer-note"></p>
 
   </div>
 
@@ -267,46 +347,44 @@
 
     const state = CHANNELS.map(() => ({ joined: false, verified: false }));
 
-    // ── Render cards ─────────────────────────────────────────
+    // ── Render channel rows ──────────────────────────────────
     document.getElementById('cv-footer-note').textContent = FOOTER_NOTE;
     const container = document.getElementById('cv-channels');
 
     CHANNELS.forEach((ch, i) => {
-      const card = document.createElement('div');
-      card.className = 'cv-card';
-      card.innerHTML = `
-        <div class="cv-card-top">
-          <div class="cv-card-avatar">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-            </svg>
-          </div>
-          <div class="cv-card-meta">
-            <div class="cv-card-name">${ch.name}</div>
-            <div class="cv-card-handle">${ch.username}</div>
-          </div>
-          <div class="cv-card-badge" id="badge-${i}">
-            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-          </div>
+      const row = document.createElement('div');
+      row.className = 'cv-row';
+      row.innerHTML = `
+        <div class="cv-avatar">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+          </svg>
         </div>
-        <div class="cv-card-divider"></div>
-        <div class="cv-card-actions">
-          <button class="cv-btn cv-btn-join" id="btn-join-${i}" onclick="doJoin(${i})">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
-            </svg>
-            Join
-          </button>
-          <button class="cv-btn cv-btn-verify" id="btn-verify-${i}" onclick="doVerify(${i})">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-            </svg>
-            Verify
-          </button>
+        <div class="cv-meta">
+          <div class="cv-name">${ch.name}</div>
+          <div class="cv-handle">${ch.username}</div>
+        </div>
+        <div class="cv-actions">
+          <button class="cv-btn cv-btn-join"   id="btn-join-${i}"   onclick="doJoin(${i})">Join</button>
+          <button class="cv-btn cv-btn-verify" id="btn-verify-${i}" onclick="doVerify(${i})">Verify</button>
+        </div>
+        <div class="cv-badge" id="badge-${i}">
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
         </div>
       `;
-      container.appendChild(card);
+      container.appendChild(row);
     });
+
+    // Kick the badge display (needs display:flex after class add)
+    function showBadge(i) {
+      const b = document.getElementById(`badge-${i}`);
+      b.style.display = 'flex';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          b.classList.add('visible');
+        });
+      });
+    }
 
     // ── Join ─────────────────────────────────────────────────
     function doJoin(i) {
@@ -319,12 +397,10 @@
       const btn = document.getElementById(`btn-join-${i}`);
       btn.classList.add('done');
       btn.disabled = true;
-      btn.innerHTML = `
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-        Joined
-      `;
+      btn.textContent = 'Joined';
+
       haptic('light');
-      showToast('Tap Verify to confirm membership.', 'info');
+      showToast('Now tap Verify to confirm.', 'info');
     }
 
     // ── Verify ───────────────────────────────────────────────
@@ -341,17 +417,14 @@
       btn.disabled = true;
       btn.innerHTML = `<span class="cv-spinner"></span> Checking…`;
 
-      // Simulate API check — replace with real call
+      // Simulate verification — replace with real API call
       setTimeout(() => {
         state[i].verified = true;
 
         btn.classList.add('done');
-        btn.innerHTML = `
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-          Verified
-        `;
+        btn.textContent = 'Verified ✓';
 
-        document.getElementById(`badge-${i}`).classList.add('visible');
+        showBadge(i);
         haptic('success');
 
         if (state.every(s => s.verified)) {
@@ -364,7 +437,7 @@
       }, 1500);
     }
 
-    // ── Main Button — shown ONLY when all verified ────────────
+    // ── Main Button — only after all verified ────────────────
     function showMainButton() {
       if (!tg) return;
       tg.MainButton.setText('Continue →');
@@ -374,7 +447,7 @@
 
     function closeApp() {
       if (tg) tg.close();
-      else showToast('App would close now (demo)', 'info');
+      else showToast('App would close (demo mode)', 'info');
     }
 
     // ── Toast ────────────────────────────────────────────────
@@ -391,7 +464,7 @@
     function haptic(type) {
       if (!tg) return;
       if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
-      else if (type === 'error')   tg.HapticFeedback.notificationOccurred('error');
+      else if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
       else tg.HapticFeedback.impactOccurred('light');
     }
   </script>

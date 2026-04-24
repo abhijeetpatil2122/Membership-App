@@ -1,49 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta charset="utf-8" />
   <title>Join Verification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: var(--tg-theme-bg-color, #0b1020);
-      --text: var(--tg-theme-text-color, #eff6ff);
-      --hint: var(--tg-theme-hint-color, #9db0cd);
+      --bg: var(--tg-theme-bg-color, #0f172a);
+      --text: var(--tg-theme-text-color, #f8fafc);
+      --hint: var(--tg-theme-hint-color, #94a3b8);
       --button: var(--tg-theme-button-color, #2563eb);
-      --button-text: var(--tg-theme-button-text-color, #fff);
-      --card: rgba(15, 23, 42, 0.75);
+      --button-text: var(--tg-theme-button-text-color, #ffffff);
+      --card: rgba(15, 23, 42, 0.72);
       --border: rgba(148, 163, 184, 0.2);
       --ok: #22c55e;
       --warn: #f59e0b;
-      --err: #ef4444;
+      --error: #ef4444;
     }
 
     * { box-sizing: border-box; }
 
-    body {
+    html, body {
       margin: 0;
-      min-height: 100vh;
+      min-height: 100%;
       color: var(--text);
-      background:
-        radial-gradient(1000px 550px at -10% -10%, rgba(37, 99, 235, 0.2), transparent 65%),
-        radial-gradient(900px 500px at 110% -10%, rgba(16, 185, 129, 0.12), transparent 60%),
-        var(--bg);
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
     }
 
-    .container { max-width: 520px; margin: 0 auto; display: grid; gap: 14px; }
+    body.no_transition * { transition: none !important; }
 
-    .hero,
-    .panel {
+    /* Background scaffold (from Telegram landing layout idea) */
+    .tgme_background_wrap {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(1000px 700px at -20% -10%, rgba(37, 99, 235, 0.25), transparent 60%),
+        radial-gradient(900px 600px at 110% -10%, rgba(16, 185, 129, 0.18), transparent 60%),
+        var(--bg);
+    }
+
+    .tgme_background {
+      width: 100%;
+      height: 100%;
+      opacity: 0.95;
+      display: block;
+    }
+
+    .tgme_background_pattern {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: radial-gradient(rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-size: 18px 18px;
+      opacity: 0.4;
+    }
+
+    .tgme_page_wrap {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: max(12px, env(safe-area-inset-top)) 14px max(12px, env(safe-area-inset-bottom));
+      gap: 14px;
+    }
+
+    /* Header (custom implementation, no external tg CSS dependency) */
+    .tgme_head_wrap {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(2, 6, 23, 0.62);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .tgme_head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      gap: 10px;
+    }
+
+    .tgme_head_brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .tgme_brand_dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #38bdf8, #2563eb);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    .tgme_head_right_btn {
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      text-decoration: none;
+      padding: 8px 11px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .tgme_body_wrap {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+
+    .tgme_page {
+      width: min(560px, 100%);
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .card {
       border: 1px solid var(--border);
       border-radius: 18px;
       background: var(--card);
+      backdrop-filter: blur(10px);
       box-shadow: 0 14px 42px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
     }
 
-    .hero { padding: 18px; }
+    .hero {
+      padding: 18px;
+    }
+
     .chip {
       display: inline-block;
       border-radius: 999px;
@@ -54,41 +157,51 @@
       background: rgba(59, 130, 246, 0.2);
     }
 
-    h1 { margin: 12px 0 6px; font-size: 24px; }
-    #subtitle { margin: 0; line-height: 1.5; font-size: 14px; color: var(--hint); }
+    h1 {
+      margin: 12px 0 6px;
+      font-size: 24px;
+      line-height: 1.25;
+    }
+
+    #subtitle {
+      margin: 0;
+      color: var(--hint);
+      line-height: 1.5;
+      font-size: 14px;
+    }
 
     #status {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
       padding: 12px 14px;
       font-size: 13px;
       color: var(--hint);
     }
+
     #status.ok { border-left: 3px solid var(--ok); color: #bbf7d0; }
     #status.warn { border-left: 3px solid var(--warn); color: #fde68a; }
-    #status.error { border-left: 3px solid var(--err); color: #fecaca; }
+    #status.error { border-left: 3px solid var(--error); color: #fecaca; }
 
-    #channels {
+    #channel-list {
       display: grid;
       gap: 10px;
       padding: 12px;
     }
 
-    .row {
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(255, 255, 255, 0.03);
+    .channel {
+      border: 1px solid rgba(255,255,255,0.12);
       border-radius: 14px;
+      background: rgba(255,255,255,0.03);
       padding: 12px;
       display: grid;
       grid-template-columns: 1fr auto;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
     }
 
-    .name {
+    .channel-title {
       font-size: 15px;
       font-weight: 700;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      word-break: break-word;
     }
 
     .badge {
@@ -100,181 +213,296 @@
       font-size: 11px;
       font-weight: 700;
     }
+
     .badge.ok { background: #86efac; color: #052e16; }
     .badge.warn { background: #fcd34d; color: #78350f; }
 
     .btn {
+      appearance: none;
       border: none;
       border-radius: 10px;
       padding: 10px 12px;
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn.primary {
       color: var(--button-text);
       background: linear-gradient(135deg, var(--button), #1d4ed8);
     }
 
     .btn.secondary {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.22);
       color: var(--text);
     }
 
     .hint {
-      font-size: 12px;
       color: var(--hint);
+      font-size: 12px;
       line-height: 1.45;
       padding: 0 14px 14px;
+      margin: 0;
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 22px; }
+      .channel { grid-template-columns: 1fr; }
     }
   </style>
 </head>
-<body>
-  <main class="container">
-    <section class="hero">
-      <span class="chip">🔐 Membership Gate</span>
-      <h1>Join all required channels</h1>
-      <p id="subtitle">We'll verify your memberships through your Bot Business webhook.</p>
-    </section>
+<body class="no_transition">
+  <div class="tgme_background_wrap">
+    <canvas
+      id="tgme_background"
+      class="tgme_background default"
+      width="50"
+      height="50"
+      data-colors="dbddbb,6ba587,d5d88d,88b884">
+    </canvas>
+    <div class="tgme_background_pattern default"></div>
+  </div>
 
-    <section class="panel">
-      <div id="status" class="warn">Initializing mini app…</div>
-      <div id="channels"></div>
-      <p class="hint">If you already joined everything, tap <b>Re-check</b>. The app auto-closes after successful verification.</p>
-    </section>
+  <div class="tgme_page_wrap">
+    <div class="tgme_head_wrap">
+      <div class="tgme_head">
+        <a href="#" class="tgme_head_brand" aria-label="App brand">
+          <span class="tgme_brand_dot">✈️</span>
+          <span>Membership Panel</span>
+        </a>
+        <a class="tgme_head_right_btn" href="https://t.me" target="_blank" rel="noopener">Telegram</a>
+      </div>
+    </div>
 
-    <button id="recheck" class="btn">Re-check</button>
-  </main>
+    <div class="tgme_body_wrap">
+      <div class="tgme_page">
+        <section class="card hero">
+          <span class="chip">🔐 BB Verification</span>
+          <h1>Join all required channels</h1>
+          <p id="subtitle">We verify membership via your Bot Business webhook and unlock instantly.</p>
+        </section>
 
+        <section class="card">
+          <div id="status" class="warn">Initializing mini app…</div>
+          <div id="channel-list"></div>
+          <p class="hint">If you already joined channels, tap <b>Re-check</b>. App auto-closes when verified.</p>
+        </section>
+
+        <button id="recheck-btn" class="btn primary" type="button">Re-check Membership</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://telegram.org/js/tgwallpaper.min.js?3"></script>
   <script>
-    const tg = window.Telegram?.WebApp;
-    const statusEl = document.getElementById('status');
-    const subtitleEl = document.getElementById('subtitle');
-    const channelsEl = document.getElementById('channels');
-    const recheckBtn = document.getElementById('recheck');
+    (function () {
+      const tg = window.Telegram?.WebApp;
+      const statusEl = document.getElementById('status');
+      const subtitleEl = document.getElementById('subtitle');
+      const listEl = document.getElementById('channel-list');
+      const recheckBtn = document.getElementById('recheck-btn');
 
-    const query = new URLSearchParams(window.location.search);
-    const checkEndpoint = query.get('check');
+      const checkEndpoint = new URLSearchParams(window.location.search).get('check');
 
-    function setStatus(type, message) {
-      statusEl.className = type;
-      statusEl.textContent = message;
-    }
-
-    function isValidWebhookUrl(url) {
-      if (!url) return false;
-      try {
-        const parsed = new URL(url);
-        return parsed.protocol === 'https:';
-      } catch {
-        return false;
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
       }
-    }
 
-    function renderChannels(channels) {
-      channelsEl.innerHTML = '';
+      function setStatus(type, message) {
+        statusEl.className = type;
+        statusEl.textContent = message;
+      }
 
-      channels.forEach((item) => {
-        const row = document.createElement('article');
-        row.className = 'row';
-
-        const left = document.createElement('div');
-        const badgeClass = item.joined ? 'ok' : 'warn';
-        const badgeText = item.joined ? 'Joined' : 'Not joined';
-
-        left.innerHTML = `
-          <div class="name">${item.channel || item.id || 'Channel'}</div>
-          <span class="badge ${badgeClass}">${badgeText}</span>
-        `;
-
-        const right = document.createElement('div');
-        if (!item.joined && item.link) {
-          const joinBtn = document.createElement('button');
-          joinBtn.className = 'btn secondary';
-          joinBtn.textContent = 'Join';
-          joinBtn.onclick = () => tg?.openTelegramLink(item.link);
-          right.appendChild(joinBtn);
+      function isValidWebhookUrl(url) {
+        if (!url) return false;
+        try {
+          const parsed = new URL(url);
+          return parsed.protocol === 'https:';
+        } catch {
+          return false;
         }
-
-        row.append(left, right);
-        channelsEl.appendChild(row);
-      });
-    }
-
-    async function checkMembership() {
-      if (!isValidWebhookUrl(checkEndpoint)) {
-        setStatus('error', 'Invalid or missing `check` webhook URL.');
-        subtitleEl.textContent = 'Open this app from /start button generated by Bot Business.';
-        return;
       }
 
-      try {
-        setStatus('warn', 'Checking your memberships…');
-        subtitleEl.textContent = 'Please wait while we ask your webhook.';
-        recheckBtn.disabled = true;
+      function normalizeChannels(payload) {
+        if (!Array.isArray(payload?.channels)) return [];
 
-        const url = new URL(checkEndpoint);
-        url.searchParams.set('_', Date.now().toString());
-
-        const response = await fetch(url.toString(), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            initData: tg?.initData || null,
-            platform: tg?.platform || null
-          })
+        return payload.channels.map((item, idx) => {
+          const label = item.channel || item.title || item.id || `Channel ${idx + 1}`;
+          return {
+            title: String(label),
+            joined: Boolean(item.joined),
+            link: item.link ? String(item.link) : null
+          };
         });
+      }
 
-        const data = await response.json();
+      function renderChannels(channels) {
+        listEl.innerHTML = '';
 
-        if (!response.ok || !data.ok) {
-          throw new Error(data.error || 'Webhook returned an invalid response.');
-        }
-
-        renderChannels(data.channels || []);
-
-        if (data.joined) {
-          setStatus('ok', '✅ Verification completed. Closing mini app…');
-          subtitleEl.textContent = 'All channels joined. Returning to bot.';
-          tg?.HapticFeedback?.notificationOccurred('success');
-          tg?.MainButton?.setText('Verified ✅');
-          tg?.MainButton?.show();
-          tg?.MainButton?.disable();
-          setTimeout(() => tg?.close(), 1600);
+        if (!channels.length) {
+          const row = document.createElement('div');
+          row.className = 'channel';
+          row.innerHTML = '<div class="channel-title">No channels returned by webhook.</div>';
+          listEl.appendChild(row);
           return;
         }
 
-        setStatus('warn', 'Please join missing channels and tap Re-check.');
-        subtitleEl.textContent = 'After joining channels, come back and verify again.';
-        tg?.MainButton?.setText('Re-check');
-        tg?.MainButton?.show();
-        tg?.MainButton?.enable();
-      } catch (error) {
-        setStatus('error', `❌ ${error.message}`);
-        subtitleEl.textContent = 'Check BB webhook command and WebApp.render JSON output.';
-        tg?.MainButton?.setText('Retry');
-        tg?.MainButton?.show();
-        tg?.MainButton?.enable();
-      } finally {
-        recheckBtn.disabled = false;
+        channels.forEach((item) => {
+          const row = document.createElement('article');
+          row.className = 'channel';
+
+          const badgeClass = item.joined ? 'ok' : 'warn';
+          const badgeText = item.joined ? 'Joined' : 'Not joined';
+
+          const left = document.createElement('div');
+          left.innerHTML = `
+            <div class="channel-title">${escapeHtml(item.title)}</div>
+            <span class="badge ${badgeClass}">${badgeText}</span>
+          `;
+
+          const right = document.createElement('div');
+          if (!item.joined && item.link) {
+            const joinBtn = document.createElement('button');
+            joinBtn.type = 'button';
+            joinBtn.className = 'btn secondary';
+            joinBtn.textContent = 'Join';
+            joinBtn.onclick = () => tg?.openTelegramLink(item.link);
+            right.appendChild(joinBtn);
+          }
+
+          row.append(left, right);
+          listEl.appendChild(row);
+        });
       }
-    }
 
-    function init() {
-      if (!tg) {
-        setStatus('error', 'Telegram WebApp SDK not available.');
-        subtitleEl.textContent = 'Open this page from Telegram bot /start button.';
-        recheckBtn.onclick = () => location.reload();
-        return;
+      async function fetchWithTimeout(url, options, timeoutMs) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+          return await fetch(url, { ...options, signal: controller.signal });
+        } finally {
+          clearTimeout(timer);
+        }
       }
 
-      tg.ready();
-      tg.expand();
-      tg.MainButton?.onClick(checkMembership);
-      recheckBtn.onclick = checkMembership;
-      checkMembership();
-    }
+      async function runCheck() {
+        if (!isValidWebhookUrl(checkEndpoint)) {
+          setStatus('error', 'Invalid or missing check webhook URL.');
+          subtitleEl.textContent = 'Open this app via your bot /start button so ?check= is attached.';
+          return;
+        }
 
-    init();
+        try {
+          setStatus('warn', 'Checking your memberships…');
+          subtitleEl.textContent = 'Please wait while your Bot Business webhook validates channel joins.';
+          recheckBtn.disabled = true;
+
+          const url = new URL(checkEndpoint);
+          url.searchParams.set('_', Date.now().toString());
+
+          const response = await fetchWithTimeout(
+            url.toString(),
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                initData: tg?.initData || null,
+                platform: tg?.platform || null,
+                version: tg?.version || null
+              })
+            },
+            12000
+          );
+
+          const rawText = await response.text();
+          let data = null;
+          try {
+            data = JSON.parse(rawText);
+          } catch {
+            throw new Error('Webhook did not return valid JSON.');
+          }
+
+          if (!response.ok || !data?.ok) {
+            throw new Error(data?.error || 'Webhook responded with an error.');
+          }
+
+          const channels = normalizeChannels(data);
+          renderChannels(channels);
+
+          if (Boolean(data.joined)) {
+            setStatus('ok', '✅ Verification successful. Closing mini app…');
+            subtitleEl.textContent = 'All channels joined. You can continue in the bot.';
+            tg?.HapticFeedback?.notificationOccurred('success');
+            tg?.MainButton?.setText('Verified ✅');
+            tg?.MainButton?.show();
+            tg?.MainButton?.disable();
+            setTimeout(() => tg?.close(), 1600);
+            return;
+          }
+
+          setStatus('warn', 'Please join missing channels and tap Re-check Membership.');
+          subtitleEl.textContent = 'After joining channels, return here and verify again.';
+          tg?.MainButton?.setText('Re-check Membership');
+          tg?.MainButton?.show();
+          tg?.MainButton?.enable();
+        } catch (error) {
+          const isAbort = error?.name === 'AbortError';
+          setStatus('error', `❌ ${isAbort ? 'Webhook request timed out.' : error.message}`);
+          subtitleEl.textContent = 'Check BB command response via WebApp.render({ ok, joined, channels }).';
+          tg?.MainButton?.setText('Retry');
+          tg?.MainButton?.show();
+          tg?.MainButton?.enable();
+        } finally {
+          recheckBtn.disabled = false;
+        }
+      }
+
+      function initWallpaper() {
+        const bg = document.getElementById('tgme_background');
+        if (!bg || !window.TWallpaper) {
+          document.body.classList.remove('no_transition');
+          return;
+        }
+
+        try {
+          window.TWallpaper.init(bg);
+          window.TWallpaper.animate(true);
+          window.onfocus = function () {
+            window.TWallpaper.update();
+          };
+        } catch {
+          // keep static fallback background
+        }
+
+        document.body.classList.remove('no_transition');
+      }
+
+      function initTelegram() {
+        if (!tg) {
+          setStatus('error', 'Telegram WebApp SDK unavailable.');
+          subtitleEl.textContent = 'Please open this page from Telegram bot web app button.';
+          recheckBtn.onclick = () => window.location.reload();
+          return;
+        }
+
+        tg.ready();
+        tg.expand();
+        tg.MainButton?.onClick(runCheck);
+        recheckBtn.onclick = runCheck;
+
+        runCheck();
+      }
+
+      initWallpaper();
+      initTelegram();
+    })();
   </script>
 </body>
 </html>

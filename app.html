@@ -5,7 +5,7 @@
   <title>Channel Verification</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  
+
   <!-- Telegram CSS (required for background) -->
   <link href="//telegram.org/css/font-roboto.css?1" rel="stylesheet">
   <link href="//telegram.org/css/bootstrap.min.css?3" rel="stylesheet">
@@ -14,16 +14,23 @@
   <style>
     /* ── Custom overrides (keep Telegram background intact) ── */
     :root {
-      --bg:      var(--tg-theme-bg-color,           #0b1020);
-      --text:    var(--tg-theme-text-color,          #eff6ff);
-      --hint:    var(--tg-theme-hint-color,          #93a4bf);
-      --card:    rgba(15, 23, 42, 0.76);
-      --border:  rgba(148, 163, 184, 0.18);
+      --bg:      var(--tg-theme-bg-color,           #ffffff);
+      --text:    var(--tg-theme-text-color,          #000000);
+      --hint:    var(--tg-theme-hint-color,          #8e8e93);
+      --card:    var(--tg-theme-bg-color,            #ffffff);
+      --border:  var(--tg-theme-section-separator-color, rgba(0, 0, 0, 0.1));
       --ok:      #22c55e;
-      --warn:    #f59e0b;
       --error:   #ef4444;
-      --btn-bg:  var(--tg-theme-button-color,        #2aabee);
+      --btn-bg:  var(--tg-theme-button-color,        #2481cc);
       --btn-txt: var(--tg-theme-button-text-color,   #ffffff);
+    }
+
+    /* Dark mode overrides */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --card: var(--tg-theme-bg-color, #1c1c1e);
+        --border: rgba(255, 255, 255, 0.1);
+      }
     }
 
     /* Reset Telegram's page margins to fit our design */
@@ -52,18 +59,17 @@
       background: transparent;
     }
 
-    /* Custom card styles */
+    /* Custom card styles - SOLID WHITE */
     .custom-card {
       border: 1px solid var(--border);
       border-radius: 16px;
-      background: rgba(15, 23, 42, 0.76);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: var(--card);
       overflow: hidden;
       margin-bottom: 12px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
-    /* Hero card with LARGE lock icon */
+    /* Hero card with icon */
     .hero {
       padding: 28px 20px;
       display: flex;
@@ -76,15 +82,14 @@
       width: 80px;
       height: 80px;
       border-radius: 20px;
-      background: rgba(42,171,238,0.12);
-      border: 1px solid rgba(42,171,238,0.25);
+      background: rgba(36, 129, 204, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .hero-icon svg {
-      width: 44px;
-      height: 44px;
+      width: 48px;
+      height: 48px;
     }
     .hero-label {
       font-size: 11px;
@@ -107,7 +112,7 @@
       line-height: 1.45;
     }
 
-    /* Status bar with dynamic colors */
+    /* Status bar - NO YELLOW, only red/green */
     #status {
       padding: 12px 16px;
       font-size: 13px;
@@ -127,34 +132,43 @@
       flex-shrink: 0;
     }
     #status.ok {
-      background: rgba(34,197,94,0.08);
-      color: #86efac;
+      color: var(--ok);
     }
-    #status.ok::before { background: var(--ok); box-shadow: 0 0 6px var(--ok); }
-    #status.warn {
-      background: rgba(245,158,11,0.08);
-      color: #fde68a;
-    }
-    #status.warn::before { background: var(--warn); box-shadow: 0 0 6px var(--warn); }
+    #status.ok::before { background: var(--ok); }
     #status.error {
-      background: rgba(239,68,68,0.08);
-      color: #fecaca;
+      color: var(--error);
     }
-    #status.error::before { background: var(--error); box-shadow: 0 0 6px var(--error); }
+    #status.error::before { background: var(--error); }
 
-    /* Channel list */
+    /* Channel list - SCROLLABLE */
     #channel-list {
       padding: 12px;
       display: flex;
       flex-direction: column;
       gap: 8px;
+      max-height: 400px;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
-    /* Channel row */
+    /* Custom scrollbar */
+    #channel-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    #channel-list::-webkit-scrollbar-track {
+      background: var(--border);
+      border-radius: 4px;
+    }
+    #channel-list::-webkit-scrollbar-thumb {
+      background: var(--btn-bg);
+      border-radius: 4px;
+    }
+
+    /* Channel row - solid background */
     .channel {
-      border: 1px solid rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
       border-radius: 14px;
-      background: rgba(255,255,255,0.03);
+      background: var(--card);
       padding: 10px 12px;
       display: flex;
       align-items: center;
@@ -191,7 +205,7 @@
       font-weight: 700;
     }
     .badge.ok { color: #052e16; background: #86efac; }
-    .badge.warn { color: #451a03; background: #fcd34d; }
+    .badge.error { color: #7f1a1a; background: #fecaca; }
 
     /* Join button styles */
     .join-btn {
@@ -214,14 +228,14 @@
     .join-btn:disabled { opacity: .5; cursor: default; transform: none; }
     .joined-btn {
       background: rgba(34,197,94,0.12);
-      color: #86efac;
+      color: #22c55e;
       border: 1px solid rgba(34,197,94,0.25);
       cursor: default;
     }
     .joined-btn svg {
       width: 14px;
       height: 14px;
-      stroke: #86efac;
+      stroke: #22c55e;
     }
     .btn-spinner {
       width: 12px;
@@ -234,7 +248,7 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Footer notification */
+    /* Footer notification - fixed at bottom */
     .footer-notification {
       position: fixed;
       left: 16px;
@@ -255,19 +269,8 @@
       text-align: center;
     }
     .footer-notification.show { opacity: 1; transform: translateY(0); }
-    .footer-notification.ok { background: rgba(34,197,94,0.95); border-left: 3px solid #fff; }
-    .footer-notification.warn { background: rgba(245,158,11,0.95); border-left: 3px solid #fff; }
-    .footer-notification.error { background: rgba(239,68,68,0.95); border-left: 3px solid #fff; }
-
-    /* Footer note */
-    .footer-note {
-      font-size: 11px;
-      color: var(--hint);
-      line-height: 1.4;
-      text-align: center;
-      padding: 8px 4px;
-      opacity: 0.7;
-    }
+    .footer-notification.ok { background: #22c55e; }
+    .footer-notification.error { background: #ef4444; }
   </style>
 </head>
 
@@ -284,7 +287,7 @@
   </div>
 
   <div class="tgme_page_wrap">
-    
+
     <!-- Header (EXACT from source) -->
     <div class="tgme_head_wrap">
       <div class="tgme_head">
@@ -304,53 +307,49 @@
     <div class="tgme_body_wrap">
       <div class="tgme_page">
 
-        <!-- Hero card with LARGE lock icon -->
-        <!-- Hero card with LARGE icon -->
-<div class="custom-card">
-  <div class="hero">
-    <div class="hero-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
-        <defs>
-          <clipPath id="__lottie_element_2">
-            <rect width="512" height="512" x="0" y="0"></rect>
-          </clipPath>
-          <clipPath id="__lottie_element_4">
-            <path d="M0,0 L100,0 L100,100 L0,100z"></path>
-          </clipPath>
-        </defs>
-        <g clip-path="url(#__lottie_element_2)">
-          <g clip-path="url(#__lottie_element_4)" style="display: block;" transform="matrix(5.119999885559082,0,0,5.119999885559082,0,0)" opacity="1">
-            <g style="display: block;" transform="matrix(1,0,0,1,0,0)" opacity="1">
-              <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                <path fill-rule="evenodd" fill="var(--btn-bg)" fill-opacity="1" d=" M57.8129997253418,58.459999084472656 C57.96799850463867,58.54600143432617 58.119998931884766,58.63999938964844 58.268001556396484,58.7400016784668 C58.268001556396484,58.7400016784668 72.1969985961914,68.25199890136719 72.1969985961914,68.25199890136719 C75.01699829101562,70.17900085449219 78.84400177001953,68.15899658203125 78.84400177001953,64.74199676513672 C78.84400177001953,64.74199676513672 78.84400177001953,25.17799949645996 78.84400177001953,25.17799949645996 C78.84400177001953,21.576000213623047 74.6449966430664,19.607999801635742 71.8759994506836,21.90999984741211 C71.8759994506836,21.90999984741211 58.42399978637695,33.09700012207031 58.42399978637695,33.09700012207031 C58.23110580444336,33.257774353027344 58.02691650390625,33.404483795166016 57.8129997253418,33.5359992980957 C57.8129997253418,33.5359992980957 57.8129997253418,58.45899963378906 57.8129997253418,58.45899963378906 C57.8129997253418,58.45899963378906 57.8129997253418,58.459999084472656 57.8129997253418,58.459999084472656z M27.2189998626709,57.75 C23.89348602294922,57.75054931640625 21.15654945373535,55.012516021728516 21.1560001373291,51.6870002746582 C21.1560001373291,51.6870002746582 21.1560001373291,40.5620002746582 21.1560001373291,40.5620002746582 C21.1560001373291,37.13335037231445 23.977352142333984,34.3120002746582 27.4060001373291,34.3120002746582 C27.4060001373291,34.3120002746582 52.3129997253418,34.3120002746582 52.3129997253418,34.3120002746582 C52.3129997253418,34.3120002746582 52.3129997253418,57.75 52.3129997253418,57.75 C52.3129997253418,57.75 27.2189998626709,57.75 27.2189998626709,57.75 C27.2189998626709,57.75 27.2189998626709,57.75 27.2189998626709,57.75z M31.239999771118164,63.25 C31.239999771118164,63.25 36.0359992980957,75.5780029296875 36.0359992980957,75.5780029296875 C36.939205169677734,77.90005493164062 39.187469482421875,79.43794250488281 41.67900085449219,79.43800354003906 C44.552650451660156,79.43766021728516 46.8824462890625,76.99759674072266 46.75,74.12699890136719 C46.75,74.12699890136719 46.25,63.25 46.25,63.25 C46.25,63.25 31.239999771118164,63.25 31.239999771118164,63.25 C31.239999771118164,63.25 31.239999771118164,63.25 31.239999771118164,63.25z M68.36000061035156,17.68000030517578 C74.71099853515625,12.397000312805176 84.34400177001953,16.915000915527344 84.34400177001953,25.177000045776367 C84.34400177001953,25.177000045776367 84.34400177001953,64.74299621582031 84.34400177001953,64.74299621582031 C84.34400177001953,72.58000183105469 75.56700134277344,77.21399688720703 69.09500122070312,72.79399871826172 C69.09500122070312,72.79399871826172 55.16600036621094,63.28200149536133 55.16600036621094,63.28200149536133 C55.13563919067383,63.261287689208984 55.099754333496094,63.25013732910156 55.0629997253418,63.25 C55.0629997253418,63.25 51.755001068115234,63.25 51.755001068115234,63.25 C51.755001068115234,63.25 52.244998931884766,73.87300109863281 52.244998931884766,73.87300109863281 C52.52199935913086,79.9000015258789 47.71200180053711,84.93699645996094 41.67900085449219,84.93699645996094 C36.92416000366211,84.93759155273438 32.63317108154297,82.00322723388672 30.909000396728516,77.5719985961914 C30.909000396728516,77.5719985961914 25.274999618530273,63.08700180053711 25.274999618530273,63.08700180053711 C19.815000534057617,62.16299819946289 15.656000137329102,57.4109992980957 15.656000137329102,51.6870002746582 C15.656000137329102,51.6870002746582 15.656000137329102,40.5620002746582 15.656000137329102,40.5620002746582 C15.656000137329102,34.073001861572266 20.916000366210938,28.812000274658203 27.4060001373291,28.812000274658203 C27.4060001373291,28.812000274658203 54.974998474121094,28.812000274658203 54.974998474121094,28.812000274658203 C54.974998474121094,28.812000274658203 68.35900115966797,17.68000030517578 68.35900115966797,17.68000030517578 C68.35900115966797,17.68000030517578 68.36000061035156,17.68000030517578 68.36000061035156,17.68000030517578z"></path>
-              </g>
-            </g>
-          </g>
-        </g>
-      </svg>
-    </div>
-    <div class="hero-text">
-      <div class="hero-label">🔐 Channel Verification</div>
-      <div class="hero-title">Join required channels</div>
-      <div class="hero-sub" id="subtitle">Verify your membership to continue</div>
-    </div>
-  </div>
-</div>
+        <!-- Hero card with icon (your custom SVG preserved) -->
+        <div class="custom-card">
+          <div class="hero">
+            <div class="hero-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                  <clipPath id="__lottie_element_2">
+                    <rect width="512" height="512" x="0" y="0"></rect>
+                  </clipPath>
+                  <clipPath id="__lottie_element_4">
+                    <path d="M0,0 L100,0 L100,100 L0,100z"></path>
+                  </clipPath>
+                </defs>
+                <g clip-path="url(#__lottie_element_2)">
+                  <g clip-path="url(#__lottie_element_4)" style="display: block;" transform="matrix(5.119999885559082,0,0,5.119999885559082,0,0)" opacity="1">
+                    <g style="display: block;" transform="matrix(1,0,0,1,0,0)" opacity="1">
+                      <g opacity="1" transform="matrix(1,0,0,1,0,0)">
+                        <path fill-rule="evenodd" fill="var(--btn-bg)" fill-opacity="1" d=" M57.8129997253418,58.459999084472656 C57.96799850463867,58.54600143432617 58.119998931884766,58.63999938964844 58.268001556396484,58.7400016784668 C58.268001556396484,58.7400016784668 72.1969985961914,68.25199890136719 72.1969985961914,68.25199890136719 C75.01699829101562,70.17900085449219 78.84400177001953,68.15899658203125 78.84400177001953,64.74199676513672 C78.84400177001953,64.74199676513672 78.84400177001953,25.17799949645996 78.84400177001953,25.17799949645996 C78.84400177001953,21.576000213623047 74.6449966430664,19.607999801635742 71.8759994506836,21.90999984741211 C71.8759994506836,21.90999984741211 58.42399978637695,33.09700012207031 58.42399978637695,33.09700012207031 C58.23110580444336,33.257774353027344 58.02691650390625,33.404483795166016 57.8129997253418,33.5359992980957 C57.8129997253418,33.5359992980957 57.8129997253418,58.45899963378906 57.8129997253418,58.45899963378906 C57.8129997253418,58.45899963378906 57.8129997253418,58.459999084472656 57.8129997253418,58.459999084472656z M27.2189998626709,57.75 C23.89348602294922,57.75054931640625 21.15654945373535,55.012516021728516 21.1560001373291,51.6870002746582 C21.1560001373291,51.6870002746582 21.1560001373291,40.5620002746582 21.1560001373291,40.5620002746582 C21.1560001373291,37.13335037231445 23.977352142333984,34.3120002746582 27.4060001373291,34.3120002746582 C27.4060001373291,34.3120002746582 52.3129997253418,34.3120002746582 52.3129997253418,34.3120002746582 C52.3129997253418,34.3120002746582 52.3129997253418,57.75 52.3129997253418,57.75 C52.3129997253418,57.75 27.2189998626709,57.75 27.2189998626709,57.75 C27.2189998626709,57.75 27.2189998626709,57.75 27.2189998626709,57.75z M31.239999771118164,63.25 C31.239999771118164,63.25 36.0359992980957,75.5780029296875 36.0359992980957,75.5780029296875 C36.939205169677734,77.90005493164062 39.187469482421875,79.43794250488281 41.67900085449219,79.43800354003906 C44.552650451660156,79.43766021728516 46.8824462890625,76.99759674072266 46.75,74.12699890136719 C46.75,74.12699890136719 46.25,63.25 46.25,63.25 C46.25,63.25 31.239999771118164,63.25 31.239999771118164,63.25 C31.239999771118164,63.25 31.239999771118164,63.25 31.239999771118164,63.25z M68.36000061035156,17.68000030517578 C74.71099853515625,12.397000312805176 84.34400177001953,16.915000915527344 84.34400177001953,25.177000045776367 C84.34400177001953,25.177000045776367 84.34400177001953,64.74299621582031 84.34400177001953,64.74299621582031 C84.34400177001953,72.58000183105469 75.56700134277344,77.21399688720703 69.09500122070312,72.79399871826172 C69.09500122070312,72.79399871826172 55.16600036621094,63.28200149536133 55.16600036621094,63.28200149536133 C55.13563919067383,63.261287689208984 55.099754333496094,63.25013732910156 55.0629997253418,63.25 C55.0629997253418,63.25 51.755001068115234,63.25 51.755001068115234,63.25 C51.755001068115234,63.25 52.244998931884766,73.87300109863281 52.244998931884766,73.87300109863281 C52.52199935913086,79.9000015258789 47.71200180053711,84.93699645996094 41.67900085449219,84.93699645996094 C36.92416000366211,84.93759155273438 32.63317108154297,82.00322723388672 30.909000396728516,77.5719985961914 C30.909000396728516,77.5719985961914 25.274999618530273,63.08700180053711 25.274999618530273,63.08700180053711 C19.815000534057617,62.16299819946289 15.656000137329102,57.4109992980957 15.656000137329102,51.6870002746582 C15.656000137329102,51.6870002746582 15.656000137329102,40.5620002746582 15.656000137329102,40.5620002746582 C15.656000137329102,34.073001861572266 20.916000366210938,28.812000274658203 27.4060001373291,28.812000274658203 C27.4060001373291,28.812000274658203 54.974998474121094,28.812000274658203 54.974998474121094,28.812000274658203 C54.974998474121094,28.812000274658203 68.35900115966797,17.68000030517578 68.35900115966797,17.68000030517578 C68.35900115966797,17.68000030517578 68.36000061035156,17.68000030517578 68.36000061035156,17.68000030517578z"></path>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+            </div>
+            <div class="hero-text">
+              <div class="hero-label">Channel Verification</div>
+              <div class="hero-title">Join required channels</div>
+              <div class="hero-sub" id="subtitle">Verify your membership to continue</div>
+            </div>
+          </div>
+        </div>
 
         <!-- Status + channel list card -->
         <div class="custom-card">
-          <div id="status" class="warn">Initializing...</div>
+          <div id="status" class="error">Initializing...</div>
           <div id="channel-list"></div>
         </div>
-
-        <!-- Footer note -->
-        <div class="footer-note">Use Main Button to re-check • Auto-closes after full verification</div>
 
       </div>
     </div>
   </div>
 
-  <!-- Footer notification toast -->
+  <!-- Footer notification toast (outside card, fixed at bottom) -->
   <div id="footerNotification" class="footer-notification"></div>
 
   <!-- Telegram Wallpaper Script -->
@@ -391,7 +390,6 @@
       toastEl.className = `footer-notification ${type} show`;
       if (tg && type === 'ok') tg.HapticFeedback?.notificationOccurred('success');
       if (tg && type === 'error') tg.HapticFeedback?.notificationOccurred('error');
-      if (tg && type === 'warn') tg.HapticFeedback?.notificationOccurred('warning');
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => toastEl.classList.remove('show'), duration);
     }
@@ -400,7 +398,6 @@
       statusEl.className = kind;
       statusEl.textContent = message;
       if (kind === 'ok') subtitleEl.textContent = '✓ All channels verified!';
-      else if (kind === 'warn') subtitleEl.textContent = '⚠️ Join missing channels and re-check';
       else if (kind === 'error') subtitleEl.textContent = '❌ Verification failed';
     }
 
@@ -429,7 +426,7 @@
         avatar.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>';
         const infoDiv = document.createElement('div');
         infoDiv.className = 'ch-info';
-        infoDiv.innerHTML = `<div class="channel-title">${escapeHtml(title)}</div><span class="badge ${joined ? 'ok' : 'warn'}">${joined ? '✓ Joined' : '✗ Not joined'}</span>`;
+        infoDiv.innerHTML = `<div class="channel-title">${escapeHtml(title)}</div><span class="badge ${joined ? 'ok' : 'error'}">${joined ? '✓ Joined' : '✗ Not joined'}</span>`;
         row.appendChild(avatar);
         row.appendChild(infoDiv);
         if (!joined && ch.link) {
@@ -474,7 +471,7 @@
         return;
       }
       try {
-        setStatus('warn', 'Verifying memberships...');
+        setStatus('error', 'Verifying memberships...');
         tg?.HapticFeedback?.impactOccurred('medium');
         const url = new URL(checkEndpoint);
         url.searchParams.set('_', Date.now());
@@ -497,8 +494,8 @@
           setTimeout(() => tg?.close(), 1500);
           return;
         }
-        setStatus('warn', '⚠️ Join missing channels and tap Main Button');
-        showNotification('Please join pending channels and re-check', 'warn');
+        setStatus('error', '✗ Join missing channels and tap Main Button');
+        showNotification('Please join pending channels and re-check', 'error');
         tg?.MainButton?.setText('Re-check');
         tg?.MainButton?.show();
         tg?.MainButton?.enable();

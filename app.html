@@ -5,165 +5,306 @@
   <title>Channel Verification</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <!-- Telegram Fonts & CSS (required for proper styling) -->
-  <link href="//telegram.org/css/font-roboto.css?1" rel="stylesheet">
-  <link href="//telegram.org/css/bootstrap.min.css?3" rel="stylesheet">
-  <link href="//telegram.org/css/telegram.css?249" rel="stylesheet">
+  <link href="//telegram.org/css/font-roboto.css?1" rel="stylesheet" type="text/css">
 
   <style>
-    /* Custom overrides - keep Telegram classes */
-    .tgme_page_wrap {
-      padding: max(10px, env(safe-area-inset-top)) 14px max(80px, calc(env(safe-area-inset-bottom) + 80px));
-    }
-    .tgme_page {
-      max-width: 560px;
-      margin: 0 auto;
+    /* ── Tokens ─────────────────────────────────────────────── */
+    :root {
+      --bg:      var(--tg-theme-bg-color,           #ffffff);
+      --text:    var(--tg-theme-text-color,          #000000);
+      --hint:    var(--tg-theme-hint-color,          #8e8e93);
+      --card:    var(--tg-theme-bg-color,            #ffffff);
+      --border:  var(--tg-theme-section-separator-color, rgba(0, 0, 0, 0.1));
+      --ok:      #22c55e;
+      --error:   #ef4444;
+      --btn-bg:  var(--tg-theme-button-color,        #2481cc);
+      --btn-txt: var(--tg-theme-button-text-color,   #ffffff);
+      --accent-btn-color: var(--tg-theme-button-color, #2481cc);
+      --tme-logo-color: #000000;
     }
 
-    /* Custom button styling matching Telegram */
-    .custom-action-btn {
+    /* Dark mode overrides */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: var(--tg-theme-bg-color, #1c1c1e);
+        --card: var(--tg-theme-bg-color, #1c1c1e);
+        --border: rgba(255, 255, 255, 0.1);
+        --tme-logo-color: #ffffff;
+      }
+    }
+
+    /* ── Reset ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Roboto', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Wallpaper (EXACT from Telegram source) ─────────────── */
+    .tgme_background_wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .tgme_background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .tgme_background_pattern {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIj48Y2lyY2xlIGN4PSIyNSIgY3k9IjI1IiByPSIxLjUiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC4wNiIvPjwvc3ZnPg==');
+      background-repeat: repeat;
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+
+    /* ── Page wrap ──────────────────────────────────────────── */
+    .tgme_page_wrap {
+      position: relative;
+      z-index: 1;
+      min-height: 100dvh;
+      padding: max(10px, env(safe-area-inset-top)) 14px max(80px, calc(env(safe-area-inset-bottom) + 80px));
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ── Header ─────────────────────────────────────────────── */
+    .tgme_head_wrap {
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 14px;
+    }
+    .tgme_head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      gap: 10px;
+    }
+    .tgme_head_brand {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 10px 24px;
-      border-radius: 30px;
-      font-size: 15px;
-      font-weight: 600;
       text-decoration: none;
-      transition: opacity 0.15s;
-      cursor: pointer;
-      border: none;
-      font-family: inherit;
-      background: var(--tg-theme-button-color, #2481cc);
-      color: var(--tg-theme-button-text-color, #ffffff);
-      width: 100%;
-      margin-top: 12px;
     }
-    .custom-action-btn:active { opacity: 0.7; transform: scale(0.98); }
-    .custom-action-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .custom-action-btn.hidden { display: none; }
+    .tgme_logo { width: 120px; height: 30px; }
+    .tgme_head_right_btn {
+      border-radius: 30px;
+      padding: 7px 20px;
+      background: var(--btn-bg);
+      color: var(--btn-txt);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: opacity .15s;
+    }
+    .tgme_head_right_btn:active { opacity: 0.7; }
 
-    /* Hero card container */
-    .verification-hero {
-      text-align: center;
-      padding: 28px 20px;
+    /* ── Body ───────────────────────────────────────────────── */
+    .tgme_body_wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
-    .verification-icon {
+    .tgme_page {
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ── Custom card styles - SOLID WHITE ───────────────────── */
+    .custom-card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--card);
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Hero card with icon */
+    .hero {
+      padding: 28px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+    }
+    .hero-icon {
       width: 80px;
       height: 80px;
-      margin: 0 auto 16px;
       border-radius: 20px;
       background: rgba(36, 129, 204, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .verification-icon svg {
+    .hero-icon svg {
       width: 48px;
       height: 48px;
     }
-    .verification-title {
+    .hero-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--btn-bg);
+      margin-bottom: 8px;
+    }
+    .hero-title {
       font-size: 22px;
       font-weight: 700;
-      color: var(--tg-theme-text-color, #000000);
+      line-height: 1.3;
+      color: var(--text);
       margin-bottom: 6px;
     }
-    .verification-subtitle {
+    .hero-sub {
       font-size: 14px;
-      color: var(--tg-theme-hint-color, #8e8e93);
+      color: var(--hint);
+      line-height: 1.45;
     }
 
-    /* Channel list container */
-    .channel-list-container {
+    /* Status bar */
+    #status {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.4;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    #status::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    #status.ok { color: var(--ok); }
+    #status.ok::before { background: var(--ok); }
+    #status.error { color: var(--error); }
+    #status.error::before { background: var(--error); }
+
+    /* Channel list */
+    #channel-list {
       padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       max-height: 400px;
       overflow-y: auto;
     }
-    .channel-list-container::-webkit-scrollbar {
+    #channel-list::-webkit-scrollbar {
       width: 4px;
     }
-    .channel-list-container::-webkit-scrollbar-track {
-      background: var(--tg-theme-section-separator-color, rgba(0,0,0,0.1));
+    #channel-list::-webkit-scrollbar-track {
+      background: var(--border);
       border-radius: 4px;
     }
-    .channel-list-container::-webkit-scrollbar-thumb {
-      background: var(--tg-theme-button-color, #2481cc);
+    #channel-list::-webkit-scrollbar-thumb {
+      background: var(--btn-bg);
       border-radius: 4px;
     }
 
-    /* Channel item */
-    .channel-item {
+    /* Channel row */
+    .channel {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--card);
+      padding: 10px 12px;
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--tg-theme-section-separator-color, rgba(0,0,0,0.1));
     }
-    .channel-item:last-child {
-      border-bottom: none;
-    }
-    .channel-avatar {
+    .ch-avatar {
       width: 44px;
       height: 44px;
       border-radius: 50%;
-      background: var(--tg-theme-button-color, #2481cc);
+      background: var(--btn-bg);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
       overflow: hidden;
     }
-    .channel-avatar svg {
+    .ch-avatar svg {
       width: 26px;
       height: 26px;
     }
-    .channel-info {
-      flex: 1;
-    }
-    .channel-name {
-      font-size: 15px;
+    .ch-info { flex: 1; min-width: 0; }
+    .channel-title {
+      font-size: 14px;
       font-weight: 600;
-      color: var(--tg-theme-text-color, #000000);
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       margin-bottom: 4px;
     }
-    .channel-status {
+    .badge {
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      border-radius: 999px;
       padding: 3px 8px;
-      border-radius: 20px;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
     }
-    .channel-status.joined {
-      background: #86efac;
-      color: #052e16;
-    }
-    .channel-status.pending {
-      background: #fecaca;
-      color: #7f1a1a;
-    }
-    .channel-action-btn {
+    .badge.ok { color: #052e16; background: #86efac; }
+    .badge.error { color: #7f1a1a; background: #fecaca; }
+
+    /* Join button styles - rounded pill like Open Bot */
+    .join-btn {
       flex-shrink: 0;
-      padding: 7px 18px;
+      border: none;
       border-radius: 30px;
+      padding: 8px 20px;
+      background: var(--btn-bg);
+      color: var(--btn-txt);
       font-size: 13px;
       font-weight: 600;
-      border: none;
       cursor: pointer;
       font-family: inherit;
-      transition: opacity 0.15s;
-      background: var(--tg-theme-button-color, #2481cc);
-      color: var(--tg-theme-button-text-color, #ffffff);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity .15s;
     }
-    .channel-action-btn:active { opacity: 0.7; transform: scale(0.97); }
-    .channel-action-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
-    .channel-action-btn.joined-btn {
+    .join-btn:active { opacity: .75; transform: scale(0.97); }
+    .join-btn:disabled { opacity: .5; cursor: default; transform: none; }
+    .joined-btn {
       background: rgba(34,197,94,0.12);
       color: #22c55e;
       border: 1px solid rgba(34,197,94,0.25);
+      cursor: default;
+    }
+    .joined-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: #22c55e;
     }
     .btn-spinner {
       width: 12px;
@@ -171,35 +312,13 @@
       border: 2px solid rgba(255,255,255,0.3);
       border-top-color: currentColor;
       border-radius: 50%;
-      animation: spin 0.65s linear infinite;
+      animation: spin .65s linear infinite;
       display: inline-block;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Status message */
-    .verification-status {
-      padding: 12px 16px;
-      font-size: 13px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-bottom: 1px solid var(--tg-theme-section-separator-color, rgba(0,0,0,0.1));
-    }
-    .verification-status::before {
-      content: '';
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .verification-status.ok { color: #22c55e; }
-    .verification-status.ok::before { background: #22c55e; }
-    .verification-status.error { color: #ef4444; }
-    .verification-status.error::before { background: #ef4444; }
-
-    /* Toast notification */
-    .custom-toast {
+    /* Footer notification */
+    .footer-notification {
       position: fixed;
       left: 16px;
       right: 16px;
@@ -213,30 +332,26 @@
       opacity: 0;
       transform: translateY(10px);
       pointer-events: none;
-      transition: opacity 0.25s ease, transform 0.25s ease;
+      transition: opacity .25s ease, transform .25s ease;
       text-align: center;
     }
-    .custom-toast.show { opacity: 1; transform: translateY(0); }
-    .custom-toast.success { background: #22c55e; }
-    .custom-toast.error { background: #ef4444; }
+    .footer-notification.show { opacity: 1; transform: translateY(0); }
+    .footer-notification.ok { background: #22c55e; }
+    .footer-notification.error { background: #ef4444; }
   </style>
 </head>
 
 <body class="no_transition">
 
-  <!-- Telegram Official Background Layer (EXACT from source) -->
+  <!-- Telegram Official Background Layer -->
   <div class="tgme_background_wrap">
-    <canvas id="tgme_background"
-            class="tgme_background default"
-            width="50" height="50"
-            data-colors="dbddbb,6ba587,d5d88d,88b884">
-    </canvas>
+    <canvas id="tgme_background" class="tgme_background default" width="50" height="50" data-colors="dbddbb,6ba587,d5d88d,88b884"></canvas>
     <div class="tgme_background_pattern default"></div>
   </div>
 
   <div class="tgme_page_wrap">
 
-    <!-- Header (EXACT from source) -->
+    <!-- Header -->
     <div class="tgme_head_wrap">
       <div class="tgme_head">
         <a href="//telegram.org/" class="tgme_head_brand" target="_blank" rel="noopener">
@@ -255,43 +370,43 @@
     <div class="tgme_body_wrap">
       <div class="tgme_page">
 
-        <!-- Hero Section (using Telegram's tgme_page style) -->
-        <div class="tgme_page">
-          <div class="verification-hero">
-            <div class="verification-icon">
+        <!-- Hero card with icon -->
+        <div class="custom-card">
+          <div class="hero">
+            <div class="hero-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" preserveAspectRatio="xMidYMid meet">
-                <defs><clipPath id="icon_clip"><rect width="512" height="512"></rect></clipPath></defs>
-                <g clip-path="url(#icon_clip)">
-                  <path fill-rule="evenodd" fill="var(--tg-theme-button-color, #2481cc)" d="M57.8129997253418,58.459999084472656 C57.96799850463867,58.54600143432617 58.119998931884766,58.63999938964844 58.268001556396484,58.7400016784668 C58.268001556396484,58.7400016784668 72.1969985961914,68.25199890136719 72.1969985961914,68.25199890136719 C75.01699829101562,70.17900085449219 78.84400177001953,68.15899658203125 78.84400177001953,64.74199676513672 C78.84400177001953,64.74199676513672 78.84400177001953,25.17799949645996 78.84400177001953,25.17799949645996 C78.84400177001953,21.576000213623047 74.6449966430664,19.607999801635742 71.8759994506836,21.90999984741211 C71.8759994506836,21.90999984741211 58.42399978637695,33.09700012207031 58.42399978637695,33.09700012207031 C58.23110580444336,33.257774353027344 58.02691650390625,33.404483795166016 57.8129997253418,33.5359992980957 C57.8129997253418,33.5359992980957 57.8129997253418,58.45899963378906 57.8129997253418,58.45899963378906 C57.8129997253418,58.45899963378906 57.8129997253418,58.459999084472656 57.8129997253418,58.459999084472656z M27.2189998626709,57.75 C23.89348602294922,57.75054931640625 21.15654945373535,55.012516021728516 21.1560001373291,51.6870002746582 C21.1560001373291,51.6870002746582 21.1560001373291,40.5620002746582 21.1560001373291,40.5620002746582 C21.1560001373291,37.13335037231445 23.977352142333984,34.3120002746582 27.4060001373291,34.3120002746582 C27.4060001373291,34.3120002746582 52.3129997253418,34.3120002746582 52.3129997253418,34.3120002746582 C52.3129997253418,34.3120002746582 52.3129997253418,57.75 52.3129997253418,57.75 C52.3129997253418,57.75 27.2189998626709,57.75 27.2189998626709,57.75 C27.2189998626709,57.75 27.2189998626709,57.75 27.2189998626709,57.75z M31.239999771118164,63.25 C31.239999771118164,63.25 36.0359992980957,75.5780029296875 36.0359992980957,75.5780029296875 C36.939205169677734,77.90005493164062 39.187469482421875,79.43794250488281 41.67900085449219,79.43800354003906 C44.552650451660156,79.43766021728516 46.8824462890625,76.99759674072266 46.75,74.12699890136719 C46.75,74.12699890136719 46.25,63.25 46.25,63.25 C46.25,63.25 31.239999771118164,63.25 31.239999771118164,63.25 C31.239999771118164,63.25 31.239999771118164,63.25 31.239999771118164,63.25z M68.36000061035156,17.68000030517578 C74.71099853515625,12.397000312805176 84.34400177001953,16.915000915527344 84.34400177001953,25.177000045776367 C84.34400177001953,25.177000045776367 84.34400177001953,64.74299621582031 84.34400177001953,64.74299621582031 C84.34400177001953,72.58000183105469 75.56700134277344,77.21399688720703 69.09500122070312,72.79399871826172 C69.09500122070312,72.79399871826172 55.16600036621094,63.28200149536133 55.16600036621094,63.28200149536133 C55.13563919067383,63.261287689208984 55.099754333496094,63.25013732910156 55.0629997253418,63.25 C55.0629997253418,63.25 51.755001068115234,63.25 51.755001068115234,63.25 C51.755001068115234,63.25 52.244998931884766,73.87300109863281 52.244998931884766,73.87300109863281 C52.52199935913086,79.9000015258789 47.71200180053711,84.93699645996094 41.67900085449219,84.93699645996094 C36.92416000366211,84.93759155273438 32.63317108154297,82.00322723388672 30.909000396728516,77.5719985961914 C30.909000396728516,77.5719985961914 25.274999618530273,63.08700180053711 25.274999618530273,63.08700180053711 C19.815000534057617,62.16299819946289 15.656000137329102,57.4109992980957 15.656000137329102,51.6870002746582 C15.656000137329102,51.6870002746582 15.656000137329102,40.5620002746582 15.656000137329102,40.5620002746582 C15.656000137329102,34.073001861572266 20.916000366210938,28.812000274658203 27.4060001373291,28.812000274658203 C27.4060001373291,28.812000274658203 54.974998474121094,28.812000274658203 54.974998474121094,28.812000274658203 C54.974998474121094,28.812000274658203 68.35900115966797,17.68000030517578 68.35900115966797,17.68000030517578 C68.35900115966797,17.68000030517578 68.36000061035156,17.68000030517578 68.36000061035156,17.68000030517578z"></path>
+                <defs><clipPath id="hero_clip"><rect width="512" height="512"></rect></clipPath></defs>
+                <g clip-path="url(#hero_clip)">
+                  <path fill-rule="evenodd" fill="var(--btn-bg)" d="M57.8129997253418,58.459999084472656 C57.96799850463867,58.54600143432617 58.119998931884766,58.63999938964844 58.268001556396484,58.7400016784668 C58.268001556396484,58.7400016784668 72.1969985961914,68.25199890136719 72.1969985961914,68.25199890136719 C75.01699829101562,70.17900085449219 78.84400177001953,68.15899658203125 78.84400177001953,64.74199676513672 C78.84400177001953,64.74199676513672 78.84400177001953,25.17799949645996 78.84400177001953,25.17799949645996 C78.84400177001953,21.576000213623047 74.6449966430664,19.607999801635742 71.8759994506836,21.90999984741211 C71.8759994506836,21.90999984741211 58.42399978637695,33.09700012207031 58.42399978637695,33.09700012207031 C58.23110580444336,33.257774353027344 58.02691650390625,33.404483795166016 57.8129997253418,33.5359992980957 C57.8129997253418,33.5359992980957 57.8129997253418,58.45899963378906 57.8129997253418,58.45899963378906 C57.8129997253418,58.45899963378906 57.8129997253418,58.459999084472656 57.8129997253418,58.459999084472656z M27.2189998626709,57.75 C23.89348602294922,57.75054931640625 21.15654945373535,55.012516021728516 21.1560001373291,51.6870002746582 C21.1560001373291,51.6870002746582 21.1560001373291,40.5620002746582 21.1560001373291,40.5620002746582 C21.1560001373291,37.13335037231445 23.977352142333984,34.3120002746582 27.4060001373291,34.3120002746582 C27.4060001373291,34.3120002746582 52.3129997253418,34.3120002746582 52.3129997253418,34.3120002746582 C52.3129997253418,34.3120002746582 52.3129997253418,57.75 52.3129997253418,57.75 C52.3129997253418,57.75 27.2189998626709,57.75 27.2189998626709,57.75 C27.2189998626709,57.75 27.2189998626709,57.75 27.2189998626709,57.75z M31.239999771118164,63.25 C31.239999771118164,63.25 36.0359992980957,75.5780029296875 36.0359992980957,75.5780029296875 C36.939205169677734,77.90005493164062 39.187469482421875,79.43794250488281 41.67900085449219,79.43800354003906 C44.552650451660156,79.43766021728516 46.8824462890625,76.99759674072266 46.75,74.12699890136719 C46.75,74.12699890136719 46.25,63.25 46.25,63.25 C46.25,63.25 31.239999771118164,63.25 31.239999771118164,63.25 C31.239999771118164,63.25 31.239999771118164,63.25 31.239999771118164,63.25z M68.36000061035156,17.68000030517578 C74.71099853515625,12.397000312805176 84.34400177001953,16.915000915527344 84.34400177001953,25.177000045776367 C84.34400177001953,25.177000045776367 84.34400177001953,64.74299621582031 84.34400177001953,64.74299621582031 C84.34400177001953,72.58000183105469 75.56700134277344,77.21399688720703 69.09500122070312,72.79399871826172 C69.09500122070312,72.79399871826172 55.16600036621094,63.28200149536133 55.16600036621094,63.28200149536133 C55.13563919067383,63.261287689208984 55.099754333496094,63.25013732910156 55.0629997253418,63.25 C55.0629997253418,63.25 51.755001068115234,63.25 51.755001068115234,63.25 C51.755001068115234,63.25 52.244998931884766,73.87300109863281 52.244998931884766,73.87300109863281 C52.52199935913086,79.9000015258789 47.71200180053711,84.93699645996094 41.67900085449219,84.93699645996094 C36.92416000366211,84.93759155273438 32.63317108154297,82.00322723388672 30.909000396728516,77.5719985961914 C30.909000396728516,77.5719985961914 25.274999618530273,63.08700180053711 25.274999618530273,63.08700180053711 C19.815000534057617,62.16299819946289 15.656000137329102,57.4109992980957 15.656000137329102,51.6870002746582 C15.656000137329102,51.6870002746582 15.656000137329102,40.5620002746582 15.656000137329102,40.5620002746582 C15.656000137329102,34.073001861572266 20.916000366210938,28.812000274658203 27.4060001373291,28.812000274658203 C27.4060001373291,28.812000274658203 54.974998474121094,28.812000274658203 54.974998474121094,28.812000274658203 C54.974998474121094,28.812000274658203 68.35900115966797,17.68000030517578 68.35900115966797,17.68000030517578 C68.35900115966797,17.68000030517578 68.36000061035156,17.68000030517578 68.36000061035156,17.68000030517578z"></path>
                 </g>
               </svg>
             </div>
-            <div class="verification-title">Join required channels</div>
-            <div class="verification-subtitle" id="subtitle">Verify your membership to continue</div>
+            <div class="hero-text">
+              <div class="hero-label">Channel Verification</div>
+              <div class="hero-title">Join required channels</div>
+              <div class="hero-sub" id="subtitle">Verify your membership to continue</div>
+            </div>
           </div>
         </div>
 
-        <!-- Status and Channel List Card -->
-        <div class="tgme_page">
-          <div id="status" class="verification-status error">Initializing...</div>
-          <div id="channel-list" class="channel-list-container"></div>
+        <!-- Status + channel list card -->
+        <div class="custom-card">
+          <div id="status" class="error">Initializing...</div>
+          <div id="channel-list"></div>
         </div>
-
-        <!-- Telegram-style Action Button (replaces MainButton) -->
-        <button id="actionButton" class="custom-action-btn">Re-check</button>
 
       </div>
     </div>
   </div>
 
-  <!-- Toast notification -->
-  <div id="toast" class="custom-toast"></div>
+  <!-- Footer notification toast -->
+  <div id="footerNotification" class="footer-notification"></div>
 
   <!-- Telegram Wallpaper Script -->
-  <script src="//telegram.org/js/tgwallpaper.min.js?3"></script>
+  <script src="https://telegram.org/js/tgwallpaper.min.js?3"></script>
 
   <script>
-    // Initialize Telegram Wallpaper (EXACT from source)
+    // Initialize Telegram Wallpaper
     var tme_bg = document.getElementById('tgme_background');
     if (tme_bg && window.TWallpaper) {
       TWallpaper.init(tme_bg);
@@ -303,7 +418,6 @@
     // Dark mode support
     function toggleTheme(dark) {
       document.documentElement.classList.toggle('theme_dark', dark);
-      window.Telegram && Telegram.setWidgetOptions && Telegram.setWidgetOptions({dark: dark});
     }
     if (window.matchMedia) {
       var darkMedia = window.matchMedia('(prefers-color-scheme: dark)');
@@ -316,35 +430,24 @@
     const statusEl = document.getElementById('status');
     const subtitleEl = document.getElementById('subtitle');
     const listEl = document.getElementById('channel-list');
-    const toastEl = document.getElementById('toast');
-    const actionBtn = document.getElementById('actionButton');
+    const toastEl = document.getElementById('footerNotification');
     const checkEndpoint = new URLSearchParams(window.location.search).get('check');
 
     let toastTimer;
     function showNotification(message, type, duration = 2500) {
       toastEl.textContent = message;
-      toastEl.className = `custom-toast ${type} show`;
-      if (tg && type === 'success') tg.HapticFeedback?.notificationOccurred('success');
+      toastEl.className = `footer-notification ${type} show`;
+      if (tg && type === 'ok') tg.HapticFeedback?.notificationOccurred('success');
       if (tg && type === 'error') tg.HapticFeedback?.notificationOccurred('error');
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => toastEl.classList.remove('show'), duration);
     }
 
     function setStatus(kind, message) {
-      statusEl.className = `verification-status ${kind}`;
+      statusEl.className = kind;
       statusEl.textContent = message;
       if (kind === 'ok') subtitleEl.textContent = '✓ All channels verified!';
       else if (kind === 'error') subtitleEl.textContent = '❌ Verification failed';
-    }
-
-    function setLoading(loading) {
-      if (loading) {
-        actionBtn.disabled = true;
-        actionBtn.innerHTML = '<span class="btn-spinner"></span> Checking...';
-      } else {
-        actionBtn.disabled = false;
-        actionBtn.innerHTML = 'Re-check';
-      }
     }
 
     function escapeHtml(str) {
@@ -359,36 +462,35 @@
     function renderChannels(channels) {
       listEl.innerHTML = '';
       if (!channels.length) {
-        listEl.innerHTML = '<div style="padding:14px;text-align:center;color:var(--tg-theme-hint-color, #8e8e93)">No channels from webhook</div>';
+        listEl.innerHTML = '<div style="padding:14px;text-align:center;color:var(--hint)">No channels from webhook</div>';
         return;
       }
       channels.forEach((ch, idx) => {
         const title = ch.channel || ch.title || ch.id || `Channel ${idx + 1}`;
         const joined = Boolean(ch.joined);
-        const row = document.createElement('div');
-        row.className = 'channel-item';
+        const row = document.createElement('article');
+        row.className = 'channel';
         
         const avatar = document.createElement('div');
-        avatar.className = 'channel-avatar';
+        avatar.className = 'ch-avatar';
         avatar.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="avatar_clip"><rect width="512" height="512"></rect></clipPath></defs><g clip-path="url(#avatar_clip)"><path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(255,255,255)" stroke-opacity="1" stroke-width="6" d=" M35.28499984741211,72.25 C35.28499984741211,72.25 72.875,72.25 72.875,72.25 C77.812255859375,72.25 81.875,68.187255859375 81.875,63.25 C81.875,63.25 81.875,30.375 81.875,30.375 C81.875,25.437746047973633 77.812255859375,21.375 72.875,21.375 C72.875,21.375 26.875,21.375 26.875,21.375 C21.937746047973633,21.375 17.875,25.437746047973633 17.875,30.375 C17.875,30.375 17.875,81.83300018310547 17.875,81.83300018310547 C17.875,84.49500274658203 21.084999084472656,85.83799743652344 22.981000900268555,83.96900177001953 C22.981000900268555,83.96900177001953 34.58300018310547,72.53800201416016 34.58300018310547,72.53800201416016 C34.7700080871582,72.35356903076172 35.02234649658203,72.25004577636719 35.28499984741211,72.25 C35.28499984741211,72.25 35.28499984741211,72.25 35.28499984741211,72.25z M34.875,53.625 C34.875,53.625 55.75,53.625 55.75,53.625 M34.875,39.625 C34.875,39.625 66.25,39.625 66.25,39.625"></path></g></svg>`;
         
         const infoDiv = document.createElement('div');
-        infoDiv.className = 'channel-info';
-        infoDiv.innerHTML = `<div class="channel-name">${escapeHtml(title)}</div><span class="channel-status ${joined ? 'joined' : 'pending'}">${joined ? '✓ Joined' : '✗ Not joined'}</span>`;
-        
+        infoDiv.className = 'ch-info';
+        infoDiv.innerHTML = `<div class="channel-title">${escapeHtml(title)}</div><span class="badge ${joined ? 'ok' : 'error'}">${joined ? '✓ Joined' : '✗ Not joined'}</span>`;
         row.appendChild(avatar);
         row.appendChild(infoDiv);
         
         if (!joined && ch.link) {
           const btn = document.createElement('button');
-          btn.className = 'channel-action-btn';
+          btn.className = 'join-btn';
           btn.innerHTML = 'Join';
           btn.onclick = () => {
             tg?.HapticFeedback?.impactOccurred('light');
             if (tg) tg.openTelegramLink(ch.link);
             else window.open(ch.link, '_blank');
             btn.disabled = true;
-            btn.innerHTML = '<span class="btn-spinner"></span> Opening...';
+            btn.innerHTML = '<span class="btn-spinner"></span> Opening…';
             setTimeout(() => {
               if (!btn.disabled) return;
               btn.innerHTML = 'Join';
@@ -398,9 +500,9 @@
           row.appendChild(btn);
         } else if (joined) {
           const doneBtn = document.createElement('button');
-          doneBtn.className = 'channel-action-btn joined-btn';
+          doneBtn.className = 'join-btn joined-btn';
           doneBtn.disabled = true;
-          doneBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Joined';
+          doneBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Joined';
           row.appendChild(doneBtn);
         }
         listEl.appendChild(row);
@@ -420,7 +522,6 @@
         showNotification('Missing ?check= webhook URL', 'error');
         return;
       }
-      setLoading(true);
       try {
         setStatus('error', 'Verifying memberships...');
         tg?.HapticFeedback?.impactOccurred('medium');
@@ -437,21 +538,26 @@
         renderChannels(channels);
         if (data.joined) {
           setStatus('ok', '✅ All channels joined! Closing...');
-          showNotification('Verification complete! Closing app...', 'success', 1800);
+          showNotification('Verification complete! Closing app...', 'ok', 1800);
           tg?.HapticFeedback?.notificationOccurred('success');
-          actionBtn.disabled = true;
-          actionBtn.innerHTML = 'Verified ✓';
+          tg?.MainButton?.setText('Verified ✓');
+          tg?.MainButton?.show();
+          tg?.MainButton?.disable();
           setTimeout(() => tg?.close(), 1500);
           return;
         }
-        setStatus('error', '✗ Join missing channels and tap Re-check');
+        setStatus('error', '✗ Join missing channels and tap Main Button');
         showNotification('Please join pending channels and re-check', 'error');
+        tg?.MainButton?.setText('Re-check');
+        tg?.MainButton?.show();
+        tg?.MainButton?.enable();
       } catch (err) {
         const isAbort = err?.name === 'AbortError';
         setStatus('error', isAbort ? 'Webhook timeout' : err.message);
         showNotification(isAbort ? 'Request timeout — tap Retry' : err.message, 'error');
-      } finally {
-        setLoading(false);
+        tg?.MainButton?.setText('Retry');
+        tg?.MainButton?.show();
+        tg?.MainButton?.enable();
       }
     }
 
@@ -459,12 +565,11 @@
       if (!tg) {
         setStatus('error', 'Telegram WebApp SDK missing');
         showNotification('Open from Telegram bot', 'error');
-        actionBtn.disabled = true;
         return;
       }
       tg.ready();
       tg.expand();
-      actionBtn.onclick = runCheck;
+      tg.MainButton?.onClick(runCheck);
       runCheck();
     }
 

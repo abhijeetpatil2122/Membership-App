@@ -44,6 +44,8 @@
     .tgme_head_right_btn {
       background: var(--btn-bg);
       color: var(--btn-txt);
+      border-radius: 30px;
+      padding: 8px 20px;
     }
     .tgme_head_right_btn:hover { color: var(--btn-txt); opacity: 0.8; }
 
@@ -59,7 +61,7 @@
       background: transparent;
     }
 
-    /* Custom card styles - SOLID WHITE */
+    /* Custom card styles - SOLID WHITE like header */
     .custom-card {
       border: 1px solid var(--border);
       border-radius: 16px;
@@ -183,8 +185,12 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      overflow: hidden;
     }
-    .ch-avatar svg { fill: #fff; width: 20px; height: 20px; }
+    .ch-avatar svg { 
+      width: 28px; 
+      height: 28px; 
+    }
     .ch-info { flex: 1; min-width: 0; }
     .channel-title {
       font-size: 14px;
@@ -207,12 +213,12 @@
     .badge.ok { color: #052e16; background: #86efac; }
     .badge.error { color: #7f1a1a; background: #fecaca; }
 
-    /* Join button styles */
+    /* Join button styles - ROUNDED PILL like Open Bot */
     .join-btn {
       flex-shrink: 0;
       border: none;
-      border-radius: 10px;
-      padding: 8px 16px;
+      border-radius: 30px;
+      padding: 8px 20px;
       background: var(--btn-bg);
       color: var(--btn-txt);
       font-size: 13px;
@@ -231,6 +237,7 @@
       color: #22c55e;
       border: 1px solid rgba(34,197,94,0.25);
       cursor: default;
+      border-radius: 30px;
     }
     .joined-btn svg {
       width: 14px;
@@ -255,8 +262,8 @@
       right: 16px;
       bottom: max(16px, env(safe-area-inset-bottom));
       z-index: 30;
-      border-radius: 12px;
-      padding: 10px 16px;
+      border-radius: 30px;
+      padding: 10px 20px;
       font-size: 13px;
       font-weight: 500;
       line-height: 1.4;
@@ -307,7 +314,7 @@
     <div class="tgme_body_wrap">
       <div class="tgme_page">
 
-        <!-- Hero card with icon (your custom SVG preserved) -->
+        <!-- Hero card with icon -->
         <div class="custom-card">
           <div class="hero">
             <div class="hero-icon">
@@ -339,7 +346,7 @@
           </div>
         </div>
 
-        <!-- Status + channel list card -->
+        <!-- Status + channel list card (ONLY these 2 cards exist) -->
         <div class="custom-card">
           <div id="status" class="error">Initializing...</div>
           <div id="channel-list"></div>
@@ -349,7 +356,7 @@
     </div>
   </div>
 
-  <!-- Footer notification toast (outside card, fixed at bottom) -->
+  <!-- Footer notification toast (outside all cards) -->
   <div id="footerNotification" class="footer-notification"></div>
 
   <!-- Telegram Wallpaper Script -->
@@ -421,14 +428,18 @@
         const joined = Boolean(ch.joined);
         const row = document.createElement('article');
         row.className = 'channel';
+        
+        // NEW CHANNEL AVATAR SVG
         const avatar = document.createElement('div');
         avatar.className = 'ch-avatar';
-        avatar.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>';
+        avatar.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="__lottie_element_2"><rect width="512" height="512" x="0" y="0"></rect></clipPath><clipPath id="__lottie_element_4"><path d="M0,0 L100,0 L100,100 L0,100z"></path></clipPath></defs><g clip-path="url(#__lottie_element_2)"><g clip-path="url(#__lottie_element_4)" style="display: block;" transform="matrix(5.119999885559082,0,0,5.119999885559082,0,0)" opacity="1"><g style="display: block;" transform="matrix(1,0,0,1,0,0)" opacity="1"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(255,255,255)" stroke-opacity="1" stroke-width="6" d=" M35.28499984741211,72.25 C35.28499984741211,72.25 72.875,72.25 72.875,72.25 C77.812255859375,72.25 81.875,68.187255859375 81.875,63.25 C81.875,63.25 81.875,30.375 81.875,30.375 C81.875,25.437746047973633 77.812255859375,21.375 72.875,21.375 C72.875,21.375 26.875,21.375 26.875,21.375 C21.937746047973633,21.375 17.875,25.437746047973633 17.875,30.375 C17.875,30.375 17.875,81.83300018310547 17.875,81.83300018310547 C17.875,84.49500274658203 21.084999084472656,85.83799743652344 22.981000900268555,83.96900177001953 C22.981000900268555,83.96900177001953 34.58300018310547,72.53800201416016 34.58300018310547,72.53800201416016 C34.7700080871582,72.35356903076172 35.02234649658203,72.25004577636719 35.28499984741211,72.25 C35.28499984741211,72.25 35.28499984741211,72.25 35.28499984741211,72.25z M34.875,53.625 C34.875,53.625 55.75,53.625 55.75,53.625 M34.875,39.625 C34.875,39.625 66.25,39.625 66.25,39.625"></path></g></g></g></g></svg>`;
+        
         const infoDiv = document.createElement('div');
         infoDiv.className = 'ch-info';
         infoDiv.innerHTML = `<div class="channel-title">${escapeHtml(title)}</div><span class="badge ${joined ? 'ok' : 'error'}">${joined ? '✓ Joined' : '✗ Not joined'}</span>`;
         row.appendChild(avatar);
         row.appendChild(infoDiv);
+        
         if (!joined && ch.link) {
           const btn = document.createElement('button');
           btn.className = 'join-btn';

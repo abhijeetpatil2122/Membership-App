@@ -50,14 +50,11 @@
       flex: 0 0 auto;
       border: 0;
       cursor: pointer;
-      transition: transform .15s ease, opacity .15s ease;
+      transition: opacity .15s ease;  /* no transform — no lift */
     }
 
-    .join-btn:hover,
-    .continue-btn:hover {
-      transform: translateY(-1px);
-      opacity: .96;
-    }
+    .join-btn:hover { opacity: .88; }
+    .continue-btn:hover { opacity: .92; }
 
     .join-btn:focus,
     .join-btn:active,
@@ -66,12 +63,48 @@
       outline: none !important;
       box-shadow: none !important;
       background-image: none !important;
+      transform: none !important;     /* lock — no movement on tap */
     }
 
     .join-btn.is-loading,
     .continue-btn.is-loading {
       pointer-events: none;
       opacity: .92;
+    }
+
+    /* ── Toast notification ── */
+    #toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .22s ease, transform .22s ease;
+      z-index: 9999;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #toast.success { background: #3dbb6e; }
+    #toast.error   { background: #e5534b; }
+
+    .toast-icon {
+      font-size: 15px;
+      line-height: 1;
+      flex: 0 0 auto;
     }
 
     .join-spinner,
@@ -149,12 +182,12 @@
       text-align: center;
     }
 
-    /* ── Continue button: tighter gap, bigger button ── */
+    /* ── Continue button ── */
     .continue-wrap {
       width: 100%;
       max-width: 340px;
-      margin: 6px auto 0;       /* was: 2px + large default spacing */
-      padding: 0 16px 14px;
+      margin: 0 auto;            /* no extra top gap — sits right under footer-note */
+      padding: 8px 16px 16px;
       box-sizing: border-box;
     }
 
@@ -163,11 +196,11 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      height: 54px;              /* was 48px */
+      height: 58px;              /* noticeably bigger */
       border-radius: 999px;
       background: var(--accent-btn-color);
       color: #fff !important;
-      font-size: 17px;           /* was 16px */
+      font-size: 18px;           /* bigger text to match height */
       font-weight: 700;
       text-decoration: none !important;
       border: 0;
@@ -175,9 +208,10 @@
       position: relative;
       overflow: hidden;
       cursor: pointer;
-      transition: transform .15s ease, opacity .15s ease;
+      transition: opacity .15s ease;   /* no transform — no lift */
       padding: 0;
       line-height: 1;
+      transform: none !important;      /* ensure no movement */
     }
 
     /* Telegram-like shine */
@@ -309,7 +343,7 @@
 
             <!-- MAIN ICON (smaller circle, icon scales proportionally) -->
             <div class="main-icon-wrap">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="40" height="40" preserveAspectRatio="xMidYMid meet">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="48" height="48" preserveAspectRatio="xMidYMid meet">
                 <defs>
                   <clipPath id="__lottie_element_2_fixed_main">
                     <rect width="512" height="512" x="0" y="0"></rect>
@@ -454,6 +488,12 @@
 
   </div>
 
+  <!-- Toast notification -->
+  <div id="toast">
+    <span class="toast-icon" id="toast-icon"></span>
+    <span id="toast-msg"></span>
+  </div>
+
   <!-- Wallpaper Script -->
   <script src="//telegram.org/js/tgwallpaper.min.js?3"></script>
 
@@ -472,15 +512,46 @@
       window.onfocus = function(){ TWallpaper.update(); };
     }
 
+    // ── Toast ──
+    var toastTimer;
+    function showToast(type, msg) {
+      var el = document.getElementById('toast');
+      var icon = document.getElementById('toast-icon');
+      var msgEl = document.getElementById('toast-msg');
+      clearTimeout(toastTimer);
+      el.className = '';           // reset classes
+      el.classList.add(type);
+      icon.textContent = type === 'success' ? '✓' : '✕';
+      msgEl.textContent = msg;
+      // force reflow so transition re-fires if already showing
+      void el.offsetWidth;
+      el.classList.add('show');
+      toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2800);
+    }
+
     function startJoin(btn) {
       if (!btn || btn.classList.contains('is-loading')) return false;
+
+      var channelName = btn.closest('.channel-row')
+                           .querySelector('.channel-name')
+                           .textContent.trim();
 
       btn.classList.add('is-loading');
       btn.innerHTML = '<span class="join-loading-content"><span class="join-spinner"></span><span>Joining</span></span>';
 
       setTimeout(function () {
+        // Simulate: 70% success, 30% error for frontend test
+        var ok = Math.random() > 0.3;
         btn.classList.remove('is-loading');
-        btn.innerHTML = 'Joined';
+        if (ok) {
+          btn.innerHTML = 'Joined';
+          btn.style.pointerEvents = 'none';
+          btn.style.opacity = '0.7';
+          showToast('success', 'Joined ' + channelName);
+        } else {
+          btn.innerHTML = 'Join';
+          showToast('error', 'Failed to join ' + channelName);
+        }
       }, 1500);
 
       return false;
@@ -493,11 +564,9 @@
       btn.innerHTML = '<span class="continue-loading-content"><span class="continue-spinner"></span><span>Continuing</span></span>';
 
       setTimeout(function () {
-        // Close the WebApp via Telegram SDK
         if (tg) {
           tg.close();
         } else {
-          // Fallback for browser testing
           btn.classList.remove('is-loading');
           btn.innerHTML = '<span class="continue-content">Continue</span>';
         }

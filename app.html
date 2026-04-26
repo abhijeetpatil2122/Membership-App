@@ -18,6 +18,14 @@
   </script>
 
   <style>
+    .join-btn,
+    .continue-btn {
+      -webkit-tap-highlight-color: transparent;
+      outline: none !important;
+      box-shadow: none !important;
+      user-select: none;
+    }
+
     .join-btn {
       display: inline-flex;
       align-items: center;
@@ -39,9 +47,19 @@
       transition: transform .15s ease, opacity .15s ease;
     }
 
-    .join-btn:hover {
+    .join-btn:hover,
+    .continue-btn:hover {
       transform: translateY(-1px);
       opacity: .96;
+    }
+
+    .join-btn:focus,
+    .join-btn:active,
+    .continue-btn:focus,
+    .continue-btn:active {
+      outline: none !important;
+      box-shadow: none !important;
+      background-image: none !important;
     }
 
     .join-btn.is-loading {
@@ -108,11 +126,19 @@
 
     .footer-note {
       margin-top: 18px;
-      padding-bottom: 8px;
+      padding-bottom: 6px;
       font-size: 14px;
       line-height: 1.35;
       color: rgba(127, 127, 127, 0.95);
       text-align: center;
+    }
+
+    .continue-wrap {
+      width: 100%;
+      max-width: 340px;
+      margin: 18px auto 0;
+      padding: 0 16px 18px;
+      box-sizing: border-box;
     }
 
     .continue-btn {
@@ -120,9 +146,7 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      max-width: 340px;
       height: 44px;
-      margin-top: 14px;
       border-radius: 999px;
       background: var(--accent-btn-color);
       color: #fff !important;
@@ -132,11 +156,6 @@
       border: 0;
       box-shadow: none;
       transition: transform .15s ease, opacity .15s ease;
-    }
-
-    .continue-btn:hover {
-      transform: translateY(-1px);
-      opacity: .96;
     }
   </style>
 </head>
@@ -311,12 +330,14 @@
               Join all channels to continue with the bot.
             </div>
 
-            <!-- CONTINUE BUTTON -->
-            <a class="continue-btn" href="#" onclick="return continueBot()">Continue</a>
-
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- CONTINUE BUTTON OUTSIDE THE LIST BLOCK -->
+    <div class="continue-wrap">
+      <a class="continue-btn" href="#" onclick="return continueBot()">Continue</a>
     </div>
 
   </div>

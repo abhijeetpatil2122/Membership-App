@@ -68,7 +68,7 @@
     .join-btn.is-loading,
     .continue-btn.is-loading {
       pointer-events: none;
-      opacity: .9;
+      opacity: .92;
     }
 
     .join-spinner,
@@ -79,7 +79,6 @@
       border-top-color: #fff;
       border-radius: 50%;
       animation: spin .8s linear infinite;
-      margin-right: 8px;
       flex: 0 0 auto;
     }
 
@@ -147,7 +146,7 @@
     }
 
     .continue-btn {
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
       width: 100%;
@@ -160,7 +159,43 @@
       text-decoration: none !important;
       border: 0;
       box-shadow: none;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
       transition: transform .15s ease, opacity .15s ease;
+      padding: 0;
+      line-height: 1;
+    }
+
+    /* Telegram-like shine */
+    .shine::before {
+      content: "";
+      position: absolute;
+      top: -40%;
+      left: -55%;
+      width: 40%;
+      height: 180%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.30), transparent);
+      transform: skewX(-20deg);
+      animation: shineMove 2.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes shineMove {
+      0%   { left: -55%; }
+      55%  { left: 120%; }
+      100% { left: 120%; }
+    }
+
+    .continue-content {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      text-align: center;
     }
   </style>
 </head>
@@ -342,7 +377,9 @@
 
     <!-- CONTINUE BUTTON OUTSIDE THE LIST BLOCK -->
     <div class="continue-wrap">
-      <a class="continue-btn tgme_action_button_new shine" href="#" onclick="return continueBot(this)">Continue</a>
+      <a class="continue-btn tgme_action_button_new shine" href="#" onclick="return continueBot(this)">
+        <span class="continue-content">Continue</span>
+      </a>
     </div>
 
   </div>
@@ -376,11 +413,11 @@
       if (!btn || btn.classList.contains('is-loading')) return false;
 
       btn.classList.add('is-loading');
-      btn.innerHTML = '<span class="continue-spinner"></span>Continuing';
+      btn.innerHTML = '<span class="continue-content"><span class="continue-spinner"></span><span>Continuing</span></span>';
 
       setTimeout(function () {
         btn.classList.remove('is-loading');
-        btn.innerHTML = 'Continue';
+        btn.innerHTML = '<span class="continue-content">Continue</span>';
       }, 1500);
 
       return false;

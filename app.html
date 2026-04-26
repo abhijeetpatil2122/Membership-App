@@ -114,6 +114,30 @@
       color: rgba(127, 127, 127, 0.95);
       text-align: center;
     }
+
+    .continue-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 340px;
+      height: 44px;
+      margin-top: 14px;
+      border-radius: 999px;
+      background: var(--accent-btn-color);
+      color: #fff !important;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none !important;
+      border: 0;
+      box-shadow: none;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+
+    .continue-btn:hover {
+      transform: translateY(-1px);
+      opacity: .96;
+    }
   </style>
 </head>
 
@@ -189,7 +213,6 @@
             <!-- CHANNEL LIST -->
             <div style="width: 100%; max-width: 340px; margin-top: 10px;">
 
-              <!-- CHANNEL 1 -->
               <div class="channel-row">
                 <div class="channel-left">
                   <div class="mini-icon-box">
@@ -220,7 +243,6 @@
 
               <div class="channel-divider"></div>
 
-              <!-- CHANNEL 2 -->
               <div class="channel-row">
                 <div class="channel-left">
                   <div class="mini-icon-box">
@@ -251,7 +273,6 @@
 
               <div class="channel-divider"></div>
 
-              <!-- CHANNEL 3 -->
               <div class="channel-row">
                 <div class="channel-left">
                   <div class="mini-icon-box">
@@ -282,10 +303,16 @@
 
             </div>
 
+            <!-- LINE BETWEEN CHANNEL LIST AND FOOTER NOTE -->
+            <div style="width: 100%; max-width: 280px; height: 1px; margin-top: 8px; background: rgba(127, 127, 127, 0.22);"></div>
+
             <!-- FOOTER NOTE -->
             <div class="footer-note">
               Join all channels to continue with the bot.
             </div>
+
+            <!-- CONTINUE BUTTON -->
+            <a class="continue-btn" href="#" onclick="return continueBot()">Continue</a>
 
           </div>
         </div>
@@ -316,6 +343,10 @@
         btn.innerHTML = 'Joined';
       }, 1500);
 
+      return false;
+    }
+
+    function continueBot() {
       return false;
     }
 

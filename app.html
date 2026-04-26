@@ -5,6 +5,9 @@
   <title>Telegram WebApp</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- Telegram SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <!-- Telegram Fonts & CSS -->
   <link href="//telegram.org/css/font-roboto.css?1" rel="stylesheet">
   <link href="//telegram.org/css/bootstrap.min.css?3" rel="stylesheet">
@@ -146,10 +149,11 @@
       text-align: center;
     }
 
+    /* ── Continue button: tighter gap, bigger button ── */
     .continue-wrap {
       width: 100%;
       max-width: 340px;
-      margin: 2px auto 0;
+      margin: 6px auto 0;       /* was: 2px + large default spacing */
       padding: 0 16px 14px;
       box-sizing: border-box;
     }
@@ -159,11 +163,11 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      height: 48px;
+      height: 54px;              /* was 48px */
       border-radius: 999px;
       background: var(--accent-btn-color);
       color: #fff !important;
-      font-size: 16px;
+      font-size: 17px;           /* was 16px */
       font-weight: 700;
       text-decoration: none !important;
       border: 0;
@@ -222,6 +226,46 @@
       gap: 8px;
       width: 100%;
     }
+
+    /* ── Main header icon: smaller circle, icon fits better ── */
+    .main-icon-wrap {
+      width: 72px;               /* was 96px */
+      height: 72px;
+      margin-bottom: 10px;
+      border-radius: 50%;
+      background: var(--accent-btn-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(0,0,0,.12);
+      overflow: hidden;
+    }
+
+    /* ── Header title ── */
+    .header-title {
+      font-size: 22px;           /* was 28px — tighter, cleaner */
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.025em;
+      color: var(--tme-logo-color);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .header-title-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-btn-color);
+      border-radius: 6px;
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
   </style>
 </head>
 
@@ -263,9 +307,9 @@
         <div style="padding: 12px 16px 0 16px;">
           <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center;">
 
-            <!-- MAIN ICON -->
-            <div style="width: 96px; height: 96px; margin-bottom: 12px; border-radius: 50%; background: var(--accent-btn-color); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,.12); overflow: hidden; transform: translateY(-1px);">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="52" height="52" preserveAspectRatio="xMidYMid meet">
+            <!-- MAIN ICON (smaller circle, icon scales proportionally) -->
+            <div class="main-icon-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="40" height="40" preserveAspectRatio="xMidYMid meet">
                 <defs>
                   <clipPath id="__lottie_element_2_fixed_main">
                     <rect width="512" height="512" x="0" y="0"></rect>
@@ -286,13 +330,14 @@
               </svg>
             </div>
 
-            <!-- HEADER NAME -->
-            <div style="font-size: 28px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: var(--tme-logo-color);">
-              Join Channel Verification
+            <!-- HEADER NAME (improved visual) -->
+            <div class="header-title">
+              Channel Verification
+              <span class="header-title-badge">Required</span>
             </div>
 
             <!-- SEPARATION LINE -->
-            <div style="width: 100%; max-width: 280px; height: 1px; margin-top: 12px; background: rgba(127, 127, 127, 0.22);"></div>
+            <div style="width: 100%; max-width: 280px; height: 1px; margin-top: 10px; background: rgba(127, 127, 127, 0.22);"></div>
 
             <!-- CHANNEL LIST -->
             <div style="width: 100%; max-width: 340px; margin-top: 4px;">
@@ -413,6 +458,13 @@
   <script src="//telegram.org/js/tgwallpaper.min.js?3"></script>
 
   <script>
+    // ── Telegram WebApp init ──
+    var tg = window.Telegram && window.Telegram.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+
     var tme_bg = document.getElementById('tgme_background');
     if (tme_bg) {
       TWallpaper.init(tme_bg);
@@ -441,9 +493,15 @@
       btn.innerHTML = '<span class="continue-loading-content"><span class="continue-spinner"></span><span>Continuing</span></span>';
 
       setTimeout(function () {
-        btn.classList.remove('is-loading');
-        btn.innerHTML = '<span class="continue-content">Continue</span>';
-      }, 1500);
+        // Close the WebApp via Telegram SDK
+        if (tg) {
+          tg.close();
+        } else {
+          // Fallback for browser testing
+          btn.classList.remove('is-loading');
+          btn.innerHTML = '<span class="continue-content">Continue</span>';
+        }
+      }, 1000);
 
       return false;
     }

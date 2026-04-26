@@ -91,19 +91,28 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: 11px 0;
+      padding: 10px 0;
+    }
+
+    .channel-row:first-child {
+      padding-top: 8px;
+    }
+
+    .channel-row:last-child {
+      padding-bottom: 8px;
     }
 
     .channel-left {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       min-width: 0;
     }
 
     .channel-name {
       font-weight: 600;
-      font-size: 15px;
+      font-size: 14.5px;
+      line-height: 1.1;
       color: var(--tme-logo-color);
       overflow: hidden;
       text-overflow: ellipsis;
@@ -117,8 +126,8 @@
     }
 
     .mini-icon-box {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: var(--accent-btn-color);
       display: flex;
@@ -129,7 +138,7 @@
     }
 
     .footer-note {
-      margin-top: 12px;
+      margin-top: 8px;
       padding-bottom: 2px;
       font-size: 13.5px;
       line-height: 1.35;
@@ -140,7 +149,7 @@
     .continue-wrap {
       width: 100%;
       max-width: 340px;
-      margin: 8px auto 0;
+      margin: 4px auto 0;
       padding: 0 16px 18px;
       box-sizing: border-box;
     }
@@ -214,7 +223,7 @@
 
   <div class="tgme_page_wrap">
 
-    <!-- HEADER (ORIGINAL) -->
+    <!-- HEADER -->
     <div class="tgme_head_wrap">
       <div class="tgme_head">
         <a href="//telegram.org/" class="tgme_head_brand">
@@ -270,12 +279,12 @@
             <div style="width: 100%; max-width: 280px; height: 1px; margin-top: 12px; background: rgba(127, 127, 127, 0.22);"></div>
 
             <!-- CHANNEL LIST -->
-            <div style="width: 100%; max-width: 340px; margin-top: 8px;">
+            <div style="width: 100%; max-width: 340px; margin-top: 4px;">
 
               <div class="channel-row">
                 <div class="channel-left">
                   <div class="mini-icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="22" height="22" preserveAspectRatio="xMidYMid meet">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" preserveAspectRatio="xMidYMid meet">
                       <defs>
                         <clipPath id="__channel_icon_clip">
                           <rect width="512" height="512" x="0" y="0"></rect>
@@ -305,7 +314,7 @@
               <div class="channel-row">
                 <div class="channel-left">
                   <div class="mini-icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="22" height="22" preserveAspectRatio="xMidYMid meet">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" preserveAspectRatio="xMidYMid meet">
                       <defs>
                         <clipPath id="__channel_icon_clip2">
                           <rect width="512" height="512" x="0" y="0"></rect>
@@ -335,7 +344,7 @@
               <div class="channel-row">
                 <div class="channel-left">
                   <div class="mini-icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="22" height="22" preserveAspectRatio="xMidYMid meet">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" preserveAspectRatio="xMidYMid meet">
                       <defs>
                         <clipPath id="__channel_icon_clip3">
                           <rect width="512" height="512" x="0" y="0"></rect>
@@ -363,7 +372,7 @@
             </div>
 
             <!-- LINE BETWEEN CHANNEL LIST AND FOOTER NOTE -->
-            <div style="width: 100%; max-width: 280px; height: 1px; margin-top: 6px; background: rgba(127, 127, 127, 0.22);"></div>
+            <div style="width: 100%; max-width: 280px; height: 1px; margin-top: 4px; background: rgba(127, 127, 127, 0.22);"></div>
 
             <!-- FOOTER NOTE -->
             <div class="footer-note">

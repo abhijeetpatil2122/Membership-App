@@ -24,6 +24,9 @@
       outline: none !important;
       box-shadow: none !important;
       user-select: none;
+      -webkit-appearance: none;
+      appearance: none;
+      background-image: none !important;
     }
 
     .join-btn {
@@ -62,23 +65,25 @@
       background-image: none !important;
     }
 
-    .join-btn.is-loading {
+    .join-btn.is-loading,
+    .continue-btn.is-loading {
       pointer-events: none;
       opacity: .9;
     }
 
-    .join-spinner {
+    .join-spinner,
+    .continue-spinner {
       width: 14px;
       height: 14px;
       border: 2px solid rgba(255,255,255,.45);
       border-top-color: #fff;
       border-radius: 50%;
-      animation: joinSpin .8s linear infinite;
+      animation: spin .8s linear infinite;
       margin-right: 8px;
       flex: 0 0 auto;
     }
 
-    @keyframes joinSpin {
+    @keyframes spin {
       to { transform: rotate(360deg); }
     }
 
@@ -87,19 +92,19 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: 16px 0;
+      padding: 11px 0;
     }
 
     .channel-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       min-width: 0;
     }
 
     .channel-name {
       font-weight: 600;
-      font-size: 16px;
+      font-size: 15px;
       color: var(--tme-logo-color);
       overflow: hidden;
       text-overflow: ellipsis;
@@ -109,12 +114,12 @@
     .channel-divider {
       width: 100%;
       height: 1px;
-      background: rgba(127, 127, 127, 0.20);
+      background: rgba(127, 127, 127, 0.18);
     }
 
     .mini-icon-box {
-      width: 42px;
-      height: 42px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       background: var(--accent-btn-color);
       display: flex;
@@ -125,9 +130,9 @@
     }
 
     .footer-note {
-      margin-top: 18px;
-      padding-bottom: 6px;
-      font-size: 14px;
+      margin-top: 12px;
+      padding-bottom: 2px;
+      font-size: 13.5px;
       line-height: 1.35;
       color: rgba(127, 127, 127, 0.95);
       text-align: center;
@@ -136,7 +141,7 @@
     .continue-wrap {
       width: 100%;
       max-width: 340px;
-      margin: 18px auto 0;
+      margin: 8px auto 0;
       padding: 0 16px 18px;
       box-sizing: border-box;
     }
@@ -195,12 +200,12 @@
     <!-- BODY CONTENT -->
     <div class="tgme_body_wrap">
       <div class="tgme_page">
-        <div style="padding: 14px 16px 0 16px;">
+        <div style="padding: 12px 16px 0 16px;">
           <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center;">
 
             <!-- MAIN ICON -->
-            <div style="width: 104px; height: 104px; margin-bottom: 16px; border-radius: 50%; background: var(--accent-btn-color); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,.12); overflow: hidden; transform: translateY(-3px);">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="62" height="62" preserveAspectRatio="xMidYMid meet">
+            <div style="width: 104px; height: 104px; margin-bottom: 14px; border-radius: 50%; background: var(--accent-btn-color); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,.12); overflow: hidden; transform: translateY(-2px);">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="60" height="60" preserveAspectRatio="xMidYMid meet">
                 <defs>
                   <clipPath id="__lottie_element_2_fixed_main">
                     <rect width="512" height="512" x="0" y="0"></rect>
@@ -222,20 +227,20 @@
             </div>
 
             <!-- HEADER NAME -->
-            <div style="font-size: 30px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: var(--tme-logo-color);">
+            <div style="font-size: 28px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: var(--tme-logo-color);">
               Join Channel Verification
             </div>
 
             <!-- SEPARATION LINE -->
-            <div style="width: 100%; max-width: 280px; height: 1px; margin-top: 14px; background: rgba(127, 127, 127, 0.22);"></div>
+            <div style="width: 100%; max-width: 280px; height: 1px; margin-top: 12px; background: rgba(127, 127, 127, 0.22);"></div>
 
             <!-- CHANNEL LIST -->
-            <div style="width: 100%; max-width: 340px; margin-top: 10px;">
+            <div style="width: 100%; max-width: 340px; margin-top: 8px;">
 
               <div class="channel-row">
                 <div class="channel-left">
                   <div class="mini-icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24" preserveAspectRatio="xMidYMid meet">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="22" height="22" preserveAspectRatio="xMidYMid meet">
                       <defs>
                         <clipPath id="__channel_icon_clip">
                           <rect width="512" height="512" x="0" y="0"></rect>
@@ -265,7 +270,7 @@
               <div class="channel-row">
                 <div class="channel-left">
                   <div class="mini-icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24" preserveAspectRatio="xMidYMid meet">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="22" height="22" preserveAspectRatio="xMidYMid meet">
                       <defs>
                         <clipPath id="__channel_icon_clip2">
                           <rect width="512" height="512" x="0" y="0"></rect>
@@ -295,7 +300,7 @@
               <div class="channel-row">
                 <div class="channel-left">
                   <div class="mini-icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24" preserveAspectRatio="xMidYMid meet">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="22" height="22" preserveAspectRatio="xMidYMid meet">
                       <defs>
                         <clipPath id="__channel_icon_clip3">
                           <rect width="512" height="512" x="0" y="0"></rect>
@@ -323,7 +328,7 @@
             </div>
 
             <!-- LINE BETWEEN CHANNEL LIST AND FOOTER NOTE -->
-            <div style="width: 100%; max-width: 280px; height: 1px; margin-top: 8px; background: rgba(127, 127, 127, 0.22);"></div>
+            <div style="width: 100%; max-width: 280px; height: 1px; margin-top: 6px; background: rgba(127, 127, 127, 0.22);"></div>
 
             <!-- FOOTER NOTE -->
             <div class="footer-note">
@@ -337,7 +342,7 @@
 
     <!-- CONTINUE BUTTON OUTSIDE THE LIST BLOCK -->
     <div class="continue-wrap">
-      <a class="continue-btn" href="#" onclick="return continueBot()">Continue</a>
+      <a class="continue-btn" href="#" onclick="return continueBot(this)">Continue</a>
     </div>
 
   </div>
@@ -367,7 +372,17 @@
       return false;
     }
 
-    function continueBot() {
+    function continueBot(btn) {
+      if (!btn || btn.classList.contains('is-loading')) return false;
+
+      btn.classList.add('is-loading');
+      btn.innerHTML = '<span class="continue-spinner"></span>Continuing';
+
+      setTimeout(function () {
+        btn.classList.remove('is-loading');
+        btn.innerHTML = 'Continue';
+      }, 1500);
+
       return false;
     }
 

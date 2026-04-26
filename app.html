@@ -21,6 +21,8 @@
   </script>
 
   <style>
+
+    /* ── Reset taps ── */
     .join-btn,
     .continue-btn {
       -webkit-tap-highlight-color: transparent;
@@ -31,7 +33,15 @@
       appearance: none;
       background-image: none !important;
     }
+    .join-btn:focus, .join-btn:active,
+    .continue-btn:focus, .continue-btn:active {
+      outline: none !important;
+      box-shadow: none !important;
+      background-image: none !important;
+      transform: none !important;
+    }
 
+    /* ── Join button ── */
     .join-btn {
       display: inline-flex;
       align-items: center;
@@ -50,113 +60,109 @@
       flex: 0 0 auto;
       border: 0;
       cursor: pointer;
-      transition: opacity .15s ease;  /* no transform — no lift */
+      transition: opacity .15s ease;
     }
-
     .join-btn:hover { opacity: .88; }
-    .continue-btn:hover { opacity: .92; }
-
-    .join-btn:focus,
-    .join-btn:active,
-    .continue-btn:focus,
-    .continue-btn:active {
-      outline: none !important;
-      box-shadow: none !important;
-      background-image: none !important;
-      transform: none !important;     /* lock — no movement on tap */
-    }
-
-    .join-btn.is-loading,
-    .continue-btn.is-loading {
+    .join-btn.is-loading { pointer-events: none; opacity: .92; }
+    /* done state — same dim style as continue locked */
+    .join-btn.done {
       pointer-events: none;
-      opacity: .92;
+      opacity: 0.72;
+      cursor: default;
     }
 
-    /* ── Toast notification ── */
-    #toast {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%) translateY(12px);
+    /* ── Spinners — solid white on accent bg ── */
+    .join-spinner {
+      width: 14px;
+      height: 14px;
+      border: 2.5px solid rgba(255,255,255,.30);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .75s linear infinite;
+      flex: 0 0 14px;
+      display: inline-block;
+    }
+    .continue-spinner {
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(255,255,255,.30);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .75s linear infinite;
+      flex: 0 0 18px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Status SVG inside join-btn ── */
+    .status-icon {
+      width: 22px;
+      height: 22px;
+      flex: 0 0 22px;
       display: inline-flex;
       align-items: center;
-      flex-wrap: nowrap;
-      gap: 7px;
-      padding: 9px 16px 9px 12px;
-      border-radius: 999px;
-      font-size: 13.5px;
-      font-weight: 600;
-      color: #fff;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity .22s ease, transform .22s ease;
-      z-index: 9999;
-      max-width: calc(100vw - 32px);
-      box-sizing: border-box;
+      justify-content: center;
+      line-height: 0;
+    }
+    .status-icon svg {
+      width: 22px !important;
+      height: 22px !important;
+      display: block;
     }
 
+    /* ── Toast — rebuilt from scratch ── */
+    #toast {
+      position: fixed;
+      bottom: 76px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      opacity: 0;
+      pointer-events: none;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: nowrap;
+      gap: 8px;
+      padding: 10px 18px 10px 13px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      z-index: 9999;
+      transition: opacity .22s ease, transform .22s ease;
+      line-height: 1;
+    }
     #toast.show {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
-
     #toast.success { background: #3dbb6e; }
     #toast.error   { background: #e5534b; }
 
+    /* icon wrapper — fixed px size so SVG never affects layout */
     #toast-icon {
-      width: 20px;
-      height: 20px;
-      flex: 0 0 20px;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      min-height: 20px;
+      flex-shrink: 0;
+      line-height: 0;
     }
-
+    #toast-icon svg {
+      width: 20px !important;
+      height: 20px !important;
+      display: block;
+      flex-shrink: 0;
+    }
     #toast-msg {
-      white-space: nowrap;
-      line-height: 1.2;
+      line-height: 1;
+      flex-shrink: 0;
     }
 
-    /* SVG status icons inside join-btn */
-    .join-btn .status-icon {
-      width: 20px;
-      height: 20px;
-      flex: 0 0 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Continue button locked state */
-    .continue-btn.locked {
-      opacity: 0.45;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
-    /* Continue SVG icon */
-    .continue-icon {
-      width: 22px;
-      height: 22px;
-      flex: 0 0 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .continue-spinner {
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255,255,255,.45);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
-      flex: 0 0 auto;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
+    /* ── Channel rows ── */
     .channel-row {
       display: flex;
       align-items: center;
@@ -164,14 +170,8 @@
       gap: 12px;
       padding: 10px 0;
     }
-
-    .channel-row:first-child {
-      padding-top: 8px;
-    }
-
-    .channel-row:last-child {
-      padding-bottom: 8px;
-    }
+    .channel-row:first-child { padding-top: 8px; }
+    .channel-row:last-child  { padding-bottom: 8px; }
 
     .channel-left {
       display: flex;
@@ -193,9 +193,10 @@
     .channel-divider {
       width: 100%;
       height: 1px;
-      background: rgba(127, 127, 127, 0.18);
+      background: rgba(127,127,127,.18);
     }
 
+    /* channel list circle — bigger inner SVG */
     .mini-icon-box {
       width: 36px;
       height: 36px;
@@ -204,16 +205,22 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      flex: 0 0 auto;
+      flex: 0 0 36px;
       overflow: hidden;
     }
+    .mini-icon-box svg {
+      width: 26px !important;
+      height: 26px !important;
+      display: block;
+    }
 
+    /* ── Footer note ── */
     .footer-note {
       margin-top: 8px;
       padding-bottom: 2px;
       font-size: 13.5px;
       line-height: 1.35;
-      color: rgba(127, 127, 127, 0.95);
+      color: rgba(127,127,127,.95);
       text-align: center;
     }
 
@@ -221,7 +228,7 @@
     .continue-wrap {
       width: 100%;
       max-width: 340px;
-      margin: 0 auto;            /* no extra top gap — sits right under footer-note */
+      margin: 0 auto;
       padding: 8px 16px 16px;
       box-sizing: border-box;
     }
@@ -231,11 +238,11 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      height: 58px;              /* noticeably bigger */
+      height: 58px;
       border-radius: 999px;
       background: var(--accent-btn-color);
       color: #fff !important;
-      font-size: 18px;           /* bigger text to match height */
+      font-size: 18px;
       font-weight: 700;
       text-decoration: none !important;
       border: 0;
@@ -243,26 +250,31 @@
       position: relative;
       overflow: hidden;
       cursor: pointer;
-      transition: opacity .15s ease;   /* no transform — no lift */
+      transition: opacity .15s ease;
       padding: 0;
       line-height: 1;
-      transform: none !important;      /* ensure no movement */
+    }
+    .continue-btn:hover { opacity: .92; }
+    .continue-btn.is-loading { pointer-events: none; opacity: .92; }
+
+    /* locked = visible but non-clickable, dim same as join done */
+    .continue-btn.locked {
+      opacity: 0.45;
+      pointer-events: none;
+      cursor: default;
     }
 
-    /* Telegram-like shine */
+    /* Shine sweep */
     .shine::before {
       content: "";
       position: absolute;
-      top: -40%;
-      left: -55%;
-      width: 40%;
-      height: 180%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.30), transparent);
+      top: -40%; left: -55%;
+      width: 40%; height: 180%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
       transform: skewX(-20deg);
       animation: shineMove 2.8s ease-in-out infinite;
       pointer-events: none;
     }
-
     @keyframes shineMove {
       0%   { left: -55%; }
       55%  { left: 120%; }
@@ -273,32 +285,41 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 9px;
       position: relative;
       z-index: 1;
-      width: 100%;
-      text-align: center;
     }
 
-    .join-loading-content {
+    /* Continue SVG icon — 26px */
+    .continue-icon {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      width: 100%;
+      width: 26px;
+      height: 26px;
+      flex-shrink: 0;
+      line-height: 0;
+    }
+    .continue-icon svg {
+      width: 26px !important;
+      height: 26px !important;
+      display: block;
     }
 
+    .join-loading-content,
     .continue-loading-content {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       width: 100%;
+      position: relative;
+      z-index: 1;
     }
 
-    /* ── Main header icon: smaller circle, icon fits better ── */
+    /* ── Main header icon ── */
     .main-icon-wrap {
-      width: 72px;               /* was 96px */
+      width: 72px;
       height: 72px;
       margin-bottom: 10px;
       border-radius: 50%;
@@ -312,7 +333,7 @@
 
     /* ── Header title ── */
     .header-title {
-      font-size: 22px;           /* was 28px — tighter, cleaner */
+      font-size: 22px;
       font-weight: 800;
       line-height: 1.2;
       letter-spacing: -0.025em;
@@ -321,7 +342,6 @@
       align-items: center;
       gap: 7px;
     }
-
     .header-title-badge {
       display: inline-flex;
       align-items: center;
@@ -335,6 +355,7 @@
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
+
   </style>
 </head>
 
@@ -370,26 +391,22 @@
       </div>
     </div>
 
-    <!-- BODY CONTENT -->
+    <!-- BODY -->
     <div class="tgme_body_wrap">
       <div class="tgme_page">
-        <div style="padding: 12px 16px 0 16px;">
-          <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center;">
+        <div style="padding:12px 16px 0 16px;">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;">
 
-            <!-- MAIN ICON (smaller circle, icon scales proportionally) -->
+            <!-- MAIN ICON -->
             <div class="main-icon-wrap">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="48" height="48" preserveAspectRatio="xMidYMid meet">
                 <defs>
-                  <clipPath id="__lottie_element_2_fixed_main">
-                    <rect width="512" height="512" x="0" y="0"></rect>
-                  </clipPath>
-                  <clipPath id="__lottie_element_4_fixed_main">
-                    <path d="M0,0 L100,0 L100,100 L0,100z"></path>
-                  </clipPath>
+                  <clipPath id="main_clip"><rect width="512" height="512" x="0" y="0"></rect></clipPath>
+                  <clipPath id="main_box"><path d="M0,0 L100,0 L100,100 L0,100z"></path></clipPath>
                 </defs>
-                <g clip-path="url(#__lottie_element_2_fixed_main)">
-                  <g clip-path="url(#__lottie_element_4_fixed_main)" style="display: block;" transform="matrix(5.119999885559082,0,0,5.119999885559082,0,0)" opacity="1">
-                    <g style="display: block;" transform="matrix(1,0,0,1,0,0)" opacity="1">
+                <g clip-path="url(#main_clip)">
+                  <g clip-path="url(#main_box)" transform="matrix(5.119999885559082,0,0,5.119999885559082,0,0)" opacity="1">
+                    <g transform="matrix(1,0,0,1,0,0)" opacity="1">
                       <g opacity="1" transform="matrix(1,0,0,1,0,0)">
                         <path fill-rule="evenodd" fill="#ffffff" fill-opacity="1" d=" M57.8129997253418,58.459999084472656 C57.96799850463867,58.54600143432617 58.119998931884766,58.63999938964844 58.268001556396484,58.7400016784668 C58.268001556396484,58.7400016784668 72.1969985961914,68.25199890136719 72.1969985961914,68.25199890136719 C75.01699829101562,70.17900085449219 78.84400177001953,68.15899658203125 78.84400177001953,64.74199676513672 C78.84400177001953,64.74199676513672 78.84400177001953,25.17799949645996 78.84400177001953,25.17799949645996 C78.84400177001953,21.576000213623047 74.6449966430664,19.607999801635742 71.8759994506836,21.90999984741211 C71.8759994506836,21.90999984741211 58.42399978637695,33.09700012207031 58.42399978637695,33.09700012207031 C58.23110580444336,33.257774353027344 58.02691650390625,33.404483795166016 57.8129997253418,33.5359992980957 C57.8129997253418,33.5359992980957 57.8129997253418,58.45899963378906 57.8129997253418,58.45899963378906 C57.8129997253418,58.45899963378906 57.8129997253418,58.459999084472656 57.8129997253418,58.459999084472656z M27.2189998626709,57.75 C23.89348602294922,57.75054931640625 21.15654945373535,55.012516021728516 21.1560001373291,51.6870002746582 C21.1560001373291,51.6870002746582 21.1560001373291,40.5620002746582 21.1560001373291,40.5620002746582 C21.1560001373291,37.13335037231445 23.977352142333984,34.3120002746582 27.4060001373291,34.3120002746582 C27.4060001373291,34.3120002746582 52.3129997253418,34.3120002746582 52.3129997253418,34.3120002746582 C52.3129997253418,34.3120002746582 52.3129997253418,57.75 52.3129997253418,57.75 C52.3129997253418,57.75 27.2189998626709,57.75 27.2189998626709,57.75 C27.2189998626709,57.75 27.2189998626709,57.75 27.2189998626709,57.75z M31.239999771118164,63.25 C31.239999771118164,63.25 36.0359992980957,75.5780029296875 36.0359992980957,75.5780029296875 C36.939205169677734,77.90005493164062 39.187469482421875,79.43794250488281 41.67900085449219,79.43800354003906 C44.552650451660156,79.43766021728516 46.8824462890625,76.99759674072266 46.75,74.12699890136719 C46.75,74.12699890136719 46.25,63.25 46.25,63.25 C46.25,63.25 31.239999771118164,63.25 31.239999771118164,63.25 C31.239999771118164,63.25 31.239999771118164,63.25 31.239999771118164,63.25z M68.36000061035156,17.68000030517578 C74.71099853515625,12.397000312805176 84.34400177001953,16.915000915527344 84.34400177001953,25.177000045776367 C84.34400177001953,25.177000045776367 84.34400177001953,64.74299621582031 84.34400177001953,64.74299621582031 C84.34400177001953,72.58000183105469 75.56700134277344,77.21399688720703 69.09500122070312,72.79399871826172 C69.09500122070312,72.79399871826172 55.16600036621094,63.28200149536133 55.16600036621094,63.28200149536133 C55.13563919067383,63.261287689208984 55.099754333496094,63.25013732910156 55.0629997253418,63.25 C55.0629997253418,63.25 51.755001068115234,63.25 51.755001068115234,63.25 C51.755001068115234,63.25 52.244998931884766,73.87300109863281 52.244998931884766,73.87300109863281 C52.52199935913086,79.9000015258789 47.71200180053711,84.93699645996094 41.67900085449219,84.93699645996094 C36.92416000366211,84.93759155273438 32.63317108154297,82.00322723388672 30.909000396728516,77.5719985961914 C30.909000396728516,77.5719985961914 25.274999618530273,63.08700180053711 25.274999618530273,63.08700180053711 C19.815000534057617,62.16299819946289 15.656000137329102,57.4109992980957 15.656000137329102,51.6870002746582 C15.656000137329102,51.6870002746582 15.656000137329102,40.5620002746582 15.656000137329102,40.5620002746582 C15.656000137329102,34.073001861572266 20.916000366210938,28.812000274658203 27.4060001373291,28.812000274658203 C27.4060001373291,28.812000274658203 54.974998474121094,28.812000274658203 54.974998474121094,28.812000274658203 C54.974998474121094,28.812000274658203 68.35900115966797,17.68000030517578 68.35900115966797,17.68000030517578 C68.35900115966797,17.68000030517578 68.36000061035156,17.68000030517578 68.36000061035156,17.68000030517578z"></path>
                       </g>
@@ -399,39 +416,24 @@
               </svg>
             </div>
 
-            <!-- HEADER NAME (improved visual) -->
+            <!-- HEADER TITLE -->
             <div class="header-title">
               Channel Verification
               <span class="header-title-badge">Required</span>
             </div>
 
-            <!-- SEPARATION LINE -->
-            <div style="width: 100%; max-width: 280px; height: 1px; margin-top: 10px; background: rgba(127, 127, 127, 0.22);"></div>
+            <!-- SEPARATOR -->
+            <div style="width:100%;max-width:280px;height:1px;margin-top:10px;background:rgba(127,127,127,.22);"></div>
 
             <!-- CHANNEL LIST -->
-            <div style="width: 100%; max-width: 340px; margin-top: 4px;">
+            <div style="width:100%;max-width:340px;margin-top:4px;">
 
               <div class="channel-row">
                 <div class="channel-left">
                   <div class="mini-icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" preserveAspectRatio="xMidYMid meet">
-                      <defs>
-                        <clipPath id="__channel_icon_clip">
-                          <rect width="512" height="512" x="0" y="0"></rect>
-                        </clipPath>
-                        <clipPath id="__channel_icon_box">
-                          <path d="M0,0 L100,0 L100,100 L0,100z"></path>
-                        </clipPath>
-                      </defs>
-                      <g clip-path="url(#__channel_icon_clip)">
-                        <g clip-path="url(#__channel_icon_box)" transform="matrix(5.119999885559082,0,0,5.119999885559082,0,0)" opacity="1">
-                          <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                            <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                              <path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(255,255,255)" stroke-opacity="1" stroke-width="6" d=" M35.28499984741211,72.25 C35.28499984741211,72.25 72.875,72.25 72.875,72.25 C77.812255859375,72.25 81.875,68.187255859375 81.875,63.25 C81.875,63.25 81.875,30.375 81.875,30.375 C81.875,25.437746047973633 77.812255859375,21.375 72.875,21.375 C72.875,21.375 26.875,21.375 26.875,21.375 C21.937746047973633,21.375 17.875,25.437746047973633 17.875,30.375 C17.875,30.375 17.875,81.83300018310547 17.875,81.83300018310547 C17.875,84.49500274658203 21.084999084472656,85.83799743652344 22.981000900268555,83.96900177001953 C22.981000900268555,83.96900177001953 34.58300018310547,72.53800201416016 34.58300018310547,72.53800201416016 C34.7700080871582,72.35356903076172 35.02234649658203,72.25004577636719 35.28499984741211,72.25 C35.28499984741211,72.25 35.28499984741211,72.25 35.28499984741211,72.25z M34.875,53.625 C34.875,53.625 55.75,53.625 55.75,53.625 M34.875,39.625 C34.875,39.625 66.25,39.625 66.25,39.625"></path>
-                            </g>
-                          </g>
-                        </g>
-                      </g>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
+                      <defs><clipPath id="ch1a"><rect width="512" height="512" x="0" y="0"></rect></clipPath><clipPath id="ch1b"><path d="M0,0 L100,0 L100,100 L0,100z"></path></clipPath></defs>
+                      <g clip-path="url(#ch1a)"><g clip-path="url(#ch1b)" transform="matrix(5.119999885559082,0,0,5.119999885559082,0,0)" opacity="1"><g transform="matrix(1,0,0,1,0,0)" opacity="1"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(255,255,255)" stroke-opacity="1" stroke-width="6" d=" M35.28499984741211,72.25 C35.28499984741211,72.25 72.875,72.25 72.875,72.25 C77.812255859375,72.25 81.875,68.187255859375 81.875,63.25 C81.875,63.25 81.875,30.375 81.875,30.375 C81.875,25.437746047973633 77.812255859375,21.375 72.875,21.375 C72.875,21.375 26.875,21.375 26.875,21.375 C21.937746047973633,21.375 17.875,25.437746047973633 17.875,30.375 C17.875,30.375 17.875,81.83300018310547 17.875,81.83300018310547 C17.875,84.49500274658203 21.084999084472656,85.83799743652344 22.981000900268555,83.96900177001953 C22.981000900268555,83.96900177001953 34.58300018310547,72.53800201416016 34.58300018310547,72.53800201416016 C34.7700080871582,72.35356903076172 35.02234649658203,72.25004577636719 35.28499984741211,72.25z M34.875,53.625 C34.875,53.625 55.75,53.625 55.75,53.625 M34.875,39.625 C34.875,39.625 66.25,39.625 66.25,39.625"></path></g></g></g></g>
                     </svg>
                   </div>
                   <div class="channel-name">@ChannelOne</div>
@@ -444,24 +446,9 @@
               <div class="channel-row">
                 <div class="channel-left">
                   <div class="mini-icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" preserveAspectRatio="xMidYMid meet">
-                      <defs>
-                        <clipPath id="__channel_icon_clip2">
-                          <rect width="512" height="512" x="0" y="0"></rect>
-                        </clipPath>
-                        <clipPath id="__channel_icon_box2">
-                          <path d="M0,0 L100,0 L100,100 L0,100z"></path>
-                        </clipPath>
-                      </defs>
-                      <g clip-path="url(#__channel_icon_clip2)">
-                        <g clip-path="url(#__channel_icon_box2)" transform="matrix(5.119999885559082,0,0,5.119999885559082,0,0)" opacity="1">
-                          <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                            <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                              <path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(255,255,255)" stroke-opacity="1" stroke-width="6" d=" M35.28499984741211,72.25 C35.28499984741211,72.25 72.875,72.25 72.875,72.25 C77.812255859375,72.25 81.875,68.187255859375 81.875,63.25 C81.875,63.25 81.875,30.375 81.875,30.375 C81.875,25.437746047973633 77.812255859375,21.375 72.875,21.375 C72.875,21.375 26.875,21.375 26.875,21.375 C21.937746047973633,21.375 17.875,25.437746047973633 17.875,30.375 C17.875,30.375 17.875,81.83300018310547 17.875,81.83300018310547 C17.875,84.49500274658203 21.084999084472656,85.83799743652344 22.981000900268555,83.96900177001953 C22.981000900268555,83.96900177001953 34.58300018310547,72.53800201416016 34.58300018310547,72.53800201416016 C34.7700080871582,72.35356903076172 35.02234649658203,72.25004577636719 35.28499984741211,72.25 C35.28499984741211,72.25 35.28499984741211,72.25 35.28499984741211,72.25z M34.875,53.625 C34.875,53.625 55.75,53.625 55.75,53.625 M34.875,39.625 C34.875,39.625 66.25,39.625 66.25,39.625"></path>
-                            </g>
-                          </g>
-                        </g>
-                      </g>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
+                      <defs><clipPath id="ch2a"><rect width="512" height="512" x="0" y="0"></rect></clipPath><clipPath id="ch2b"><path d="M0,0 L100,0 L100,100 L0,100z"></path></clipPath></defs>
+                      <g clip-path="url(#ch2a)"><g clip-path="url(#ch2b)" transform="matrix(5.119999885559082,0,0,5.119999885559082,0,0)" opacity="1"><g transform="matrix(1,0,0,1,0,0)" opacity="1"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(255,255,255)" stroke-opacity="1" stroke-width="6" d=" M35.28499984741211,72.25 C35.28499984741211,72.25 72.875,72.25 72.875,72.25 C77.812255859375,72.25 81.875,68.187255859375 81.875,63.25 C81.875,63.25 81.875,30.375 81.875,30.375 C81.875,25.437746047973633 77.812255859375,21.375 72.875,21.375 C72.875,21.375 26.875,21.375 26.875,21.375 C21.937746047973633,21.375 17.875,25.437746047973633 17.875,30.375 C17.875,30.375 17.875,81.83300018310547 17.875,81.83300018310547 C17.875,84.49500274658203 21.084999084472656,85.83799743652344 22.981000900268555,83.96900177001953 C22.981000900268555,83.96900177001953 34.58300018310547,72.53800201416016 34.58300018310547,72.53800201416016 C34.7700080871582,72.35356903076172 35.02234649658203,72.25004577636719 35.28499984741211,72.25z M34.875,53.625 C34.875,53.625 55.75,53.625 55.75,53.625 M34.875,39.625 C34.875,39.625 66.25,39.625 66.25,39.625"></path></g></g></g></g>
                     </svg>
                   </div>
                   <div class="channel-name">@ChannelTwo</div>
@@ -474,24 +461,9 @@
               <div class="channel-row">
                 <div class="channel-left">
                   <div class="mini-icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" preserveAspectRatio="xMidYMid meet">
-                      <defs>
-                        <clipPath id="__channel_icon_clip3">
-                          <rect width="512" height="512" x="0" y="0"></rect>
-                        </clipPath>
-                        <clipPath id="__channel_icon_box3">
-                          <path d="M0,0 L100,0 L100,100 L0,100z"></path>
-                        </clipPath>
-                      </defs>
-                      <g clip-path="url(#__channel_icon_clip3)">
-                        <g clip-path="url(#__channel_icon_box3)" transform="matrix(5.119999885559082,0,0,5.119999885559082,0,0)" opacity="1">
-                          <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                            <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                              <path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(255,255,255)" stroke-opacity="1" stroke-width="6" d=" M35.28499984741211,72.25 C35.28499984741211,72.25 72.875,72.25 72.875,72.25 C77.812255859375,72.25 81.875,68.187255859375 81.875,63.25 C81.875,63.25 81.875,30.375 81.875,30.375 C81.875,25.437746047973633 77.812255859375,21.375 72.875,21.375 C72.875,21.375 26.875,21.375 26.875,21.375 C21.937746047973633,21.375 17.875,25.437746047973633 17.875,30.375 C17.875,30.375 17.875,81.83300018310547 17.875,81.83300018310547 C17.875,84.49500274658203 21.084999084472656,85.83799743652344 22.981000900268555,83.96900177001953 C22.981000900268555,83.96900177001953 34.58300018310547,72.53800201416016 34.58300018310547,72.53800201416016 C34.7700080871582,72.35356903076172 35.02234649658203,72.25004577636719 35.28499984741211,72.25 C35.28499984741211,72.25 35.28499984741211,72.25 35.28499984741211,72.25z M34.875,53.625 C34.875,53.625 55.75,53.625 55.75,53.625 M34.875,39.625 C34.875,39.625 66.25,39.625 66.25,39.625"></path>
-                            </g>
-                          </g>
-                        </g>
-                      </g>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
+                      <defs><clipPath id="ch3a"><rect width="512" height="512" x="0" y="0"></rect></clipPath><clipPath id="ch3b"><path d="M0,0 L100,0 L100,100 L0,100z"></path></clipPath></defs>
+                      <g clip-path="url(#ch3a)"><g clip-path="url(#ch3b)" transform="matrix(5.119999885559082,0,0,5.119999885559082,0,0)" opacity="1"><g transform="matrix(1,0,0,1,0,0)" opacity="1"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(255,255,255)" stroke-opacity="1" stroke-width="6" d=" M35.28499984741211,72.25 C35.28499984741211,72.25 72.875,72.25 72.875,72.25 C77.812255859375,72.25 81.875,68.187255859375 81.875,63.25 C81.875,63.25 81.875,30.375 81.875,30.375 C81.875,25.437746047973633 77.812255859375,21.375 72.875,21.375 C72.875,21.375 26.875,21.375 26.875,21.375 C21.937746047973633,21.375 17.875,25.437746047973633 17.875,30.375 C17.875,30.375 17.875,81.83300018310547 17.875,81.83300018310547 C17.875,84.49500274658203 21.084999084472656,85.83799743652344 22.981000900268555,83.96900177001953 C22.981000900268555,83.96900177001953 34.58300018310547,72.53800201416016 34.58300018310547,72.53800201416016 C34.7700080871582,72.35356903076172 35.02234649658203,72.25004577636719 35.28499984741211,72.25z M34.875,53.625 C34.875,53.625 55.75,53.625 55.75,53.625 M34.875,39.625 C34.875,39.625 66.25,39.625 66.25,39.625"></path></g></g></g></g>
                     </svg>
                   </div>
                   <div class="channel-name">@ChannelThree</div>
@@ -501,12 +473,12 @@
 
             </div>
 
-            <!-- LINE BETWEEN CHANNEL LIST AND FOOTER NOTE -->
-            <div style="width: 100%; max-width: 280px; height: 1px; margin-top: 4px; background: rgba(127, 127, 127, 0.22);"></div>
+            <!-- SEPARATOR -->
+            <div style="width:100%;max-width:280px;height:1px;margin-top:4px;background:rgba(127,127,127,.22);"></div>
 
             <!-- FOOTER NOTE -->
             <div class="footer-note">
-              Join all channels to continue with the bot.
+              Join all channels to <strong>continue</strong> with the bot.
             </div>
 
           </div>
@@ -514,7 +486,7 @@
       </div>
     </div>
 
-    <!-- CONTINUE BUTTON OUTSIDE THE LIST BLOCK -->
+    <!-- CONTINUE BUTTON -->
     <div class="continue-wrap">
       <a class="continue-btn tgme_action_button_new shine locked" href="#" onclick="return continueBot(this)">
         <span class="continue-content">
@@ -526,9 +498,9 @@
 
   </div>
 
-  <!-- Toast notification -->
+  <!-- Toast -->
   <div id="toast">
-    <span class="toast-icon" id="toast-icon"></span>
+    <span id="toast-icon"></span>
     <span id="toast-msg"></span>
   </div>
 
@@ -547,12 +519,21 @@
       window.onfocus = function(){ TWallpaper.update(); };
     }
 
-    // ── SVG icons ──
-    var SVG_SUCCESS = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="sc2"><rect width="512" height="512" x="0" y="0"></rect></clipPath><clipPath id="sc3"><path d="M0,0 L100,0 L100,100 L0,100z"></path></clipPath></defs><g clip-path="url(#sc2)"><g clip-path="url(#sc3)" transform="matrix(5.119999885559082,0,0,5.119999885559082,0,0)" opacity="1"><g transform="matrix(1,0,0,1,0,0)" opacity="1"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(255,255,255)" fill-opacity="1" d=" M67.8499984741211,39.525001525878906 C66.54020690917969,38.214805603027344 64.40542602539062,38.15988540649414 63.029998779296875,39.4010009765625 C63.029998779296875,39.4010009765625 62.900001525878906,39.52399826049805 62.900001525878906,39.52399826049805 C62.900001525878906,39.52399826049805 43.9379997253418,58.48699951171875 43.9379997253418,58.48699951171875 C43.9379997253418,58.48699951171875 36.53799819946289,51.08700180053711 36.53799819946289,51.08700180053711 C35.18025588989258,49.72925567626953 32.945743560791016,49.72925567626953 31.58799934387207,51.08700180053711 C30.230255126953125,52.44474411010742 30.230255126953125,54.679256439208984 31.58799934387207,56.0369987487793 C31.58799934387207,56.0369987487793 40.755001068115234,65.20500183105469 40.755001068115234,65.20500183105469 C40.755001068115234,65.20500183105469 40.92399978637695,65.36499786376953 40.92399978637695,65.36499786376953 C42.69226837158203,66.95922088623047 45.43538284301758,66.88837432861328 47.11899948120117,65.20500183105469 C47.11899948120117,65.20500183105469 67.8489990234375,44.474998474121094 67.8489990234375,44.474998474121094 C67.8489990234375,44.474998474121094 67.9739990234375,44.345001220703125 67.9739990234375,44.345001220703125 C69.21461486816406,42.96937561035156 69.15970611572266,40.83501434326172 67.8499984741211,39.525001525878906z M50,14.545000076293945 C69.58100128173828,14.545000076293945 85.45600128173828,30.41900062561035 85.45600128173828,50 C85.45600128173828,69.58100128173828 69.58100128173828,85.45600128173828 50,85.45600128173828 C30.41900062561035,85.45600128173828 14.545000076293945,69.58100128173828 14.545000076293945,50 C14.545000076293945,30.41900062561035 30.41900062561035,14.545000076293945 50,14.545000076293945z"></path></g></g></g></g></svg>';
+    // ── Haptic ──
+    function haptic(type) {
+      try {
+        if (tg && tg.HapticFeedback) {
+          tg.HapticFeedback.notificationOccurred(type); // 'success' or 'error'
+        }
+      } catch(e) {}
+    }
 
-    var SVG_ERROR = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="ec2"><rect width="512" height="512" x="0" y="0"></rect></clipPath><clipPath id="ec3"><path d="M0,0 L101,0 L101,100 L0,100z"></path></clipPath></defs><g clip-path="url(#ec2)"><g clip-path="url(#ec3)" transform="matrix(5.06930685043335,0,0,5.06930685043335,0,2.534653425216675)" opacity="1"><g transform="matrix(1,0,0,1,0,0)" opacity="1"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(255,255,255)" fill-opacity="1" d=" M66.41200256347656,33.8380012512207 C65.05438995361328,32.480255126953125 62.81974411010742,32.48039245605469 61.46200180053711,33.8380012512207 C61.46200180053711,33.8380012512207 50.25,45.04999923706055 50.25,45.04999923706055 C50.25,45.04999923706055 39.0369987487793,33.8380012512207 39.0369987487793,33.8380012512207 C37.679256439208984,32.480255126953125 35.44474411010742,32.480255126953125 34.08700180053711,33.8380012512207 C32.72925567626953,35.195743560791016 32.72925567626953,37.43025588989258 34.08700180053711,38.78799819946289 C34.08700180053711,38.78799819946289 45.301998138427734,50 45.301998138427734,50 C45.301998138427734,50 34.0880012512207,61.2130012512207 34.0880012512207,61.2130012512207 C32.730255126953125,62.570743560791016 32.730255126953125,64.80525207519531 34.0880012512207,66.16300201416016 C35.445743560791016,67.52074432373047 37.68025588989258,67.52074432373047 39.03799819946289,66.16300201416016 C39.03799819946289,66.16300201416016 50.25,54.948001861572266 50.25,54.948001861572266 C50.25,54.948001861572266 61.4630012512207,66.16100311279297 61.4630012512207,66.16100311279297 C61.4630012512207,66.16100311279297 61.59299850463867,66.28500366210938 61.59299850463867,66.28500366210938 C62.96852111816406,67.52387237548828 65.10121154785156,67.46817016601562 66.41019439697266,66.15919494628906 C67.71917724609375,64.85021209716797 67.77487182617188,62.71752166748047 66.53600311279297,61.34199905395508 C66.53600311279297,61.34199905395508 66.41200256347656,61.21200180053711 66.41200256347656,61.21200180053711 C66.41200256347656,61.21200180053711 55.20000076293945,50 55.20000076293945,50 C55.20000076293945,50 66.41300201416016,38.7869987487793 66.41300201416016,38.7869987487793 C67.77074432373047,37.42939376831055 67.7706069946289,35.19474411010742 66.41300201416016,33.83700180053711z M50.25,14.545000076293945 C69.83100128173828,14.545000076293945 85.70600128173828,30.41900062561035 85.70600128173828,50 C85.70600128173828,69.58100128173828 69.83100128173828,85.45600128173828 50.25,85.45600128173828 C30.66900062561035,85.45600128173828 14.795000076293945,69.58100128173828 14.795000076293945,50 C14.795000076293945,30.41900062561035 30.66900062561035,14.545000076293945 50.25,14.545000076293945z"></path></g></g></g></g></svg>';
+    // ── SVG strings ──
+    var SVG_SUCCESS = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="sc2"><rect width="512" height="512" x="0" y="0"></rect></clipPath><clipPath id="sc3"><path d="M0,0 L100,0 L100,100 L0,100z"></path></clipPath></defs><g clip-path="url(#sc2)"><g clip-path="url(#sc3)" transform="matrix(5.119999885559082,0,0,5.119999885559082,0,0)" opacity="1"><g transform="matrix(1,0,0,1,0,0)" opacity="1"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(255,255,255)" fill-opacity="1" d=" M67.8499984741211,39.525001525878906 C66.54020690917969,38.214805603027344 64.40542602539062,38.15988540649414 63.029998779296875,39.4010009765625 C63.029998779296875,39.4010009765625 62.900001525878906,39.52399826049805 62.900001525878906,39.52399826049805 C62.900001525878906,39.52399826049805 43.9379997253418,58.48699951171875 43.9379997253418,58.48699951171875 C43.9379997253418,58.48699951171875 36.53799819946289,51.08700180053711 36.53799819946289,51.08700180053711 C35.18025588989258,49.72925567626953 32.945743560791016,49.72925567626953 31.58799934387207,51.08700180053711 C30.230255126953125,52.44474411010742 30.230255126953125,54.679256439208984 31.58799934387207,56.0369987487793 C31.58799934387207,56.0369987487793 40.755001068115234,65.20500183105469 40.755001068115234,65.20500183105469 C40.755001068115234,65.20500183105469 40.92399978637695,65.36499786376953 40.92399978637695,65.36499786376953 C42.69226837158203,66.95922088623047 45.43538284301758,66.88837432861328 47.11899948120117,65.20500183105469 C47.11899948120117,65.20500183105469 67.8489990234375,44.474998474121094 67.8489990234375,44.474998474121094 C67.8489990234375,44.474998474121094 67.9739990234375,44.345001220703125 67.9739990234375,44.345001220703125 C69.21461486816406,42.96937561035156 69.15970611572266,40.83501434326172 67.8499984741211,39.525001525878906z M50,14.545000076293945 C69.58100128173828,14.545000076293945 85.45600128173828,30.41900062561035 85.45600128173828,50 C85.45600128173828,69.58100128173828 69.58100128173828,85.45600128173828 50,85.45600128173828 C30.41900062561035,85.45600128173828 14.545000076293945,69.58100128173828 14.545000076293945,50 C14.545000076293945,30.41900062561035 30.41900062561035,14.545000076293945 50,14.545000076293945z"></path></g></g></g></g></svg>';
 
-    var SVG_CONTINUE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="cnc2"><rect width="512" height="512" x="0" y="0"></rect></clipPath><clipPath id="cnc3"><path d="M0,0 L101,0 L101,100 L0,100z"></path></clipPath></defs><g clip-path="url(#cnc2)"><g clip-path="url(#cnc3)" transform="matrix(5.06930685043335,0,0,5.06930685043335,0,2.534653425216675)" opacity="1"><g transform="matrix(1,0,0,1,0,0)" opacity="1"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill-rule="evenodd" fill="rgb(255,255,255)" fill-opacity="1" d=" M40.888999938964844,34.35200119018555 C41.88600158691406,28.69700050354004 47.27899932861328,24.92099952697754 52.933998107910156,25.917999267578125 C58.5890007019043,26.915000915527344 62.36399841308594,32.30799865722656 61.36800003051758,37.9630012512207 C61.36800003051758,37.9630012512207 60.231998443603516,44.4010009765625 60.231998443603516,44.4010009765625 C60.34600067138672,44.42900085449219 60.45500183105469,44.46099853515625 60.56100082397461,44.49599838256836 C62.3502311706543,45.092864990234375 63.757137298583984,46.49977111816406 64.35399627685547,48.28900146484375 C64.66200256347656,49.2130012512207 64.66200256347656,50.358001708984375 64.66200256347656,52.64699935913086 C64.66200256347656,52.64699935913086 64.66200256347656,58.790000915527344 64.66200256347656,58.790000915527344 C64.66200256347656,61.08000183105469 64.66200256347656,62.2239990234375 64.35399627685547,63.14899826049805 C63.757137298583984,64.938232421875 62.3502311706543,66.34513854980469 60.56100082397461,66.94200134277344 C59.637001037597656,67.25 58.49100112915039,67.25 56.20199966430664,67.25 C56.20199966430664,67.25 44.685001373291016,67.25 44.685001373291016,67.25 C42.39500045776367,67.25 41.25,67.25 40.32500076293945,66.94200134277344 C38.53615188598633,66.3448715209961 37.12965774536133,64.93800354003906 36.53300094604492,63.14899826049805 C36.224998474121094,62.2239990234375 36.224998474121094,61.07899856567383 36.224998474121094,58.790000915527344 C36.224998474121094,58.790000915527344 36.224998474121094,52.64799880981445 36.224998474121094,52.64799880981445 C36.224998474121094,50.358001708984375 36.224998474121094,49.2130012512207 36.53300094604492,48.28799819946289 C37.130130767822266,46.499149322509766 38.536991119384766,45.09265899658203 40.32600021362305,44.49599838256836 C41.25,44.1870002746582 42.39500045776367,44.1870002746582 44.685001373291016,44.1870002746582 C44.685001373291016,44.1870002746582 55.09199905395508,44.1870002746582 55.09199905395508,44.1870002746582 C55.09199905395508,44.1870002746582 56.345001220703125,37.07699966430664 56.345001220703125,37.07699966430664 C56.84969711303711,34.21503829956055 54.90996170043945,31.4446964263916 52.04800033569336,30.940000534057617 C49.186038970947266,30.435302734375 46.41569519042969,32.375038146972656 45.9109992980957,35.23699951171875 C45.9109992980957,35.23699951171875 45.46799850463867,37.75199890136719 45.46799850463867,37.75199890136719 C45.2249755859375,39.12976837158203 43.89126968383789,40.06352233886719 42.51350021362305,39.820499420166016 C41.1357307434082,39.577476501464844 40.20197677612305,38.24376678466797 40.44499969482422,36.86600112915039 C40.44499969482422,36.86600112915039 40.888999938964844,34.35200119018555 40.888999938964844,34.35200119018555z M85.27899932861328,47.77000045776367 C85.27899932861328,30.36199951171875 69.66899871826172,16.25 50.41299819946289,16.25 C31.1560001373291,16.25 15.545999526977539,30.36199951171875 15.545999526977539,47.77000045776367 C15.545999526977539,56.06700134277344 19.093000411987305,63.61600112915039 24.891000747680664,69.24500274658203 C25.111000061035156,72.73899841308594 23.041000366210938,77.01000213623047 20.447999954223633,79.89700317382812 C20.447999954223633,79.89700317382812 20.388999938964844,79.97200012207031 20.388999938964844,79.97200012207031 C20.016326904296875,80.51016998291016 20.3294677734375,81.27986145019531 20.972000122070312,81.40499877929688 C23.173999786376953,81.76000213623047 27.07699966430664,81.09500122070312 29.422000885009766,79.94200134277344 C29.422000885009766,79.94200134277344 29.808000564575195,79.75700378417969 29.808000564575195,79.75700378417969 C31.027999877929688,79.177001953125 33.099998474121094,78.19499969482422 34.965999603271484,76.03500366210938 C39.62200164794922,78.11799621582031 44.86600112915039,79.28900146484375 50.41299819946289,79.28900146484375 C69.66899871826172,79.28900146484375 85.27899932861328,65.177001953125 85.27899932861328,47.76900100708008z"></path></g></g></g></g></svg>';
+    var SVG_ERROR = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="ec2"><rect width="512" height="512" x="0" y="0"></rect></clipPath><clipPath id="ec3"><path d="M0,0 L101,0 L101,100 L0,100z"></path></clipPath></defs><g clip-path="url(#ec2)"><g clip-path="url(#ec3)" transform="matrix(5.06930685043335,0,0,5.06930685043335,0,2.534653425216675)" opacity="1"><g transform="matrix(1,0,0,1,0,0)" opacity="1"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(255,255,255)" fill-opacity="1" d=" M66.41200256347656,33.8380012512207 C65.05438995361328,32.480255126953125 62.81974411010742,32.48039245605469 61.46200180053711,33.8380012512207 C61.46200180053711,33.8380012512207 50.25,45.04999923706055 50.25,45.04999923706055 C50.25,45.04999923706055 39.0369987487793,33.8380012512207 39.0369987487793,33.8380012512207 C37.679256439208984,32.480255126953125 35.44474411010742,32.480255126953125 34.08700180053711,33.8380012512207 C32.72925567626953,35.195743560791016 32.72925567626953,37.43025588989258 34.08700180053711,38.78799819946289 C34.08700180053711,38.78799819946289 45.301998138427734,50 45.301998138427734,50 C45.301998138427734,50 34.0880012512207,61.2130012512207 34.0880012512207,61.2130012512207 C32.730255126953125,62.570743560791016 32.730255126953125,64.80525207519531 34.0880012512207,66.16300201416016 C35.445743560791016,67.52074432373047 37.68025588989258,67.52074432373047 39.03799819946289,66.16300201416016 C39.03799819946289,66.16300201416016 50.25,54.948001861572266 50.25,54.948001861572266 C50.25,54.948001861572266 61.4630012512207,66.16100311279297 61.4630012512207,66.16100311279297 C61.4630012512207,66.16100311279297 61.59299850463867,66.28500366210938 61.59299850463867,66.28500366210938 C62.96852111816406,67.52387237548828 65.10121154785156,67.46817016601562 66.41019439697266,66.15919494628906 C67.71917724609375,64.85021209716797 67.77487182617188,62.71752166748047 66.53600311279297,61.34199905395508 C66.53600311279297,61.34199905395508 66.41200256347656,61.21200180053711 66.41200256347656,61.21200180053711 C66.41200256347656,61.21200180053711 55.20000076293945,50 55.20000076293945,50 C55.20000076293945,50 66.41300201416016,38.7869987487793 66.41300201416016,38.7869987487793 C67.77074432373047,37.42939376831055 67.7706069946289,35.19474411010742 66.41300201416016,33.83700180053711z M50.25,14.545000076293945 C69.83100128173828,14.545000076293945 85.70600128173828,30.41900062561035 85.70600128173828,50 C85.70600128173828,69.58100128173828 69.83100128173828,85.45600128173828 50.25,85.45600128173828 C30.66900062561035,85.45600128173828 14.795000076293945,69.58100128173828 14.795000076293945,50 C14.795000076293945,30.41900062561035 30.66900062561035,14.545000076293945 50.25,14.545000076293945z"></path></g></g></g></g></svg>';
+
+    var SVG_CONTINUE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="cnc2"><rect width="512" height="512" x="0" y="0"></rect></clipPath><clipPath id="cnc3"><path d="M0,0 L101,0 L101,100 L0,100z"></path></clipPath></defs><g clip-path="url(#cnc2)"><g clip-path="url(#cnc3)" transform="matrix(5.06930685043335,0,0,5.06930685043335,0,2.534653425216675)" opacity="1"><g transform="matrix(1,0,0,1,0,0)" opacity="1"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill-rule="evenodd" fill="rgb(255,255,255)" fill-opacity="1" d=" M40.888999938964844,34.35200119018555 C41.88600158691406,28.69700050354004 47.27899932861328,24.92099952697754 52.933998107910156,25.917999267578125 C58.5890007019043,26.915000915527344 62.36399841308594,32.30799865722656 61.36800003051758,37.9630012512207 C61.36800003051758,37.9630012512207 60.231998443603516,44.4010009765625 60.231998443603516,44.4010009765625 C60.34600067138672,44.42900085449219 60.45500183105469,44.46099853515625 60.56100082397461,44.49599838256836 C62.3502311706543,45.092864990234375 63.757137298583984,46.49977111816406 64.35399627685547,48.28900146484375 C64.66200256347656,49.2130012512207 64.66200256347656,50.358001708984375 64.66200256347656,52.64699935913086 C64.66200256347656,52.64699935913086 64.66200256347656,58.790000915527344 64.66200256347656,58.790000915527344 C64.66200256347656,61.08000183105469 64.66200256347656,62.2239990234375 64.35399627685547,63.14899826049805 C63.757137298583984,64.938232421875 62.3502311706543,66.34513854980469 60.56100082397461,66.94200134277344 C59.637001037597656,67.25 58.49100112915039,67.25 56.20199966430664,67.25 C56.20199966430664,67.25 44.685001373291016,67.25 44.685001373291016,67.25 C42.39500045776367,67.25 41.25,67.25 40.32500076293945,66.94200134277344 C38.53615188598633,66.3448715209961 37.12965774536133,64.93800354003906 36.53300094604492,63.14899826049805 C36.224998474121094,62.2239990234375 36.224998474121094,61.07899856567383 36.224998474121094,58.790000915527344 C36.224998474121094,58.790000915527344 36.224998474121094,52.64799880981445 36.224998474121094,52.64799880981445 C36.224998474121094,50.358001708984375 36.224998474121094,49.2130012512207 36.53300094604492,48.28799819946289 C37.130130767822266,46.499149322509766 38.536991119384766,45.09265899658203 40.32600021362305,44.49599838256836 C41.25,44.1870002746582 42.39500045776367,44.1870002746582 44.685001373291016,44.1870002746582 C44.685001373291016,44.1870002746582 55.09199905395508,44.1870002746582 55.09199905395508,44.1870002746582 C55.09199905395508,44.1870002746582 56.345001220703125,37.07699966430664 56.345001220703125,37.07699966430664 C56.84969711303711,34.21503829956055 54.90996170043945,31.4446964263916 52.04800033569336,30.940000534057617 C49.186038970947266,30.435302734375 46.41569519042969,32.375038146972656 45.9109992980957,35.23699951171875 C45.9109992980957,35.23699951171875 45.46799850463867,37.75199890136719 45.46799850463867,37.75199890136719 C45.2249755859375,39.12976837158203 43.89126968383789,40.06352233886719 42.51350021362305,39.820499420166016 C41.1357307434082,39.577476501464844 40.20197677612305,38.24376678466797 40.44499969482422,36.86600112915039 C40.44499969482422,36.86600112915039 40.888999938964844,34.35200119018555 40.888999938964844,34.35200119018555z M85.27899932861328,47.77000045776367 C85.27899932861328,30.36199951171875 69.66899871826172,16.25 50.41299819946289,16.25 C31.1560001373291,16.25 15.545999526977539,30.36199951171875 15.545999526977539,47.77000045776367 C15.545999526977539,56.06700134277344 19.093000411987305,63.61600112915039 24.891000747680664,69.24500274658203 C25.111000061035156,72.73899841308594 23.041000366210938,77.01000213623047 20.447999954223633,79.89700317382812 C20.447999954223633,79.89700317382812 20.388999938964844,79.97200012207031 20.388999938964844,79.97200012207031 C20.016326904296875,80.51016998291016 20.3294677734375,81.27986145019531 20.972000122070312,81.40499877929688 C23.173999786376953,81.76000213623047 27.07699966430664,81.09500122070312 29.422000885009766,79.94200134277344 C29.422000885009766,79.94200134277344 29.808000564575195,79.75700378417969 29.808000564575195,79.75700378417969 C31.027999877929688,79.177001953125 33.099998474121094,78.19499969482422 34.965999603271484,76.03500366210938 C39.62200164794922,78.11799621582031 44.86600112915039,79.28900146484375 50.41299819946289,79.28900146484375 C69.66899871826172,79.28900146484375 85.27899932861328,65.177001953125 85.27899932861328,47.76900100708008z"></path></g></g></g></g></svg>';
 
     // ── Channel join tracking ──
     var TOTAL_CHANNELS = document.querySelectorAll('.join-btn').length;
@@ -570,43 +551,46 @@
     // ── Toast ──
     var toastTimer;
     function showToast(type, msg) {
-      var el = document.getElementById('toast');
-      var iconEl = document.getElementById('toast-icon');
-      var msgEl = document.getElementById('toast-msg');
+      var el  = document.getElementById('toast');
+      var ico = document.getElementById('toast-icon');
+      var txt = document.getElementById('toast-msg');
       clearTimeout(toastTimer);
-      // Reset fully before setting new class to re-trigger transition
-      el.className = '';
-      void el.offsetWidth;
-      el.className = type + ' show';
-      iconEl.innerHTML = type === 'success' ? SVG_SUCCESS : SVG_ERROR;
-      msgEl.textContent = msg;
+      el.classList.remove('show');
+      el.className = type;
+      ico.innerHTML = type === 'success' ? SVG_SUCCESS : SVG_ERROR;
+      txt.textContent = msg;
+      void el.offsetWidth;          // force reflow
+      el.classList.add('show');
+      haptic(type);
       toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2800);
     }
 
+    // ── Join ──
     function startJoin(btn) {
-      if (!btn || btn.classList.contains('is-loading')) return false;
+      if (!btn || btn.classList.contains('is-loading') || btn.classList.contains('done')) return false;
 
       var channelName = btn.closest('.channel-row')
                            .querySelector('.channel-name')
                            .textContent.trim();
 
       btn.classList.add('is-loading');
-      btn.innerHTML = '<span class="join-loading-content"><span class="join-spinner"></span><span>Joining</span></span>';
+      btn.innerHTML = '<span class="join-loading-content">'
+                    +   '<span class="join-spinner"></span>'
+                    +   '<span>Joining</span>'
+                    + '</span>';
 
       setTimeout(function () {
-        var ok = Math.random() > 0.3;
         btn.classList.remove('is-loading');
+        var ok = Math.random() > 0.3;
         if (ok) {
+          btn.classList.add('done');
           btn.innerHTML = '<span class="status-icon">' + SVG_SUCCESS + '</span>';
-          btn.style.pointerEvents = 'none';
-          btn.style.opacity = '0.72';
           joinedCount++;
           checkAllJoined();
           showToast('success', 'Joined ' + channelName);
         } else {
-          // Show error icon briefly, then restore "Join" so user can retry
-          btn.innerHTML = '<span class="status-icon">' + SVG_ERROR + '</span>';
           btn.style.opacity = '0.72';
+          btn.innerHTML = '<span class="status-icon">' + SVG_ERROR + '</span>';
           showToast('error', 'Failed to join ' + channelName);
           setTimeout(function() {
             btn.style.opacity = '';
@@ -618,18 +602,25 @@
       return false;
     }
 
+    // ── Continue ──
     function continueBot(btn) {
       if (!btn || btn.classList.contains('is-loading') || btn.classList.contains('locked')) return false;
 
       btn.classList.add('is-loading');
-      btn.innerHTML = '<span class="continue-loading-content"><span class="continue-spinner"></span><span>Continuing</span></span>';
+      btn.innerHTML = '<span class="continue-loading-content">'
+                    +   '<span class="continue-spinner"></span>'
+                    +   '<span>Continuing</span>'
+                    + '</span>';
 
       setTimeout(function () {
         if (tg) {
           tg.close();
         } else {
           btn.classList.remove('is-loading');
-          btn.innerHTML = '<span class="continue-content"><span class="continue-icon" id="continue-icon">' + SVG_CONTINUE + '</span>Continue</span>';
+          btn.innerHTML = '<span class="continue-content">'
+                        +   '<span class="continue-icon" id="continue-icon">' + SVG_CONTINUE + '</span>'
+                        +   'Continue'
+                        + '</span>';
         }
       }, 1000);
 

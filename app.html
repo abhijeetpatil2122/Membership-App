@@ -149,8 +149,8 @@
     .continue-wrap {
       width: 100%;
       max-width: 340px;
-      margin: 4px auto 0;
-      padding: 0 16px 18px;
+      margin: 2px auto 0;
+      padding: 0 16px 14px;
       box-sizing: border-box;
     }
 
@@ -159,11 +159,11 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      height: 44px;
+      height: 48px;
       border-radius: 999px;
       background: var(--accent-btn-color);
       color: #fff !important;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
       text-decoration: none !important;
       border: 0;
@@ -205,6 +205,22 @@
       z-index: 1;
       width: 100%;
       text-align: center;
+    }
+
+    .join-loading-content {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .continue-loading-content {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
     }
   </style>
 </head>
@@ -248,8 +264,8 @@
           <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center;">
 
             <!-- MAIN ICON -->
-            <div style="width: 104px; height: 104px; margin-bottom: 14px; border-radius: 50%; background: var(--accent-btn-color); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,.12); overflow: hidden; transform: translateY(-2px);">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="60" height="60" preserveAspectRatio="xMidYMid meet">
+            <div style="width: 96px; height: 96px; margin-bottom: 12px; border-radius: 50%; background: var(--accent-btn-color); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,.12); overflow: hidden; transform: translateY(-1px);">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="52" height="52" preserveAspectRatio="xMidYMid meet">
                 <defs>
                   <clipPath id="__lottie_element_2_fixed_main">
                     <rect width="512" height="512" x="0" y="0"></rect>
@@ -408,7 +424,7 @@
       if (!btn || btn.classList.contains('is-loading')) return false;
 
       btn.classList.add('is-loading');
-      btn.innerHTML = '<span class="join-spinner"></span>Joining';
+      btn.innerHTML = '<span class="join-loading-content"><span class="join-spinner"></span><span>Joining</span></span>';
 
       setTimeout(function () {
         btn.classList.remove('is-loading');
@@ -422,7 +438,7 @@
       if (!btn || btn.classList.contains('is-loading')) return false;
 
       btn.classList.add('is-loading');
-      btn.innerHTML = '<span class="continue-content"><span class="continue-spinner"></span><span>Continuing</span></span>';
+      btn.innerHTML = '<span class="continue-loading-content"><span class="continue-spinner"></span><span>Continuing</span></span>';
 
       setTimeout(function () {
         btn.classList.remove('is-loading');

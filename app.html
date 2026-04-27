@@ -147,8 +147,8 @@
     .continue-wrap {
       width: 100%;
       max-width: 340px;
-      margin: 0 auto;
-      padding: 8px 16px 16px;
+      margin: -8px auto 0;   /* pull up to cancel tgme_body_wrap bottom spacing */
+      padding: 0 16px 16px;
       box-sizing: border-box;
     }
     /* make the anchor fill the wrapper */
@@ -165,11 +165,12 @@
       transform: translateX(-50%) translateY(10px);
       opacity: 0;
       pointer-events: none;
-      display: flex;
+      display: inline-flex;
       flex-direction: row;
       align-items: center;
-      gap: 8px;
-      padding: 10px 18px 10px 12px;
+      flex-wrap: nowrap;
+      gap: 0;
+      padding: 0;
       border-radius: 999px;
       font-size: 14px;
       font-weight: 600;
@@ -178,30 +179,36 @@
       z-index: 9999;
       transition: opacity .22s ease, transform .22s ease;
       line-height: 1;
+      overflow: hidden;
     }
     #toast.show    { opacity: 1; transform: translateX(-50%) translateY(0); }
     #toast.success { background: #3dbb6e; }
     #toast.error   { background: #e5534b; }
 
-    /* toast icon: hard pixel size, never flex-grows */
     #toast-icon {
-      display: block;
-      width: 20px;
-      height: 20px;
-      min-width: 20px;
-      min-height: 20px;
-      flex: 0 0 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
+      padding-left: 12px;
+      box-sizing: border-box;
       line-height: 0;
       font-size: 0;
     }
     #toast-icon svg {
-      display: block !important;
+      display: inline-block !important;
       width: 20px !important;
       height: 20px !important;
+      vertical-align: middle;
+      flex-shrink: 0;
     }
     #toast-msg {
       line-height: 1;
       flex-shrink: 0;
+      padding: 10px 18px 10px 8px;
+      display: inline-block;
     }
 
     /* ─── Channel rows ─── */

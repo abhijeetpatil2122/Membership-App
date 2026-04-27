@@ -180,11 +180,14 @@
       transition: opacity .22s ease, transform .22s ease;
       line-height: 1;
       overflow: hidden;
+      /* Fix alignment issues: ensure consistent vertical rhythm */
+      vertical-align: middle;
     }
     #toast.show    { opacity: 1; transform: translateX(-50%) translateY(0); }
     #toast.success { background: #3dbb6e; }
     #toast.error   { background: #e5534b; }
 
+    /* Toast icon container — perfect vertical/horizontal centering */
     #toast-icon {
       display: inline-flex;
       align-items: center;
@@ -196,19 +199,30 @@
       box-sizing: border-box;
       line-height: 0;
       font-size: 0;
+      /* ensure SVG vertical centering inside flex */
+      vertical-align: middle;
     }
+    /* Force SVG inside toast-icon to be perfectly centered */
     #toast-icon svg {
-      display: inline-block !important;
+      display: block !important;
       width: 20px !important;
       height: 20px !important;
-      vertical-align: middle;
+      margin: 0 auto;
       flex-shrink: 0;
+      /* remove any extra spacing */
+      vertical-align: middle;
     }
+    /* Toast message - proper baseline alignment with the icon */
     #toast-msg {
-      line-height: 1;
+      line-height: 1.2;
       flex-shrink: 0;
       padding: 10px 18px 10px 8px;
       display: inline-block;
+      vertical-align: middle;
+      /* ensure text doesn't wrap unintentionally */
+      white-space: nowrap;
+      font-weight: 500;
+      letter-spacing: -0.01em;
     }
 
     /* ─── Channel rows ─── */
@@ -306,6 +320,27 @@
       text-transform: uppercase;
     }
 
+    /* Additional safeguard for any SVG inside the app */
+    svg {
+      vertical-align: middle;
+    }
+
+    /* Ensure responsive toast on small screens still perfect */
+    @media (max-width: 460px) {
+      #toast-msg {
+        padding: 9px 16px 9px 6px;
+        font-size: 13px;
+      }
+      #toast-icon {
+        width: 36px;
+        flex: 0 0 36px;
+        padding-left: 10px;
+      }
+      #toast-icon svg {
+        width: 18px !important;
+        height: 18px !important;
+      }
+    }
   </style>
 </head>
 
@@ -482,7 +517,7 @@
       }
     }
 
-    // ── Toast ──
+    // ── Toast (fixed alignment) ──
     var toastTimer;
     function showToast(type, msg) {
       var el  = document.getElementById('toast');
@@ -491,16 +526,17 @@
       clearTimeout(toastTimer);
       el.classList.remove('show');
       el.className = type;
-      // Set SVG via attribute so it gets exact pixel size from CSS
+      // Set SVG — now uses inline-flex and proper centering
       ico.innerHTML = type === 'success' ? SVG_SUCCESS : SVG_ERROR;
       txt.textContent = msg;
+      // force reflow
       void el.offsetWidth;
       el.classList.add('show');
       haptic(type);
       toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2800);
     }
 
-    // ── Join ──
+    // ── Join logic with same experience ──
     function startJoin(btn) {
       if (!btn || btn.classList.contains('is-loading') || btn.classList.contains('done')) return false;
 
@@ -532,7 +568,7 @@
       return false;
     }
 
-    // ── Continue ──
+    // ── Continue with no external changes ──
     function continueBot(btn) {
       if (!btn || btn.classList.contains('is-loading') || btn.classList.contains('locked')) return false;
 

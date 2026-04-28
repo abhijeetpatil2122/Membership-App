@@ -54,7 +54,7 @@
     .join-btn:active,
     .join-btn:focus  { outline: none !important; box-shadow: none !important; }
     .join-btn.is-loading { pointer-events: none; opacity: .92; }
-    .join-btn.done   { pointer-events: none; opacity: .72; cursor: default; }
+    .join-btn.done   { pointer-events: none; opacity: .72; cursor: default; min-width: unset; padding: 0 6px; }
 
     /* ─── Spinners ─── */
     .join-spinner {
@@ -97,13 +97,8 @@
       line-height: 1;
     }
 
-    /* ─── CONTINUE BUTTON ───────────────────────────────────────────
-       We override the telegram.css .tgme_action_button_new to make it
-       bigger. The original is around 42px tall. We push it to 54px.
-       We keep the class for the gradient/shine, just override sizing.
-    ─────────────────────────────────────────────────────────────── */
+    /* ─── CONTINUE BUTTON ─── */
     .tgme_action_button_new.continue-btn {
-      /* override telegram.css defaults */
       height: 54px !important;
       line-height: 54px !important;
       font-size: 17px !important;
@@ -114,7 +109,6 @@
       align-items: center !important;
       justify-content: center !important;
       gap: 10px !important;
-      /* locked = same dim style as join done */
       transition: opacity .15s ease;
     }
     .tgme_action_button_new.continue-btn.locked {
@@ -147,11 +141,10 @@
     .continue-wrap {
       width: 100%;
       max-width: 340px;
-      margin: -8px auto 0;   /* pull up to cancel tgme_body_wrap bottom spacing */
+      margin: -8px auto 0;
       padding: 0 16px 16px;
       box-sizing: border-box;
     }
-    /* make the anchor fill the wrapper */
     .continue-wrap .tgme_action_button_new.continue-btn {
       width: 100%;
       box-sizing: border-box;
@@ -180,14 +173,12 @@
       transition: opacity .22s ease, transform .22s ease;
       line-height: 1;
       overflow: hidden;
-      /* Fix alignment issues: ensure consistent vertical rhythm */
       vertical-align: middle;
     }
     #toast.show    { opacity: 1; transform: translateX(-50%) translateY(0); }
     #toast.success { background: #3dbb6e; }
     #toast.error   { background: #e5534b; }
 
-    /* Toast icon container — perfect vertical/horizontal centering */
     #toast-icon {
       display: inline-flex;
       align-items: center;
@@ -199,27 +190,22 @@
       box-sizing: border-box;
       line-height: 0;
       font-size: 0;
-      /* ensure SVG vertical centering inside flex */
       vertical-align: middle;
     }
-    /* Force SVG inside toast-icon to be perfectly centered */
     #toast-icon svg {
       display: block !important;
       width: 20px !important;
       height: 20px !important;
       margin: 0 auto;
       flex-shrink: 0;
-      /* remove any extra spacing */
       vertical-align: middle;
     }
-    /* Toast message - proper baseline alignment with the icon */
     #toast-msg {
       line-height: 1.2;
       flex-shrink: 0;
       padding: 10px 18px 10px 8px;
       display: inline-block;
       vertical-align: middle;
-      /* ensure text doesn't wrap unintentionally */
       white-space: nowrap;
       font-weight: 500;
       letter-spacing: -0.01em;
@@ -320,26 +306,23 @@
       text-transform: uppercase;
     }
 
-    /* Additional safeguard for any SVG inside the app */
-    svg {
-      vertical-align: middle;
+    svg { vertical-align: middle; }
+
+    /* ─── Loading state ─── */
+    #channels-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 0;
+      gap: 8px;
+      color: rgba(127,127,127,.8);
+      font-size: 14px;
     }
 
-    /* Ensure responsive toast on small screens still perfect */
     @media (max-width: 460px) {
-      #toast-msg {
-        padding: 9px 16px 9px 6px;
-        font-size: 13px;
-      }
-      #toast-icon {
-        width: 36px;
-        flex: 0 0 36px;
-        padding-left: 10px;
-      }
-      #toast-icon svg {
-        width: 18px !important;
-        height: 18px !important;
-      }
+      #toast-msg { padding: 9px 16px 9px 6px; font-size: 13px; }
+      #toast-icon { width: 36px; flex: 0 0 36px; padding-left: 10px; }
+      #toast-icon svg { width: 18px !important; height: 18px !important; }
     }
   </style>
 </head>
@@ -400,52 +383,14 @@
             <!-- Sep -->
             <div style="width:100%;max-width:280px;height:1px;margin-top:10px;background:rgba(127,127,127,.22);"></div>
 
-            <!-- Channel list -->
+            <!-- Channel list — dynamic -->
             <div style="width:100%;max-width:340px;margin-top:4px;">
-
-              <div class="channel-row">
-                <div class="channel-left">
-                  <div class="mini-icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
-                      <defs><clipPath id="c1a"><rect width="512" height="512"/></clipPath><clipPath id="c1b"><path d="M0,0 L100,0 L100,100 L0,100z"/></clipPath></defs>
-                      <g clip-path="url(#c1a)"><g clip-path="url(#c1b)" transform="matrix(5.12,0,0,5.12,0,0)"><g><g><path stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#fff" stroke-width="6" d="M35.285,72.25h37.59c4.937,0 9-4.063 9-9v-32.875c0-4.937-4.063-9-9-9h-46c-4.937,0-9,4.062-9,9v51.458c0,2.662 3.21,4.005 5.106,2.136l11.602-11.462c.187-.185.439-.288.702-.288zM34.875,53.625h20.875M34.875,39.625h31.375"/></g></g></g></g>
-                    </svg>
-                  </div>
-                  <div class="channel-name">@ChannelOne</div>
+              <div id="channels-list">
+                <div id="channels-loading">
+                  <span class="cont-spinner"></span>
+                  <span style="color:rgba(127,127,127,.7);font-size:14px;">Loading channels…</span>
                 </div>
-                <a class="join-btn" href="#" onclick="return startJoin(this)">Join</a>
               </div>
-
-              <div class="channel-divider"></div>
-
-              <div class="channel-row">
-                <div class="channel-left">
-                  <div class="mini-icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
-                      <defs><clipPath id="c2a"><rect width="512" height="512"/></clipPath><clipPath id="c2b"><path d="M0,0 L100,0 L100,100 L0,100z"/></clipPath></defs>
-                      <g clip-path="url(#c2a)"><g clip-path="url(#c2b)" transform="matrix(5.12,0,0,5.12,0,0)"><g><g><path stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#fff" stroke-width="6" d="M35.285,72.25h37.59c4.937,0 9-4.063 9-9v-32.875c0-4.937-4.063-9-9-9h-46c-4.937,0-9,4.062-9,9v51.458c0,2.662 3.21,4.005 5.106,2.136l11.602-11.462c.187-.185.439-.288.702-.288zM34.875,53.625h20.875M34.875,39.625h31.375"/></g></g></g></g>
-                    </svg>
-                  </div>
-                  <div class="channel-name">@ChannelTwo</div>
-                </div>
-                <a class="join-btn" href="#" onclick="return startJoin(this)">Join</a>
-              </div>
-
-              <div class="channel-divider"></div>
-
-              <div class="channel-row">
-                <div class="channel-left">
-                  <div class="mini-icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
-                      <defs><clipPath id="c3a"><rect width="512" height="512"/></clipPath><clipPath id="c3b"><path d="M0,0 L100,0 L100,100 L0,100z"/></clipPath></defs>
-                      <g clip-path="url(#c3a)"><g clip-path="url(#c3b)" transform="matrix(5.12,0,0,5.12,0,0)"><g><g><path stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#fff" stroke-width="6" d="M35.285,72.25h37.59c4.937,0 9-4.063 9-9v-32.875c0-4.937-4.063-9-9-9h-46c-4.937,0-9,4.062-9,9v51.458c0,2.662 3.21,4.005 5.106,2.136l11.602-11.462c.187-.185.439-.288.702-.288zM34.875,53.625h20.875M34.875,39.625h31.375"/></g></g></g></g>
-                    </svg>
-                  </div>
-                  <div class="channel-name">@ChannelThree</div>
-                </div>
-                <a class="join-btn" href="#" onclick="return startJoin(this)">Join</a>
-              </div>
-
             </div>
 
             <!-- Sep -->
@@ -461,7 +406,7 @@
       </div>
     </div>
 
-    <!-- CONTINUE BUTTON — same outer structure as tgme_page_action -->
+    <!-- CONTINUE BUTTON -->
     <div class="continue-wrap">
       <a id="continue-btn" class="tgme_action_button_new shine continue-btn locked" href="#" onclick="return continueBot(this)"></a>
     </div>
@@ -477,7 +422,7 @@
   <script src="//telegram.org/js/tgwallpaper.min.js?3"></script>
 
   <script>
-    // ── Init ──
+    // ── Init Telegram WebApp ──
     var tg = window.Telegram && window.Telegram.WebApp;
     if (tg) { tg.ready(); tg.expand(); }
 
@@ -500,24 +445,94 @@
 
     var SVG_CONTINUE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="cnc2"><rect width="512" height="512"/></clipPath><clipPath id="cnc3"><path d="M0,0 L101,0 L101,100 L0,100z"/></clipPath></defs><g clip-path="url(#cnc2)"><g clip-path="url(#cnc3)" transform="matrix(5.069,0,0,5.069,0,2.535)"><g><g><path fill-rule="evenodd" fill="#fff" d="M40.889,34.352c.997-5.655 6.39-9.431 12.045-8.434 5.655.997 9.43,6.39 8.434,12.045l-1.136,6.438c.114.028.223.06.329.095 1.789.597 3.196,2.004 3.793,3.793.308.924.308,2.069.308,4.358v6.143c0,2.29,0,3.434-.308,4.358-.597,1.789-2.004,3.196-3.793,3.793-.924.308-2.07.308-4.359.308h-11.517c-2.29,0-3.435,0-4.36-.308-1.788-.597-3.195-2.005-3.792-3.793-.308-.925-.308-2.07-.308-4.358v-6.143c0-2.29,0-3.434.308-4.358.597-1.789 2.004-3.197 3.793-3.794.924-.308 2.069-.308 4.359-.308h10.407l1.253-7.069c.505-2.862-1.435-5.632-4.297-6.137-2.862-.505-5.632,1.435-6.137,4.297l-.443,2.515c-.243,1.378-1.577,2.312-2.955,2.069-1.377-.243-2.311-1.577-2.068-2.955l.444-2.515zM85.279,47.77c0-17.408-15.61-31.52-34.866-31.52-19.257,0-34.867,14.112-34.867,31.52 0,8.297 3.547,15.846 9.345,21.475.22,3.494-1.85,7.765-4.443,10.652l-.059.075c-.373.538-.059,1.308.583,1.433 2.202.365 6.105-.3 8.45-1.453l.386-.185c1.22-.58 3.292-1.562 5.158-3.722 4.656,2.083 9.9,3.254 15.447,3.254 19.256,0 34.866-14.112 34.866-31.52z"/></g></g></g></g></svg>';
 
-    // ── Render continue button initial state ──
+    var SVG_CHANNEL = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="chca"><rect width="512" height="512"/></clipPath><clipPath id="chcb"><path d="M0,0 L100,0 L100,100 L0,100z"/></clipPath></defs><g clip-path="url(#chca)"><g clip-path="url(#chcb)" transform="matrix(5.12,0,0,5.12,0,0)"><g><g><path stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#fff" stroke-width="6" d="M35.285,72.25h37.59c4.937,0 9-4.063 9-9v-32.875c0-4.937-4.063-9-9-9h-46c-4.937,0-9,4.062-9,9v51.458c0,2.662 3.21,4.005 5.106,2.136l11.602-11.462c.187-.185.439-.288.702-.288zM34.875,53.625h20.875M34.875,39.625h31.375"/></g></g></g></g></svg>';
+
+    // ── State ──
+    var WEBHOOK_URL = null;
+    var CHANNELS_DATA = [];
+    var joinedSet = new Set();
+
+    // ── Parse ?check= param ──
+    var urlParams = new URLSearchParams(location.search);
+    var checkParam = urlParams.get('check');
+    if (checkParam) WEBHOOK_URL = decodeURIComponent(checkParam);
+
+    // ── Render continue button ──
     function renderContinueNormal() {
       var btn = document.getElementById('continue-btn');
       btn.innerHTML = '<span class="cont-icon">' + SVG_CONTINUE + '</span>Continue';
     }
     renderContinueNormal();
 
-    // ── Channel tracking ──
-    var TOTAL = document.querySelectorAll('.join-btn').length;
-    var joined = 0;
-
+    // ── Check if all joined → unlock continue ──
     function checkAllJoined() {
-      if (joined >= TOTAL) {
-        document.getElementById('continue-btn').classList.remove('locked');
+      var btn = document.getElementById('continue-btn');
+      if (CHANNELS_DATA.length > 0 && joinedSet.size >= CHANNELS_DATA.length) {
+        btn.classList.remove('locked');
+      } else {
+        btn.classList.add('locked');
       }
     }
 
-    // ── Toast (fixed alignment) ──
+    // ── Escape HTML ──
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // ── Render channel list dynamically ──
+    function renderChannels(channels) {
+      CHANNELS_DATA = channels;
+      var list = document.getElementById('channels-list');
+      list.innerHTML = '';
+
+      channels.forEach(function(ch, i) {
+        // Divider between rows
+        if (i > 0) {
+          var divider = document.createElement('div');
+          divider.className = 'channel-divider';
+          list.appendChild(divider);
+        }
+
+        if (ch.joined) joinedSet.add(i);
+
+        var row = document.createElement('div');
+        row.className = 'channel-row';
+
+        var btnHtml = ch.joined
+          ? '<span class="join-btn done"><span class="status-icon">' + SVG_SUCCESS + '</span></span>'
+          : '<a class="join-btn" href="' + escHtml(ch.link) + '" target="_blank" onclick="handleJoin(this,' + i + ')">' + 'Join</a>';
+
+        row.innerHTML =
+          '<div class="channel-left">' +
+            '<div class="mini-icon-box">' + SVG_CHANNEL + '</div>' +
+            '<div class="channel-name">' + escHtml(ch.name || ch.channel) + '</div>' +
+          '</div>' +
+          btnHtml;
+
+        list.appendChild(row);
+      });
+
+      checkAllJoined();
+    }
+
+    // ── Handle join click — open link + mark locally ──
+    function handleJoin(btn, idx) {
+      if (!btn || btn.classList.contains('done')) return;
+      btn.classList.add('done');
+      btn.innerHTML = '<span class="status-icon">' + SVG_SUCCESS + '</span>';
+      joinedSet.add(idx);
+      var name = btn.closest('.channel-row').querySelector('.channel-name').textContent.trim();
+      showToast('success', 'Joined ' + name);
+      haptic('success');
+      checkAllJoined();
+      // href opens Telegram link naturally
+    }
+
+    // ── Toast ──
     var toastTimer;
     function showToast(type, msg) {
       var el  = document.getElementById('toast');
@@ -526,66 +541,73 @@
       clearTimeout(toastTimer);
       el.classList.remove('show');
       el.className = type;
-      // Set SVG — now uses inline-flex and proper centering
       ico.innerHTML = type === 'success' ? SVG_SUCCESS : SVG_ERROR;
       txt.textContent = msg;
-      // force reflow
       void el.offsetWidth;
       el.classList.add('show');
       haptic(type);
       toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2800);
     }
 
-    // ── Join logic with same experience ──
-    function startJoin(btn) {
-      if (!btn || btn.classList.contains('is-loading') || btn.classList.contains('done')) return false;
-
-      var name = btn.closest('.channel-row').querySelector('.channel-name').textContent.trim();
-
-      btn.classList.add('is-loading');
-      btn.innerHTML = '<span class="join-load"><span class="join-spinner"></span>Joining</span>';
-
-      setTimeout(function(){
-        btn.classList.remove('is-loading');
-        var ok = Math.random() > 0.3;
-        if (ok) {
-          btn.classList.add('done');
-          btn.innerHTML = '<span class="status-icon">' + SVG_SUCCESS + '</span>';
-          joined++;
-          checkAllJoined();
-          showToast('success', 'Joined ' + name);
-        } else {
-          btn.style.opacity = '0.72';
-          btn.innerHTML = '<span class="status-icon">' + SVG_ERROR + '</span>';
-          showToast('error', 'Failed to join ' + name);
-          setTimeout(function(){
-            btn.style.opacity = '';
-            btn.innerHTML = 'Join';
-          }, 1600);
-        }
-      }, 1500);
-
-      return false;
-    }
-
-    // ── Continue with no external changes ──
+    // ── Continue — real webhook verification ──
     function continueBot(btn) {
       if (!btn || btn.classList.contains('is-loading') || btn.classList.contains('locked')) return false;
+      if (!WEBHOOK_URL) return false;
 
       btn.classList.add('is-loading');
-      btn.innerHTML = '<span class="cont-spinner"></span>Continuing';
+      btn.innerHTML = '<span class="cont-spinner"></span>Verifying';
 
-      setTimeout(function(){
-        if (tg) {
-          tg.close();
-        } else {
+      fetch(WEBHOOK_URL)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.joined) {
+            btn.innerHTML = '<span class="cont-spinner"></span>Continuing';
+            setTimeout(function() {
+              if (tg) tg.close();
+            }, 600);
+          } else {
+            // Refresh list with real statuses from server
+            joinedSet = new Set();
+            renderChannels(data.channels);
+            btn.classList.remove('is-loading');
+            renderContinueNormal();
+            showToast('error', 'Please join all channels first');
+            haptic('error');
+          }
+        })
+        .catch(function() {
           btn.classList.remove('is-loading');
           renderContinueNormal();
-        }
-      }, 1000);
+          showToast('error', 'Network error, try again');
+          haptic('error');
+        });
 
       return false;
     }
+
+    // ── Load channels on startup ──
+    function loadChannels() {
+      if (!WEBHOOK_URL) {
+        // Dev mode fallback — no ?check= param
+        renderChannels([
+          { channel: '@Example', name: 'Example Channel', link: 'https://t.me/example', joined: false }
+        ]);
+        return;
+      }
+
+      fetch(WEBHOOK_URL)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          renderChannels(data.channels);
+        })
+        .catch(function() {
+          document.getElementById('channels-list').innerHTML =
+            '<div style="padding:16px 0;text-align:center;color:rgba(127,127,127,.8);font-size:14px;">Failed to load channels.<br>Please close and try again.</div>';
+          showToast('error', 'Failed to load channels');
+        });
+    }
+
+    loadChannels();
 
     document.body.classList.remove('no_transition');
   </script>

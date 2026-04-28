@@ -421,7 +421,7 @@
 
   <script src="//telegram.org/js/tgwallpaper.min.js?3"></script>
 
-    <script>
+      <script>
   // ── Init Telegram WebApp ──
   var tg = window.Telegram && window.Telegram.WebApp;
   if (tg) { tg.ready(); tg.expand(); }
@@ -433,9 +433,64 @@
     window.onfocus = function(){ TWallpaper.update(); };
   }
 
-  // ── Haptic ──
-  function haptic(type) {
-    try { if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred(type); } catch(e){}
+  // ── Check if running in Telegram or Browser ──
+  var isTelegram = !!(tg && tg.initData);
+  var isBrowser = !isTelegram;
+
+  // ── Universal Haptic (vibration for browser, haptic for Telegram) ──
+  function universalHaptic(type) {
+    // Telegram haptic feedback
+    try { 
+      if (tg && tg.HapticFeedback) {
+        if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
+        else if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
+        else if (type === 'warning') tg.HapticFeedback.notificationOccurred('warning');
+        else tg.HapticFeedback.impactOccurred('light');
+      }
+    } catch(e){}
+    
+    // Browser vibration (if supported)
+    if (isBrowser && window.navigator && window.navigator.vibrate) {
+      if (type === 'success') window.navigator.vibrate(100);
+      else if (type === 'error') window.navigator.vibrate([200, 100, 200]);
+      else if (type === 'warning') window.navigator.vibrate([100, 50, 100]);
+      else window.navigator.vibrate(50);
+    }
+  }
+
+  // ── Universal Close (works in both Telegram and Browser) ──
+  function universalClose() {
+    if (tg) {
+      // Telegram WebApp close
+      tg.close();
+    } else {
+      // Browser fallback - show a message and redirect or close tab
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        // Show a friendly message since we can't force close browser tabs
+        var closeMsg = document.createElement('div');
+        closeMsg.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#28a745;color:white;padding:12px24px;border-radius:999px;font-size:14px;z-index:10000;animation:fadeOut 2s ease forwards;';
+        closeMsg.textContent = '✓ Verification complete! You can close this tab now.';
+        document.body.appendChild(closeMsg);
+        
+        // Add fade out animation
+        var style = document.createElement('style');
+        style.textContent = '@keyframes fadeOut {0%{opacity:1;}70%{opacity:1;}100%{opacity:0;visibility:hidden;}}';
+        document.head.appendChild(style);
+        
+        setTimeout(function() {
+          if (closeMsg) closeMsg.remove();
+        }, 3000);
+      }
+    }
+  }
+
+  var tme_bg = document.getElementById('tgme_background');
+  if (tme_bg) {
+    TWallpaper.init(tme_bg);
+    TWallpaper.animate(true);
+    window.onfocus = function(){ TWallpaper.update(); };
   }
 
   // ── SVGs ──
@@ -450,7 +505,7 @@
   // Telegram logo SVG for info toast
   var SVG_TELEGRAM = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" width="512" height="512" style="width: 100%; height: 100%; transform: translate3d(0,0,0);" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="__lottie_element_2"><rect width="512" height="512" x="0" y="0"></rect></clipPath></defs><g clip-path="url(#__lottie_element_2)"><g style="display: block;" transform="matrix(1.333299994468689,0,0,1.333299994468689,0,0)" opacity="1"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path fill="rgb(255,255,255)" fill-opacity="1" d=" M77.16000366210938,177.49000549316406 C144.91000366210938,148.02999877929688 190.0800018310547,128.61000061035156 212.69000244140625,119.22000122070312 C277.2300109863281,92.43000030517578 290.6400146484375,87.77999877929688 299.3800048828125,87.62000274658203 C301.29998779296875,87.58999633789062 305.6000061035156,88.06999969482422 308.3800048828125,90.31999969482422 C310.7300109863281,92.2300033569336 311.3800048828125,94.80000305175781 311.69000244140625,96.5999984741211 C312,98.4000015258789 312.3800048828125,102.5199966430664 312.0799865722656,105.7300033569336 C308.5799865722656,142.41000366210938 293.45001220703125,231.4199981689453 285.75,272.5 C282.489990234375,289.8800048828125 276.0799865722656,295.7099914550781 269.8699951171875,296.2799987792969 C256.3699951171875,297.5199890136719 246.1199951171875,287.3699951171875 233.0500030517578,278.82000732421875 C212.60000610351562,265.44000244140625 201.0399932861328,257.1099853515625 181.19000244140625,244.0500030517578 C158.24000549316406,228.9600067138672 173.1199951171875,220.66000366210938 186.1999969482422,207.11000061035156 C189.6199951171875,203.55999755859375 249.0800018310547,149.57000732421875 250.22999572753906,144.67999267578125 C250.3699951171875,144.07000732421875 250.50999450683594,141.7899932861328 249.14999389648438,140.5800018310547 C247.7899932861328,139.3699951171875 245.7899932861328,139.7899932861328 244.33999633789062,140.1199951171875 C242.2899932861328,140.5800018310547 209.61000061035156,162.13999938964844 146.30999755859375,204.7899932861328 C137.02999877929688,211.14999389648438 128.63999938964844,214.22999572753906 121.11000061035156,214.07000732421875 C112.80999755859375,213.88999938964844 96.8499984741211,209.38999938964844 84.9800033569336,205.5399932861328 C70.43000030517578,200.82000732421875 58.869998931884766,198.32000732421875 59.869998931884766,190.3000030517578 C60.400001525878906,186.1199951171875 66.16000366210938,181.85000610351562 77.16000366210938,177.49000549316406 C77.16000366210938,177.49000549316406 77.16000366210938,177.49000549316406 77.16000366210938,177.49000549316406z"></path></g></g></g></g></svg>';
 
-  // ── Add CSS for info toast (BEFORE loadChannels runs)
+  // ── Add CSS for info toast
   var style = document.createElement('style');
   style.textContent = '#toast.info { background: #7d7d7d !important; }';
   document.head.appendChild(style);
@@ -471,7 +526,7 @@
   var CHANNELS_DATA = [];
   var isVerifying = false;
   var autoCloseTimer = null;
-  var isAlreadyJoined = false; // Track if user already has all channels joined
+  var isAlreadyJoined = false;
 
   // ── Parse ?check= param ──
   var urlParams = new URLSearchParams(location.search);
@@ -493,13 +548,12 @@
     if (allJoined) {
       btn.classList.remove('locked');
       isAlreadyJoined = true;
-      // Auto close after 5 seconds if all channels are joined
       if (autoCloseTimer) clearTimeout(autoCloseTimer);
       autoCloseTimer = setTimeout(function() {
-        if (tg && CHANNELS_DATA.every(function(ch) { return ch.joined; })) {
+        if (CHANNELS_DATA.every(function(ch) { return ch.joined; })) {
           showToast('success', 'All channels joined! Closing...');
           setTimeout(function() {
-            if (tg) tg.close();
+            universalClose();
           }, 1000);
         }
       }, 5000);
@@ -522,7 +576,7 @@
       .replace(/"/g, '&quot;');
   }
 
-  // ── Update all channel buttons to reflect current backend status ──
+  // ── Update all channel buttons ──
   function updateChannelButtons() {
     var rows = document.querySelectorAll('#channels-list .channel-row');
     
@@ -551,7 +605,7 @@
     checkAllJoined();
   }
 
-  // ── Render channel list dynamically (initial load) ──
+  // ── Render channel list ──
   function renderChannels(channels) {
     CHANNELS_DATA = channels;
     var list = document.getElementById('channels-list');
@@ -587,7 +641,7 @@
     checkAllJoined();
   }
 
-  // ── Handle join click with REAL backend verification using openTelegramLink ──
+  // ── Handle join click ──
   function handleJoinClick(btn, idx, channelLink) {
     if (!btn || btn.classList.contains('done') || isVerifying) return false;
     
@@ -623,14 +677,14 @@
               btn.innerHTML = '<span class="status-icon">' + SVG_SUCCESS + '</span>';
               CHANNELS_DATA[idx].joined = true;
               showToast('success', 'Joined successfully!');
-              haptic('success');
+              universalHaptic('success');
               checkAllJoined();
             } else {
               btn.classList.remove('is-loading');
               btn.classList.remove('done');
               btn.innerHTML = '<span class="status-icon">' + SVG_ERROR + '</span>';
               showToast('error', 'Please join the channel first, then try again');
-              haptic('error');
+              universalHaptic('error');
               setTimeout(function() {
                 if (btn && !CHANNELS_DATA[idx].joined) {
                   btn.innerHTML = originalHtml;
@@ -655,7 +709,7 @@
           btn.classList.remove('is-loading');
           btn.innerHTML = '<span class="status-icon">' + SVG_ERROR + '</span>';
           showToast('error', 'Network error, please try again');
-          haptic('error');
+          universalHaptic('error');
           setTimeout(function() {
             if (btn && !CHANNELS_DATA[idx].joined) {
               btn.innerHTML = originalHtml;
@@ -669,7 +723,7 @@
     return false;
   }
 
-  // ── Toast (no emoji/symbol, only text and SVG) ──
+  // ── Toast ──
   var toastTimer;
   function showToast(type, msg) {
     var el  = document.getElementById('toast');
@@ -691,22 +745,23 @@
     txt.textContent = msg;
     void el.offsetWidth;
     el.classList.add('show');
-    if (type !== 'info') haptic(type);
+    if (type !== 'info') universalHaptic(type);
     toastTimer = setTimeout(function(){ 
       el.classList.remove('show');
     }, 2800);
   }
 
-  // ── Continue — OPTIMIZED: if already joined, close immediately ──
+  // ── Continue button handler ──
   function continueBot(btn) {
     if (!btn || btn.classList.contains('is-loading') || btn.classList.contains('locked')) return false;
     if (!WEBHOOK_URL) return false;
 
-    // OPTIMIZATION: If user already has all channels joined, close immediately without webhook call
+    // If already joined, close immediately
     if (isAlreadyJoined && CHANNELS_DATA.length > 0 && CHANNELS_DATA.every(function(ch) { return ch.joined; })) {
       showToast('success', 'Already verified! Closing...');
+      universalHaptic('success');
       setTimeout(function() {
-        if (tg) tg.close();
+        universalClose();
       }, 800);
       return false;
     }
@@ -719,8 +774,9 @@
       .then(function(data) {
         if (data.joined) {
           btn.innerHTML = '<span class="cont-spinner"></span>Continuing';
+          universalHaptic('success');
           setTimeout(function() {
-            if (tg) tg.close();
+            universalClose();
           }, 600);
         } else {
           if (data.channels) {
@@ -730,14 +786,14 @@
           btn.classList.remove('is-loading');
           renderContinueNormal();
           showToast('error', 'Please join all channels first');
-          haptic('error');
+          universalHaptic('error');
         }
       })
       .catch(function() {
         btn.classList.remove('is-loading');
         renderContinueNormal();
         showToast('error', 'Network error, try again');
-        haptic('error');
+        universalHaptic('error');
       });
 
     return false;
@@ -758,8 +814,9 @@
         renderChannels(data.channels);
         if (data.joined) {
           showToast('success', 'All channels verified!');
+          universalHaptic('success');
           setTimeout(function() {
-            if (tg) tg.close();
+            universalClose();
           }, 5000);
         }
       })
@@ -767,6 +824,7 @@
         document.getElementById('channels-list').innerHTML =
           '<div style="padding:16px 0;text-align:center;color:rgba(127,127,127,.8);font-size:14px;">Failed to load channels.<br>Please close and try again.</div>';
         showToast('error', 'Failed to load channels');
+        universalHaptic('error');
       });
   }
 

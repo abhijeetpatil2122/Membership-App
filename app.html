@@ -422,195 +422,336 @@
   <script src="//telegram.org/js/tgwallpaper.min.js?3"></script>
 
   <script>
-    // ── Init Telegram WebApp ──
-    var tg = window.Telegram && window.Telegram.WebApp;
-    if (tg) { tg.ready(); tg.expand(); }
+  // ── Init Telegram WebApp ──
+  var tg = window.Telegram && window.Telegram.WebApp;
+  if (tg) { tg.ready(); tg.expand(); }
 
-    var tme_bg = document.getElementById('tgme_background');
-    if (tme_bg) {
-      TWallpaper.init(tme_bg);
-      TWallpaper.animate(true);
-      window.onfocus = function(){ TWallpaper.update(); };
+  var tme_bg = document.getElementById('tgme_background');
+  if (tme_bg) {
+    TWallpaper.init(tme_bg);
+    TWallpaper.animate(true);
+    window.onfocus = function(){ TWallpaper.update(); };
+  }
+
+  // ── Haptic ──
+  function haptic(type) {
+    try { if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred(type); } catch(e){}
+  }
+
+  // ── SVGs ──
+  var SVG_SUCCESS = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="sc2"><rect width="512" height="512"/></clipPath><clipPath id="sc3"><path d="M0,0 L100,0 L100,100 L0,100z"/></clipPath></defs><g clip-path="url(#sc2)"><g clip-path="url(#sc3)" transform="matrix(5.12,0,0,5.12,0,0)"><g><g><path fill="#fff" d="M67.85,39.525c-1.31-1.31-3.445-1.365-4.82-.124l-.13.124-18.962,18.963-7.4-7.4c-1.358-1.358-3.592-1.358-4.95,0-1.358,1.358-1.358,3.593,0,4.95l9.167,9.168.169.16c1.768,1.594 4.511,1.523 6.195-.16l20.73-20.731.125-.13c1.24-1.376 1.185-3.51-.124-4.82zM50,14.545c19.581,0 35.456,15.874 35.456,35.455s-15.875,35.456-35.456,35.456-35.455-15.875-35.455-35.456 15.874-35.455 35.455-35.455z"/></g></g></g></g></svg>';
+
+  var SVG_ERROR = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="ec2"><rect width="512" height="512"/></clipPath><clipPath id="ec3"><path d="M0,0 L101,0 L101,100 L0,100z"/></clipPath></defs><g clip-path="url(#ec2)"><g clip-path="url(#ec3)" transform="matrix(5.069,0,0,5.069,0,2.535)"><g><g><path fill="#fff" d="M66.412,33.838c-1.358-1.358-3.592-1.358-4.95,0l-11.212,11.212-11.213-11.212c-1.358-1.358-3.592-1.358-4.95,0-1.358,1.357-1.358,3.592,0,4.95l11.215,11.212-11.214,11.213c-1.358,1.358-1.358,3.592,0,4.95 1.358,1.358 3.592,1.358 4.95,0l11.212-11.212 11.213,11.212.13.124c1.376,1.239 3.509,1.183 4.818-.126 1.31-1.309 1.365-3.442.126-4.818l-.124-.13-11.212-11.213 11.213-11.213c1.358-1.358 1.358-3.592,0-4.95zM50.25,14.545c19.581,0 35.456,15.874 35.456,35.455s-15.875,35.456-35.456,35.456-35.455-15.875-35.455-35.456 15.874-35.455 35.455-35.455z"/></g></g></g></g></svg>';
+
+  var SVG_CONTINUE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="cnc2"><rect width="512" height="512"/></clipPath><clipPath id="cnc3"><path d="M0,0 L101,0 L101,100 L0,100z"/></clipPath></defs><g clip-path="url(#cnc2)"><g clip-path="url(#cnc3)" transform="matrix(5.069,0,0,5.069,0,2.535)"><g><g><path fill-rule="evenodd" fill="#fff" d="M40.889,34.352c.997-5.655 6.39-9.431 12.045-8.434 5.655.997 9.43,6.39 8.434,12.045l-1.136,6.438c.114.028.223.06.329.095 1.789.597 3.196,2.004 3.793,3.793.308.924.308,2.069.308,4.358v6.143c0,2.29,0,3.434-.308,4.358-.597,1.789-2.004,3.196-3.793,3.793-.924.308-2.07.308-4.359.308h-11.517c-2.29,0-3.435,0-4.36-.308-1.788-.597-3.195-2.005-3.792-3.793-.308-.925-.308-2.07-.308-4.358v-6.143c0-2.29,0-3.434.308-4.358.597-1.789 2.004-3.197 3.793-3.794.924-.308 2.069-.308 4.359-.308h10.407l1.253-7.069c.505-2.862-1.435-5.632-4.297-6.137-2.862-.505-5.632,1.435-6.137,4.297l-.443,2.515c-.243,1.378-1.577,2.312-2.955,2.069-1.377-.243-2.311-1.577-2.068-2.955l.444-2.515zM85.279,47.77c0-17.408-15.61-31.52-34.866-31.52-19.257,0-34.867,14.112-34.867,31.52 0,8.297 3.547,15.846 9.345,21.475.22,3.494-1.85,7.765-4.443,10.652l-.059.075c-.373.538-.059,1.308.583,1.433 2.202.365 6.105-.3 8.45-1.453l.386-.185c1.22-.58 3.292-1.562 5.158-3.722 4.656,2.083 9.9,3.254 15.447,3.254 19.256,0 34.866-14.112 34.866-31.52z"/></g></g></g></g></svg>';
+
+  var SVG_CHANNEL = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="chca"><rect width="512" height="512"/></clipPath><clipPath id="chcb"><path d="M0,0 L100,0 L100,100 L0,100z"/></clipPath></defs><g clip-path="url(#chca)"><g clip-path="url(#chcb)" transform="matrix(5.12,0,0,5.12,0,0)"><g><g><path stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#fff" stroke-width="6" d="M35.285,72.25h37.59c4.937,0 9-4.063 9-9v-32.875c0-4.937-4.063-9-9-9h-46c-4.937,0-9,4.062-9,9v51.458c0,2.662 3.21,4.005 5.106,2.136l11.602-11.462c.187-.185.439-.288.702-.288zM34.875,53.625h20.875M34.875,39.625h31.375"/></g></g></g></g></svg>';
+
+  // ── State ──
+  var WEBHOOK_URL = null;
+  var CHANNELS_DATA = [];
+  var isVerifying = false;
+
+  // ── Parse ?check= param ──
+  var urlParams = new URLSearchParams(location.search);
+  var checkParam = urlParams.get('check');
+  if (checkParam) WEBHOOK_URL = decodeURIComponent(checkParam);
+
+  // ── Render continue button ──
+  function renderContinueNormal() {
+    var btn = document.getElementById('continue-btn');
+    btn.innerHTML = '<span class="cont-icon">' + SVG_CONTINUE + '</span>Continue';
+  }
+  renderContinueNormal();
+
+  // ── Check if all joined → unlock continue (based on REAL backend data) ──
+  function checkAllJoined() {
+    var btn = document.getElementById('continue-btn');
+    if (CHANNELS_DATA.length > 0 && CHANNELS_DATA.every(function(ch) { return ch.joined; })) {
+      btn.classList.remove('locked');
+    } else {
+      btn.classList.add('locked');
+    }
+  }
+
+  // ── Escape HTML ──
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ── Refresh channel status from backend ──
+  function refreshChannelStatus(callback) {
+    if (!WEBHOOK_URL) {
+      if (callback) callback(false);
+      return;
     }
 
-    // ── Haptic ──
-    function haptic(type) {
-      try { if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred(type); } catch(e){}
-    }
-
-    // ── SVGs ──
-    var SVG_SUCCESS = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="sc2"><rect width="512" height="512"/></clipPath><clipPath id="sc3"><path d="M0,0 L100,0 L100,100 L0,100z"/></clipPath></defs><g clip-path="url(#sc2)"><g clip-path="url(#sc3)" transform="matrix(5.12,0,0,5.12,0,0)"><g><g><path fill="#fff" d="M67.85,39.525c-1.31-1.31-3.445-1.365-4.82-.124l-.13.124-18.962,18.963-7.4-7.4c-1.358-1.358-3.592-1.358-4.95,0-1.358,1.358-1.358,3.593,0,4.95l9.167,9.168.169.16c1.768,1.594 4.511,1.523 6.195-.16l20.73-20.731.125-.13c1.24-1.376 1.185-3.51-.124-4.82zM50,14.545c19.581,0 35.456,15.874 35.456,35.455s-15.875,35.456-35.456,35.456-35.455-15.875-35.455-35.456 15.874-35.455 35.455-35.455z"/></g></g></g></g></svg>';
-
-    var SVG_ERROR = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="ec2"><rect width="512" height="512"/></clipPath><clipPath id="ec3"><path d="M0,0 L101,0 L101,100 L0,100z"/></clipPath></defs><g clip-path="url(#ec2)"><g clip-path="url(#ec3)" transform="matrix(5.069,0,0,5.069,0,2.535)"><g><g><path fill="#fff" d="M66.412,33.838c-1.358-1.358-3.592-1.358-4.95,0l-11.212,11.212-11.213-11.212c-1.358-1.358-3.592-1.358-4.95,0-1.358,1.357-1.358,3.592,0,4.95l11.215,11.212-11.214,11.213c-1.358,1.358-1.358,3.592,0,4.95 1.358,1.358 3.592,1.358 4.95,0l11.212-11.212 11.213,11.212.13.124c1.376,1.239 3.509,1.183 4.818-.126 1.31-1.309 1.365-3.442.126-4.818l-.124-.13-11.212-11.213 11.213-11.213c1.358-1.358 1.358-3.592,0-4.95zM50.25,14.545c19.581,0 35.456,15.874 35.456,35.455s-15.875,35.456-35.456,35.456-35.455-15.875-35.455-35.456 15.874-35.455 35.455-35.455z"/></g></g></g></g></svg>';
-
-    var SVG_CONTINUE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="cnc2"><rect width="512" height="512"/></clipPath><clipPath id="cnc3"><path d="M0,0 L101,0 L101,100 L0,100z"/></clipPath></defs><g clip-path="url(#cnc2)"><g clip-path="url(#cnc3)" transform="matrix(5.069,0,0,5.069,0,2.535)"><g><g><path fill-rule="evenodd" fill="#fff" d="M40.889,34.352c.997-5.655 6.39-9.431 12.045-8.434 5.655.997 9.43,6.39 8.434,12.045l-1.136,6.438c.114.028.223.06.329.095 1.789.597 3.196,2.004 3.793,3.793.308.924.308,2.069.308,4.358v6.143c0,2.29,0,3.434-.308,4.358-.597,1.789-2.004,3.196-3.793,3.793-.924.308-2.07.308-4.359.308h-11.517c-2.29,0-3.435,0-4.36-.308-1.788-.597-3.195-2.005-3.792-3.793-.308-.925-.308-2.07-.308-4.358v-6.143c0-2.29,0-3.434.308-4.358.597-1.789 2.004-3.197 3.793-3.794.924-.308 2.069-.308 4.359-.308h10.407l1.253-7.069c.505-2.862-1.435-5.632-4.297-6.137-2.862-.505-5.632,1.435-6.137,4.297l-.443,2.515c-.243,1.378-1.577,2.312-2.955,2.069-1.377-.243-2.311-1.577-2.068-2.955l.444-2.515zM85.279,47.77c0-17.408-15.61-31.52-34.866-31.52-19.257,0-34.867,14.112-34.867,31.52 0,8.297 3.547,15.846 9.345,21.475.22,3.494-1.85,7.765-4.443,10.652l-.059.075c-.373.538-.059,1.308.583,1.433 2.202.365 6.105-.3 8.45-1.453l.386-.185c1.22-.58 3.292-1.562 5.158-3.722 4.656,2.083 9.9,3.254 15.447,3.254 19.256,0 34.866-14.112 34.866-31.52z"/></g></g></g></g></svg>';
-
-    var SVG_CHANNEL = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="chca"><rect width="512" height="512"/></clipPath><clipPath id="chcb"><path d="M0,0 L100,0 L100,100 L0,100z"/></clipPath></defs><g clip-path="url(#chca)"><g clip-path="url(#chcb)" transform="matrix(5.12,0,0,5.12,0,0)"><g><g><path stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#fff" stroke-width="6" d="M35.285,72.25h37.59c4.937,0 9-4.063 9-9v-32.875c0-4.937-4.063-9-9-9h-46c-4.937,0-9,4.062-9,9v51.458c0,2.662 3.21,4.005 5.106,2.136l11.602-11.462c.187-.185.439-.288.702-.288zM34.875,53.625h20.875M34.875,39.625h31.375"/></g></g></g></g></svg>';
-
-    // ── State ──
-    var WEBHOOK_URL = null;
-    var CHANNELS_DATA = [];
-    var joinedSet = new Set();
-
-    // ── Parse ?check= param ──
-    var urlParams = new URLSearchParams(location.search);
-    var checkParam = urlParams.get('check');
-    if (checkParam) WEBHOOK_URL = decodeURIComponent(checkParam);
-
-    // ── Render continue button ──
-    function renderContinueNormal() {
-      var btn = document.getElementById('continue-btn');
-      btn.innerHTML = '<span class="cont-icon">' + SVG_CONTINUE + '</span>Continue';
-    }
-    renderContinueNormal();
-
-    // ── Check if all joined → unlock continue ──
-    function checkAllJoined() {
-      var btn = document.getElementById('continue-btn');
-      if (CHANNELS_DATA.length > 0 && joinedSet.size >= CHANNELS_DATA.length) {
-        btn.classList.remove('locked');
-      } else {
-        btn.classList.add('locked');
-      }
-    }
-
-    // ── Escape HTML ──
-    function escHtml(s) {
-      return String(s)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    // ── Render channel list dynamically ──
-    function renderChannels(channels) {
-      CHANNELS_DATA = channels;
-      var list = document.getElementById('channels-list');
-      list.innerHTML = '';
-
-      channels.forEach(function(ch, i) {
-        // Divider between rows
-        if (i > 0) {
-          var divider = document.createElement('div');
-          divider.className = 'channel-divider';
-          list.appendChild(divider);
+    fetch(WEBHOOK_URL)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.channels) {
+          // Update CHANNELS_DATA with fresh backend status
+          CHANNELS_DATA = data.channels;
+          // Update UI for each channel
+          updateChannelButtons();
+          if (callback) callback(true);
+        } else {
+          if (callback) callback(false);
         }
-
-        if (ch.joined) joinedSet.add(i);
-
-        var row = document.createElement('div');
-        row.className = 'channel-row';
-
-        var btnHtml = ch.joined
-          ? '<span class="join-btn done"><span class="status-icon">' + SVG_SUCCESS + '</span></span>'
-          : '<a class="join-btn" href="' + escHtml(ch.link) + '" target="_blank" onclick="handleJoin(this,' + i + ')">' + 'Join</a>';
-
-        row.innerHTML =
-          '<div class="channel-left">' +
-            '<div class="mini-icon-box">' + SVG_CHANNEL + '</div>' +
-            '<div class="channel-name">' + escHtml(ch.name || ch.channel) + '</div>' +
-          '</div>' +
-          btnHtml;
-
-        list.appendChild(row);
+      })
+      .catch(function() {
+        if (callback) callback(false);
       });
+  }
 
-      checkAllJoined();
-    }
+  // ── Update all channel buttons to reflect current backend status ──
+  function updateChannelButtons() {
+    var rows = document.querySelectorAll('#channels-list .channel-row');
+    
+    CHANNELS_DATA.forEach(function(ch, idx) {
+      var row = rows[idx];
+      if (!row) return;
+      
+      var btnContainer = row.querySelector('.join-btn, .join-btn.done, a.join-btn');
+      if (!btnContainer) return;
+      
+      var newBtnHtml;
+      
+      if (ch.joined) {
+        // Already joined - show checkmark
+        newBtnHtml = '<span class="join-btn done"><span class="status-icon">' + SVG_SUCCESS + '</span></span>';
+      } else {
+        // Not joined - show Join button with verification
+        newBtnHtml = '<a class="join-btn" href="' + escHtml(ch.link) + '" data-channel-index="' + idx + '" onclick="return handleJoinClick(this, ' + idx + ', \'' + escHtml(ch.link) + '\')">Join</a>';
+      }
+      
+      // Replace the button element
+      var parent = btnContainer.parentNode;
+      var tempDiv = document.createElement('div');
+      tempDiv.innerHTML = newBtnHtml;
+      var newBtn = tempDiv.firstChild;
+      parent.replaceChild(newBtn, btnContainer);
+    });
+    
+    checkAllJoined();
+  }
 
-    // ── Handle join click — open link + mark locally ──
-    function handleJoin(btn, idx) {
-      if (!btn || btn.classList.contains('done')) return;
-      btn.classList.add('done');
-      btn.innerHTML = '<span class="status-icon">' + SVG_SUCCESS + '</span>';
-      joinedSet.add(idx);
-      var name = btn.closest('.channel-row').querySelector('.channel-name').textContent.trim();
-      showToast('success', 'Joined ' + name);
-      haptic('success');
-      checkAllJoined();
-      // href opens Telegram link naturally
-    }
+  // ── Render channel list dynamically (initial load) ──
+  function renderChannels(channels) {
+    CHANNELS_DATA = channels;
+    var list = document.getElementById('channels-list');
+    list.innerHTML = '';
 
-    // ── Toast ──
-    var toastTimer;
-    function showToast(type, msg) {
-      var el  = document.getElementById('toast');
-      var ico = document.getElementById('toast-icon');
-      var txt = document.getElementById('toast-msg');
-      clearTimeout(toastTimer);
-      el.classList.remove('show');
-      el.className = type;
-      ico.innerHTML = type === 'success' ? SVG_SUCCESS : SVG_ERROR;
-      txt.textContent = msg;
-      void el.offsetWidth;
-      el.classList.add('show');
-      haptic(type);
-      toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2800);
-    }
+    channels.forEach(function(ch, i) {
+      // Divider between rows
+      if (i > 0) {
+        var divider = document.createElement('div');
+        divider.className = 'channel-divider';
+        list.appendChild(divider);
+      }
 
-    // ── Continue — real webhook verification ──
-    function continueBot(btn) {
-      if (!btn || btn.classList.contains('is-loading') || btn.classList.contains('locked')) return false;
-      if (!WEBHOOK_URL) return false;
+      var row = document.createElement('div');
+      row.className = 'channel-row';
 
-      btn.classList.add('is-loading');
-      btn.innerHTML = '<span class="cont-spinner"></span>Verifying';
+      var btnHtml;
+      if (ch.joined) {
+        btnHtml = '<span class="join-btn done"><span class="status-icon">' + SVG_SUCCESS + '</span></span>';
+      } else {
+        btnHtml = '<a class="join-btn" href="' + escHtml(ch.link) + '" data-channel-index="' + i + '" onclick="return handleJoinClick(this, ' + i + ', \'' + escHtml(ch.link) + '\')">Join</a>';
+      }
 
+      row.innerHTML =
+        '<div class="channel-left">' +
+          '<div class="mini-icon-box">' + SVG_CHANNEL + '</div>' +
+          '<div class="channel-name">' + escHtml(ch.name || ch.channel) + '</div>' +
+        '</div>' +
+        btnHtml;
+
+      list.appendChild(row);
+    });
+
+    checkAllJoined();
+  }
+
+  // ── Handle join click with REAL backend verification ──
+  function handleJoinClick(btn, idx, channelLink) {
+    if (!btn || btn.classList.contains('done') || isVerifying) return false;
+    
+    // Mark as verifying to prevent multiple clicks
+    isVerifying = true;
+    
+    // Save original button content
+    var originalContent = btn.innerHTML;
+    
+    // Show loading state
+    btn.classList.add('is-loading');
+    btn.innerHTML = '<span class="join-load"><span class="join-spinner"></span>Opening...</span>';
+    
+    // Open the channel link in new tab
+    window.open(channelLink, '_blank');
+    
+    // Show toast instruction
+    showToast('info', 'Please join the channel in Telegram, then wait...');
+    
+    // Wait 4 seconds for user to join, then verify with backend
+    setTimeout(function() {
+      // Update button to verification state
+      btn.innerHTML = '<span class="join-load"><span class="join-spinner"></span>Verifying...</span>';
+      
+      // Call backend to check REAL membership status
+      if (!WEBHOOK_URL) {
+        // Fallback for dev mode
+        btn.classList.remove('is-loading');
+        btn.innerHTML = originalContent;
+        isVerifying = false;
+        return false;
+      }
+      
       fetch(WEBHOOK_URL)
         .then(function(r) { return r.json(); })
         .then(function(data) {
-          if (data.joined) {
-            btn.innerHTML = '<span class="cont-spinner"></span>Continuing';
-            setTimeout(function() {
-              if (tg) tg.close();
-            }, 600);
+          if (data.channels && data.channels[idx]) {
+            var isJoined = data.channels[idx].joined;
+            
+            if (isJoined) {
+              // User actually joined - update UI
+              btn.classList.remove('is-loading');
+              btn.classList.add('done');
+              btn.innerHTML = '<span class="status-icon">' + SVG_SUCCESS + '</span>';
+              // Update local data
+              CHANNELS_DATA[idx].joined = true;
+              showToast('success', '✓ Joined successfully!');
+              haptic('success');
+              checkAllJoined();
+            } else {
+              // User didn't join - show error and reset
+              btn.classList.remove('is-loading');
+              btn.innerHTML = originalContent;
+              showToast('error', 'Please join the channel first, then try again');
+              haptic('error');
+            }
           } else {
-            // Refresh list with real statuses from server
-            joinedSet = new Set();
-            renderChannels(data.channels);
             btn.classList.remove('is-loading');
-            renderContinueNormal();
-            showToast('error', 'Please join all channels first');
-            haptic('error');
+            btn.innerHTML = originalContent;
+            showToast('error', 'Verification failed, please try again');
           }
+          isVerifying = false;
         })
         .catch(function() {
           btn.classList.remove('is-loading');
-          renderContinueNormal();
-          showToast('error', 'Network error, try again');
+          btn.innerHTML = originalContent;
+          showToast('error', 'Network error, please try again');
           haptic('error');
+          isVerifying = false;
         });
+    }, 4000);
+    
+    return false;
+  }
 
-      return false;
+  // ── Toast (updated with info type) ──
+  var toastTimer;
+  function showToast(type, msg) {
+    var el  = document.getElementById('toast');
+    var ico = document.getElementById('toast-icon');
+    var txt = document.getElementById('toast-msg');
+    clearTimeout(toastTimer);
+    el.classList.remove('show');
+    
+    // Handle info type (neutral color)
+    if (type === 'info') {
+      el.className = 'info';
+      el.style.background = '#6c757d';
+      ico.innerHTML = SVG_CONTINUE;
+    } else {
+      el.className = type;
+      el.style.background = '';
+      ico.innerHTML = type === 'success' ? SVG_SUCCESS : SVG_ERROR;
+    }
+    
+    txt.textContent = msg;
+    void el.offsetWidth;
+    el.classList.add('show');
+    if (type !== 'info') haptic(type);
+    toastTimer = setTimeout(function(){ 
+      el.classList.remove('show');
+      if (type === 'info') el.style.background = '';
+    }, 2800);
+  }
+
+  // ── Continue — real webhook verification (final check) ──
+  function continueBot(btn) {
+    if (!btn || btn.classList.contains('is-loading') || btn.classList.contains('locked')) return false;
+    if (!WEBHOOK_URL) return false;
+
+    btn.classList.add('is-loading');
+    btn.innerHTML = '<span class="cont-spinner"></span>Verifying';
+
+    fetch(WEBHOOK_URL)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.joined) {
+          btn.innerHTML = '<span class="cont-spinner"></span>Continuing';
+          setTimeout(function() {
+            if (tg) tg.close();
+          }, 600);
+        } else {
+          // Update ALL channels with REAL backend status
+          if (data.channels) {
+            CHANNELS_DATA = data.channels;
+            updateChannelButtons();
+          }
+          btn.classList.remove('is-loading');
+          renderContinueNormal();
+          showToast('error', 'Please join all channels first');
+          haptic('error');
+        }
+      })
+      .catch(function() {
+        btn.classList.remove('is-loading');
+        renderContinueNormal();
+        showToast('error', 'Network error, try again');
+        haptic('error');
+      });
+
+    return false;
+  }
+
+  // ── Load channels on startup ──
+  function loadChannels() {
+    if (!WEBHOOK_URL) {
+      // Dev mode fallback — no ?check= param
+      renderChannels([
+        { channel: '@Example', name: 'Example Channel', link: 'https://t.me/example', joined: false }
+      ]);
+      return;
     }
 
-    // ── Load channels on startup ──
-    function loadChannels() {
-      if (!WEBHOOK_URL) {
-        // Dev mode fallback — no ?check= param
-        renderChannels([
-          { channel: '@Example', name: 'Example Channel', link: 'https://t.me/example', joined: false }
-        ]);
-        return;
-      }
+    fetch(WEBHOOK_URL)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        renderChannels(data.channels);
+      })
+      .catch(function() {
+        document.getElementById('channels-list').innerHTML =
+          '<div style="padding:16px 0;text-align:center;color:rgba(127,127,127,.8);font-size:14px;">Failed to load channels.<br>Please close and try again.</div>';
+        showToast('error', 'Failed to load channels');
+      });
+  }
 
-      fetch(WEBHOOK_URL)
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          renderChannels(data.channels);
-        })
-        .catch(function() {
-          document.getElementById('channels-list').innerHTML =
-            '<div style="padding:16px 0;text-align:center;color:rgba(127,127,127,.8);font-size:14px;">Failed to load channels.<br>Please close and try again.</div>';
-          showToast('error', 'Failed to load channels');
-        });
-    }
+  // Add CSS for info toast
+  var style = document.createElement('style');
+  style.textContent = '#toast.info { background: #6c757d; }';
+  document.head.appendChild(style);
 
-    loadChannels();
+  loadChannels();
 
-    document.body.classList.remove('no_transition');
-  </script>
+  document.body.classList.remove('no_transition');
+</script>
 
 </body>
 </html>

@@ -451,6 +451,7 @@
   var WEBHOOK_URL = null;
   var CHANNELS_DATA = [];
   var isVerifying = false;
+  var autoCloseTimer = null;
 
   // ── Parse ?check= param ──
   var urlParams = new URLSearchParams(location.search);
@@ -464,13 +465,27 @@
   }
   renderContinueNormal();
 
-  // ── Check if all joined → unlock continue (based on REAL backend data) ──
+  // ── Check if all joined → unlock continue ──
   function checkAllJoined() {
     var btn = document.getElementById('continue-btn');
     if (CHANNELS_DATA.length > 0 && CHANNELS_DATA.every(function(ch) { return ch.joined; })) {
       btn.classList.remove('locked');
+      // Auto close after 5 seconds if all channels are joined
+      if (autoCloseTimer) clearTimeout(autoCloseTimer);
+      autoCloseTimer = setTimeout(function() {
+        if (tg && CHANNELS_DATA.every(function(ch) { return ch.joined; })) {
+          showToast('success', 'All channels joined! Closing...');
+          setTimeout(function() {
+            if (tg) tg.close();
+          }, 1000);
+        }
+      }, 5000);
     } else {
       btn.classList.add('locked');
+      if (autoCloseTimer) {
+        clearTimeout(autoCloseTimer);
+        autoCloseTimer = null;
+      }
     }
   }
 
@@ -481,31 +496,6 @@
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
-  }
-
-  // ── Refresh channel status from backend ──
-  function refreshChannelStatus(callback) {
-    if (!WEBHOOK_URL) {
-      if (callback) callback(false);
-      return;
-    }
-
-    fetch(WEBHOOK_URL)
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (data.channels) {
-          // Update CHANNELS_DATA with fresh backend status
-          CHANNELS_DATA = data.channels;
-          // Update UI for each channel
-          updateChannelButtons();
-          if (callback) callback(true);
-        } else {
-          if (callback) callback(false);
-        }
-      })
-      .catch(function() {
-        if (callback) callback(false);
-      });
   }
 
   // ── Update all channel buttons to reflect current backend status ──
@@ -584,8 +574,8 @@
     // Mark as verifying to prevent multiple clicks
     isVerifying = true;
     
-    // Save original button content
-    var originalContent = btn.innerHTML;
+    // Store original button HTML for reset
+    var originalHtml = 'Join';
     
     // Show loading state
     btn.classList.add('is-loading');
@@ -606,7 +596,7 @@
       if (!WEBHOOK_URL) {
         // Fallback for dev mode
         btn.classList.remove('is-loading');
-        btn.innerHTML = originalContent;
+        btn.innerHTML = originalHtml;
         isVerifying = false;
         return false;
       }
@@ -628,24 +618,44 @@
               haptic('success');
               checkAllJoined();
             } else {
-              // User didn't join - show error and reset
+              // User didn't join - show error SVG on button
               btn.classList.remove('is-loading');
-              btn.innerHTML = originalContent;
+              btn.classList.remove('done');
+              btn.innerHTML = '<span class="status-icon">' + SVG_ERROR + '</span>';
               showToast('error', 'Please join the channel first, then try again');
               haptic('error');
+              // Reset button after 2 seconds so user can try again
+              setTimeout(function() {
+                if (btn && !CHANNELS_DATA[idx].joined) {
+                  btn.innerHTML = originalHtml;
+                  btn.classList.remove('is-loading');
+                }
+              }, 2000);
             }
           } else {
             btn.classList.remove('is-loading');
-            btn.innerHTML = originalContent;
+            btn.innerHTML = '<span class="status-icon">' + SVG_ERROR + '</span>';
             showToast('error', 'Verification failed, please try again');
+            setTimeout(function() {
+              if (btn && !CHANNELS_DATA[idx].joined) {
+                btn.innerHTML = originalHtml;
+                btn.classList.remove('is-loading');
+              }
+            }, 2000);
           }
           isVerifying = false;
         })
         .catch(function() {
           btn.classList.remove('is-loading');
-          btn.innerHTML = originalContent;
+          btn.innerHTML = '<span class="status-icon">' + SVG_ERROR + '</span>';
           showToast('error', 'Network error, please try again');
           haptic('error');
+          setTimeout(function() {
+            if (btn && !CHANNELS_DATA[idx].joined) {
+              btn.innerHTML = originalHtml;
+              btn.classList.remove('is-loading');
+            }
+          }, 2000);
           isVerifying = false;
         });
     }, 4000);
@@ -653,7 +663,7 @@
     return false;
   }
 
-  // ── Toast (updated with info type) ──
+  // ── Toast (no image/gif, only SVG) ──
   var toastTimer;
   function showToast(type, msg) {
     var el  = document.getElementById('toast');
@@ -735,6 +745,13 @@
       .then(function(r) { return r.json(); })
       .then(function(data) {
         renderChannels(data.channels);
+        // If all channels already joined from the start, auto close after 5 seconds
+        if (data.joined) {
+          showToast('success', 'All channels verified!');
+          setTimeout(function() {
+            if (tg) tg.close();
+          }, 5000);
+        }
       })
       .catch(function() {
         document.getElementById('channels-list').innerHTML =

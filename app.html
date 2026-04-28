@@ -447,6 +447,20 @@
 
   var SVG_CHANNEL = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="chca"><rect width="512" height="512"/></clipPath><clipPath id="chcb"><path d="M0,0 L100,0 L100,100 L0,100z"/></clipPath></defs><g clip-path="url(#chca)"><g clip-path="url(#chcb)" transform="matrix(5.12,0,0,5.12,0,0)"><g><g><path stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#fff" stroke-width="6" d="M35.285,72.25h37.59c4.937,0 9-4.063 9-9v-32.875c0-4.937-4.063-9-9-9h-46c-4.937,0-9,4.062-9,9v51.458c0,2.662 3.21,4.005 5.106,2.136l11.602-11.462c.187-.185.439-.288.702-.288zM34.875,53.625h20.875M34.875,39.625h31.375"/></g></g></g></g></svg>';
 
+  // ── Helper: Open Telegram link using WebApp API ──
+  function openTelegramLink(url) {
+    if (tg && tg.openTelegramLink) {
+      // Use Telegram WebApp API method (keeps Mini App open in newer versions)
+      tg.openTelegramLink(url);
+    } else if (tg && tg.openLink) {
+      // Fallback to openLink if available
+      tg.openLink(url);
+    } else {
+      // Final fallback - browser new tab (should never happen in Telegram)
+      window.open(url, '_blank');
+    }
+  }
+
   // ── State ──
   var WEBHOOK_URL = null;
   var CHANNELS_DATA = [];
@@ -515,8 +529,8 @@
         // Already joined - show checkmark
         newBtnHtml = '<span class="join-btn done"><span class="status-icon">' + SVG_SUCCESS + '</span></span>';
       } else {
-        // Not joined - show Join button with verification
-        newBtnHtml = '<a class="join-btn" href="' + escHtml(ch.link) + '" data-channel-index="' + idx + '" onclick="return handleJoinClick(this, ' + idx + ', \'' + escHtml(ch.link) + '\')">Join</a>';
+        // Not joined - show Join button with Telegram WebApp link opening
+        newBtnHtml = '<a class="join-btn" href="#" data-channel-index="' + idx + '" onclick="return handleJoinClick(this, ' + idx + ', \'' + escHtml(ch.link) + '\')">Join</a>';
       }
       
       // Replace the button element
@@ -551,7 +565,7 @@
       if (ch.joined) {
         btnHtml = '<span class="join-btn done"><span class="status-icon">' + SVG_SUCCESS + '</span></span>';
       } else {
-        btnHtml = '<a class="join-btn" href="' + escHtml(ch.link) + '" data-channel-index="' + i + '" onclick="return handleJoinClick(this, ' + i + ', \'' + escHtml(ch.link) + '\')">Join</a>';
+        btnHtml = '<a class="join-btn" href="#" data-channel-index="' + i + '" onclick="return handleJoinClick(this, ' + i + ', \'' + escHtml(ch.link) + '\')">Join</a>';
       }
 
       row.innerHTML =
@@ -567,7 +581,7 @@
     checkAllJoined();
   }
 
-  // ── Handle join click with REAL backend verification ──
+  // ── Handle join click with REAL backend verification using openTelegramLink ──
   function handleJoinClick(btn, idx, channelLink) {
     if (!btn || btn.classList.contains('done') || isVerifying) return false;
     
@@ -581,13 +595,13 @@
     btn.classList.add('is-loading');
     btn.innerHTML = '<span class="join-load"><span class="join-spinner"></span>Opening...</span>';
     
-    // Open the channel link in new tab
-    window.open(channelLink, '_blank');
+    // Open the channel link using Telegram WebApp API (keeps Mini App open)
+    openTelegramLink(channelLink);
     
     // Show toast instruction
     showToast('info', 'Please join the channel in Telegram, then wait...');
     
-    // Wait 4 seconds for user to join, then verify with backend
+    // Wait 5 seconds for user to join, then verify with backend (increased from 4s for reliability)
     setTimeout(function() {
       // Update button to verification state
       btn.innerHTML = '<span class="join-load"><span class="join-spinner"></span>Verifying...</span>';
@@ -658,7 +672,7 @@
           }, 2000);
           isVerifying = false;
         });
-    }, 4000);
+    }, 5000); // Increased wait time to give user enough time to join
     
     return false;
   }
